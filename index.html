@@ -3,46 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiTamu - Lobby Utama</title>
+    <title>SiTamu - Enterprise Edition (Master System)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        tailwind.config = { theme: { extend: { colors: { primary: '#0A2540', accent: '#D4AF37' } } } }
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#0A2540', accent: '#D4AF37', adminBg: '#f3f4f6', principalBg: '#0f172a' } } }
+        }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #000; overflow-x: hidden; }
         
+        /* Kiosk Backgrounds */
         .bg-slide { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease; z-index: -2; }
         .bg-slide.active { opacity: 1; }
         .bg-overlay { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.7), rgba(10, 37, 64, 0.95)); z-index: -1; }
         
+        /* UI Components */
         .glass-panel { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+        .dashboard-panel { background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 0.75rem; }
         
-        .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.95); overflow-y: auto; }
+        /* SPA Transitions */
+        .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; transform: scale(0.98); overflow-y: auto; }
         .page.active { opacity: 1; pointer-events: auto; transform: scale(1); }
         
         .wizard-step { display: none; animation: fadeIn 0.4s; }
         .wizard-step.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom Scrollbar for inner forms */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 4px; }
     </style>
 </head>
 <body class="text-white h-screen w-screen relative select-none">
 
-    <!-- Backgrounds -->
-    <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
-    <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
-    <div class="bg-overlay"></div>
+    <!-- Global Backgrounds for Kiosk -->
+    <div id="kiosk-bgs">
+        <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
+        <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
+        <div class="bg-overlay"></div>
+    </div>
 
+    <!-- Toast Notification -->
     <div id="toast-container" class="fixed bottom-5 right-5 flex flex-col gap-3" style="z-index: 9999;"></div>
 
-    <!-- ================= PAGE 1: LOBBY (PILIHAN LAYANAN) ================= -->
+    <!-- ========================================================================= -->
+    <!-- MODULE 1: KIOSK LOBBY & GUEST REGISTRATION                                -->
+    <!-- ========================================================================= -->
+
+    <!-- PAGE: MAIN LOBBY -->
     <div id="page-main" class="page active flex flex-col justify-center items-center min-h-full py-10 px-4 relative">
+        <button onclick="navigate('page-login')" class="absolute top-8 right-8 border border-white/40 hover:bg-white/20 text-white px-6 py-2 rounded-full font-semibold transition flex items-center gap-2">
+            <i class="fa-solid fa-user-tie"></i> Portal Pegawai
+        </button>
+        
         <div class="text-center glass-panel p-10 rounded-3xl w-full max-w-5xl border-t border-white/30">
             <div class="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(212,175,55,0.4)] border border-accent/50">
                 <i class="fa-solid fa-building-columns text-4xl text-accent"></i>
@@ -51,241 +67,293 @@
             <p class="text-xl text-gray-200 mb-10 font-light">Selamat datang. Silakan pilih layanan tamu di bawah ini.</p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                <!-- Opsi 1: Walk-In -->
-                <button onclick="navigate('page-guest'); resetGuestForm();" class="bg-white/5 hover:bg-white/10 border border-white/20 p-8 rounded-2xl transition transform hover:-translate-y-2 group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-accent/20 transition"></div>
+                <button onclick="navigate('page-guest')" class="bg-white/5 hover:bg-white/10 border border-white/20 p-8 rounded-2xl transition transform hover:-translate-y-2 group">
                     <i class="fa-solid fa-clipboard-user text-5xl text-accent mb-6 group-hover:scale-110 transition duration-300"></i>
                     <h3 class="text-2xl font-bold mb-3">Isi Buku Tamu</h3>
-                    <p class="text-gray-300 text-sm leading-relaxed">Untuk tamu yang sudah berada di lobi sekolah dan ingin menemui Kepala Sekolah atau staf saat ini juga.</p>
+                    <p class="text-gray-300 text-sm">Untuk tamu yang sudah berada di lobi sekolah.</p>
                 </button>
-                
-                <!-- Opsi 2: Schedule -->
-                <button onclick="navigate('page-schedule');" class="bg-white/5 hover:bg-white/10 border border-white/20 p-8 rounded-2xl transition transform hover:-translate-y-2 group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-emerald-500/20 transition"></div>
+                <button onclick="navigate('page-schedule')" class="bg-white/5 hover:bg-white/10 border border-white/20 p-8 rounded-2xl transition transform hover:-translate-y-2 group">
                     <i class="fa-solid fa-calendar-check text-5xl text-emerald-400 mb-6 group-hover:scale-110 transition duration-300"></i>
                     <h3 class="text-2xl font-bold mb-3">Buat Jadwal Temu</h3>
-                    <p class="text-gray-300 text-sm leading-relaxed">Ajukan rencana pertemuan dengan Kepala Sekolah untuk tanggal, waktu, dan lokasi/platform tertentu ke depannya.</p>
+                    <p class="text-gray-300 text-sm">Ajukan rencana pertemuan untuk tanggal ke depan.</p>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ================= PAGE 2: GUEST WIZARD (Walk-In / Orang Awam) ================= -->
+    <!-- PAGE: WALK-IN GUEST FORM -->
     <div id="page-guest" class="page flex flex-col min-h-full py-10 px-8">
         <div class="flex justify-between items-center mb-6 max-w-5xl mx-auto w-full shrink-0">
-            <button onclick="navigate('page-main'); resetGuestForm();" class="text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="navigate('page-main')" class="text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
             <h2 class="text-2xl font-bold">Buku Tamu Langsung</h2>
             <div class="w-12"></div>
         </div>
 
         <div class="glass-panel rounded-3xl max-w-5xl mx-auto w-full flex-1 mb-10 overflow-hidden flex flex-col p-8 bg-white/5">
-            <!-- Progress Bar -->
             <div class="flex justify-between mb-8 relative shrink-0">
                 <div class="absolute top-1/2 left-0 w-full h-1 bg-white/20 -z-10 rounded"></div>
-                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-accent -z-10 rounded transition-all duration-300" style="width: 25%"></div>
-                
-                <div class="step-indicator flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-lg"><i class="fa-solid fa-user"></i></div>
-                    <span class="text-xs text-accent">Identitas</span>
-                </div>
-                <div class="step-indicator flex flex-col items-center">
-                    <div id="ind-2" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-briefcase"></i></div>
-                    <span id="text-ind-2" class="text-xs text-white/50">Tujuan</span>
-                </div>
-                <div class="step-indicator flex flex-col items-center">
-                    <div id="ind-3" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-shield-halved"></i></div>
-                    <span id="text-ind-3" class="text-xs text-white/50">Kepatuhan</span>
-                </div>
-                <div class="step-indicator flex flex-col items-center">
-                    <div id="ind-4" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-camera"></i></div>
-                    <span id="text-ind-4" class="text-xs text-white/50">Kamera</span>
-                </div>
+                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-accent -z-10 rounded transition-all duration-300" style="width: 33%"></div>
+                <div class="step-indicator"><div class="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 mx-auto">1</div></div>
+                <div class="step-indicator"><div id="ind-2" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 mx-auto">2</div></div>
+                <div class="step-indicator"><div id="ind-3" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 mx-auto">3</div></div>
             </div>
 
-            <!-- STEP 1: Identitas -->
+            <!-- Walk-in Step 1 -->
             <div id="step-1" class="wizard-step active h-full flex flex-col">
-                <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 1: Identitas Diri</h3>
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Nama Lengkap *</label>
-                        <input type="text" id="g-name" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent" placeholder="Contoh: Budi Santoso">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">No. HP / WhatsApp *</label>
-                        <input type="tel" id="g-phone" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent" placeholder="Contoh: 08123456789">
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm text-gray-300 mb-2">Instansi / Perusahaan *</label>
-                        <input type="text" id="g-agency" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent" placeholder="Contoh: Dinas Pendidikan / Pribadi">
-                    </div>
+                <h3 class="text-xl font-semibold mb-6 text-accent">Identitas & Tujuan</h3>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <input type="text" id="w-name" class="bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent" placeholder="Nama Lengkap *">
+                    <input type="text" id="w-agency" class="bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent" placeholder="Instansi *">
                 </div>
-                <div class="mt-auto pt-6 flex justify-end">
-                    <button onclick="nextStep(2)" class="bg-white/20 hover:bg-white/30 border border-white/30 px-8 py-3 rounded-xl font-semibold transition">Selanjutnya <i class="fa-solid fa-arrow-right ml-2"></i></button>
-                </div>
+                <textarea id="w-purpose" rows="3" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent mb-4 resize-none" placeholder="Keperluan *"></textarea>
+                <div class="mt-auto flex justify-end"><button onclick="nextStep(2)" class="bg-white/20 px-8 py-3 rounded-xl font-semibold">Selanjutnya</button></div>
             </div>
 
-            <!-- STEP 2: Tujuan -->
+            <!-- Walk-in Step 2 -->
             <div id="step-2" class="wizard-step h-full flex flex-col">
-                <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 2: Tujuan Kunjungan</h3>
-                <div class="grid gap-6">
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Kategori Keperluan *</label>
-                        <select id="g-purpose" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent appearance-none">
-                            <option value="" class="text-black">Pilih Tujuan...</option>
-                            <option value="rapat" class="text-black">Rapat Terjadwal</option>
-                            <option value="penawaran" class="text-black">Penawaran Kerjasama</option>
-                            <option value="lainnya" class="text-black">Keperluan Lainnya</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Detail Pesan *</label>
-                        <textarea id="g-detail" rows="4" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent resize-none" placeholder="Jelaskan keperluan Anda..."></textarea>
-                    </div>
-                </div>
-                <div class="mt-auto pt-6 flex justify-between">
-                    <button onclick="prevStep(1)" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
-                    <button onclick="nextStep(3)" class="bg-white/20 hover:bg-white/30 border border-white/30 px-8 py-3 rounded-xl font-semibold transition">Selanjutnya <i class="fa-solid fa-arrow-right ml-2"></i></button>
-                </div>
-            </div>
-
-            <!-- STEP 3: Kepatuhan -->
-            <div id="step-3" class="wizard-step h-full flex flex-col">
-                <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 3: Persetujuan (UU PDP)</h3>
-                <div class="bg-black/40 border border-yellow-500/30 p-6 rounded-xl flex-1 text-sm text-gray-300 leading-relaxed space-y-4">
-                    <p><strong class="text-white text-base">Pernyataan Privasi</strong></p>
-                    <p>Sesuai UU No. 27 Tahun 2022, kami membutuhkan persetujuan Anda sebelum mengaktifkan kamera untuk keperluan keamanan sekolah.</p>
-                    <label class="flex items-start gap-3 mt-6 cursor-pointer bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
-                        <input type="checkbox" id="g-consent" class="mt-1 w-5 h-5 accent-accent cursor-pointer">
-                        <span class="text-white font-semibold">Saya setuju mengaktifkan kamera dan data wajah saya digunakan untuk keamanan lingkungan sekolah.</span>
+                <h3 class="text-xl font-semibold mb-6 text-accent">Persetujuan Data</h3>
+                <div class="bg-black/40 border border-yellow-500/30 p-6 rounded-xl flex-1 text-sm text-gray-300">
+                    Sesuai UU No. 27 Tahun 2022, kami membutuhkan izin penggunaan data wajah untuk keamanan.
+                    <label class="flex items-center gap-3 mt-4 cursor-pointer bg-white/5 p-4 rounded-lg border border-white/10">
+                        <input type="checkbox" id="w-consent" class="w-5 h-5 accent-accent cursor-pointer">
+                        <span class="text-white">Saya setuju mengaktifkan kamera.</span>
                     </label>
                 </div>
                 <div class="mt-auto pt-6 flex justify-between">
-                    <button onclick="prevStep(2)" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
-                    <button onclick="nextStep(4)" class="bg-accent hover:bg-yellow-500 text-primary px-8 py-3 rounded-xl font-bold transition">Setuju & Kamera <i class="fa-solid fa-camera ml-2"></i></button>
+                    <button onclick="prevStep(1)" class="text-gray-300 px-4 py-3">Kembali</button>
+                    <button onclick="nextStep(3)" class="bg-accent text-primary px-8 py-3 rounded-xl font-bold">Setuju & Kamera</button>
                 </div>
             </div>
 
-            <!-- STEP 4: Kamera -->
-            <div id="step-4" class="wizard-step h-full flex flex-col">
-                <h3 class="text-xl font-semibold mb-4 text-accent">Langkah 4: Verifikasi Wajah</h3>
-                <div class="flex gap-6 h-64">
-                    <div class="flex-1 bg-black rounded-xl overflow-hidden relative border border-white/20 flex items-center justify-center">
-                        <video id="camera-stream" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
-                        <div id="cam-placeholder" class="text-center z-10 text-gray-500"><i class="fa-solid fa-video-slash text-4xl mb-2"></i><p>Memuat Kamera...</p></div>
-                    </div>
-                    <div class="w-1/3 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center overflow-hidden relative">
-                        <canvas id="canvas-face" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
-                        <span id="lbl-face" class="text-xs text-gray-400">Preview Wajah</span>
-                    </div>
+            <!-- Walk-in Step 3 -->
+            <div id="step-3" class="wizard-step h-full flex flex-col">
+                <h3 class="text-xl font-semibold mb-4 text-accent">Verifikasi Wajah</h3>
+                <div class="flex gap-4 h-64 justify-center items-center bg-black/50 rounded-xl border border-white/20">
+                    <div class="text-center text-gray-400"><i class="fa-solid fa-camera text-4xl mb-2"></i><p>(Simulasi Kamera Kiosk)</p></div>
                 </div>
-                
-                <div class="flex justify-center mt-6">
-                    <button onclick="capturePhoto('face')" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition"><i class="fa-solid fa-user-viewfinder"></i> Ambil Foto Wajah</button>
-                </div>
-
                 <div class="mt-auto pt-6 flex justify-between">
-                    <button onclick="prevStep(3); stopCamera();" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
-                    <button onclick="submitGuest('Walk-In')" class="bg-accent hover:bg-yellow-500 text-primary px-10 py-3 rounded-xl font-bold transition shadow-[0_0_15px_rgba(212,175,55,0.5)]">SELESAIKAN <i class="fa-solid fa-check ml-2"></i></button>
+                    <button onclick="prevStep(2)" class="text-gray-300 px-4 py-3">Kembali</button>
+                    <button onclick="submitWalkIn()" class="bg-emerald-500 text-primary px-10 py-3 rounded-xl font-bold shadow-lg">KIRIM DATA</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= PAGE 3: SCHEDULE FORM (Buat Jadwal) ================= -->
+    <!-- PAGE: SCHEDULE FORM -->
     <div id="page-schedule" class="page flex flex-col min-h-full py-10 px-8">
         <div class="flex justify-between items-center mb-6 max-w-4xl mx-auto w-full shrink-0">
-            <button onclick="navigate('page-main')" class="text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-2xl font-bold">Pengajuan Jadwal Pertemuan</h2>
+            <button onclick="navigate('page-main')" class="text-white hover:text-accent bg-black/20 p-3 rounded-full h-12 w-12 glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-2xl font-bold">Reservasi Jadwal</h2>
             <div class="w-12"></div>
         </div>
-
-        <div class="glass-panel rounded-3xl max-w-4xl mx-auto w-full mb-10 p-10 bg-white/5">
-            <p class="text-gray-300 mb-8 border-b border-white/10 pb-6">Lengkapi formulir di bawah ini untuk mengajukan reservasi jadwal pertemuan dengan Kepala Sekolah. Pengajuan akan ditinjau oleh Admin.</p>
-            
+        <div class="glass-panel rounded-3xl max-w-4xl mx-auto w-full p-8 bg-white/5">
             <form onsubmit="submitSchedule(event)">
-                <!-- Seksi Identitas -->
-                <h3 class="text-lg font-bold text-emerald-400 mb-4"><i class="fa-solid fa-id-badge mr-2"></i> 1. Informasi Pemohon</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Nama Lengkap / PIC *</label>
-                        <input type="text" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400" placeholder="Nama Anda">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Instansi / Organisasi *</label>
-                        <input type="text" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400" placeholder="Nama instansi">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Nomor HP / WhatsApp *</label>
-                        <input type="tel" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400" placeholder="08xxx">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Email (Opsional)</label>
-                        <input type="email" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400" placeholder="email@contoh.com">
-                    </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <input type="text" id="s-name" required class="bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white" placeholder="Nama / PIC *">
+                    <input type="text" id="s-agency" required class="bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white" placeholder="Instansi *">
+                    <input type="date" id="s-date" required class="bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white [color-scheme:dark]">
+                    <input type="time" id="s-time" required class="bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white [color-scheme:dark]">
                 </div>
-
-                <!-- Seksi Jadwal Kapan & Dimana -->
-                <h3 class="text-lg font-bold text-emerald-400 mb-4"><i class="fa-solid fa-clock mr-2"></i> 2. Rencana Waktu & Tempat</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Tanggal (Kapan) *</label>
-                        <input type="date" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400 [color-scheme:dark]">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Waktu (Jam) *</label>
-                        <input type="time" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400 [color-scheme:dark]">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-300 mb-2">Lokasi (Dimana) *</label>
-                        <select required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400 appearance-none">
-                            <option value="" class="text-black">Pilih Lokasi...</option>
-                            <option value="ruang_kepsek" class="text-black">Ruang Kepala Sekolah</option>
-                            <option value="ruang_rapat" class="text-black">Ruang Rapat Utama</option>
-                            <option value="luar_sekolah" class="text-black">Luar Sekolah (Tulis di Catatan)</option>
-                            <option value="daring_zoom" class="text-black">Pertemuan Online (Zoom/Meet)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Seksi Tujuan -->
-                <h3 class="text-lg font-bold text-emerald-400 mb-4"><i class="fa-solid fa-file-lines mr-2"></i> 3. Agenda Pertemuan</h3>
-                <div class="mb-8">
-                    <label class="block text-sm text-gray-300 mb-2">Topik / Keperluan *</label>
-                    <textarea rows="3" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400 resize-none" placeholder="Jelaskan secara detail agenda pertemuan yang ingin diajukan..."></textarea>
-                </div>
-
-                <div class="flex justify-end pt-4 border-t border-white/10">
-                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-primary px-10 py-4 rounded-xl font-bold transition flex items-center gap-2 shadow-lg">
-                        Ajukan Jadwal <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
+                <textarea id="s-purpose" required rows="3" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white mb-4 resize-none" placeholder="Agenda Pertemuan *"></textarea>
+                <div class="flex justify-end"><button type="submit" class="bg-emerald-500 text-primary px-10 py-4 rounded-xl font-bold shadow-lg">Ajukan Jadwal</button></div>
             </form>
         </div>
     </div>
 
-    <!-- ================= TICKET MODAL ================= -->
-    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-        <div class="bg-white text-primary p-10 rounded-3xl max-w-md w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300" id="ticket-content">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-check"></i></div>
-            <h2 class="text-3xl font-bold mb-2" id="ticket-title">Registrasi Sukses!</h2>
-            <p class="text-gray-600 mb-6" id="ticket-desc">Data Anda telah diteruskan ke sistem Administrasi.</p>
-            <div class="bg-gray-100 rounded-xl p-4 mb-8">
-                <span class="block text-sm text-gray-500 mb-1">Nomor Resi / Tiket Anda:</span>
-                <span class="block text-4xl font-black text-primary tracking-widest" id="ticket-number">---</span>
+    <!-- ========================================================================= -->
+    <!-- MODULE 2: AUTHENTICATION PORTAL                                           -->
+    <!-- ========================================================================= -->
+    <div id="page-login" class="page flex items-center justify-center h-full">
+        <button onclick="navigate('page-main')" class="absolute top-8 left-8 text-white hover:text-accent bg-black/20 p-3 rounded-full h-12 w-12 glass-panel"><i class="fa-solid fa-home"></i></button>
+        
+        <div class="glass-panel p-10 rounded-3xl w-full max-w-md bg-primary/90 border border-white/20 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-accent"></div>
+            <div class="text-center mb-8">
+                <i class="fa-solid fa-shield-halved text-4xl text-accent mb-4"></i>
+                <h2 class="text-2xl font-bold">Portal Pegawai</h2>
+                <p class="text-sm text-gray-400 mt-1">Gunakan <b>admin</b> atau <b>kepsek</b> (Pass sama)</p>
             </div>
-            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-4 rounded-xl font-bold text-lg">Selesai & Kembali ke Lobi</button>
+            <form onsubmit="processLogin(event)">
+                <input type="text" id="l-user" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 px-4 text-white mb-4" placeholder="Username" required>
+                <input type="password" id="l-pass" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 px-4 text-white mb-6" placeholder="Password" required>
+                <button type="submit" id="btn-login" class="w-full bg-accent text-primary py-3.5 rounded-xl font-bold">Autentikasi <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i></button>
+            </form>
         </div>
     </div>
 
-    <!-- Logic JS -->
+    <!-- ========================================================================= -->
+    <!-- MODULE 3: ADMIN DASHBOARD (TATA USAHA)                                    -->
+    <!-- ========================================================================= -->
+    <div id="page-admin" class="page bg-adminBg text-gray-800 flex h-full">
+        <!-- Sidebar -->
+        <div class="w-64 bg-primary text-white flex flex-col shadow-xl z-10">
+            <div class="p-6 border-b border-white/10 text-center">
+                <i class="fa-solid fa-building-columns text-3xl text-accent mb-2"></i>
+                <h2 class="font-bold text-lg">SiTamu Admin</h2>
+                <span class="text-xs bg-white/20 px-2 py-1 rounded-full mt-2 inline-block">Tata Usaha</span>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#" class="block bg-accent/20 text-accent px-4 py-3 rounded-lg font-medium"><i class="fa-solid fa-inbox w-6"></i> Antrean Tamu</a>
+                <a href="#" class="block text-gray-400 hover:bg-white/5 hover:text-white px-4 py-3 rounded-lg font-medium transition"><i class="fa-solid fa-calendar-days w-6"></i> Jadwal Reservasi</a>
+                <a href="#" class="block text-gray-400 hover:bg-white/5 hover:text-white px-4 py-3 rounded-lg font-medium transition"><i class="fa-solid fa-clock-rotate-left w-6"></i> Riwayat & Arsip</a>
+            </nav>
+            <div class="p-4 border-t border-white/10">
+                <button onclick="logout()" class="w-full flex items-center gap-2 text-red-400 hover:text-red-300 font-medium px-4 py-2"><i class="fa-solid fa-power-off"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <header class="bg-white shadow-sm p-6 flex justify-between items-center z-0">
+                <h1 class="text-2xl font-bold text-gray-800">Manajemen Antrean Tamu</h1>
+                <div class="flex items-center gap-4">
+                    <span class="relative"><i class="fa-solid fa-bell text-gray-400 text-xl"></i><span class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full"></span></span>
+                    <div class="flex items-center gap-3 border-l pl-4 ml-2">
+                        <img src="https://ui-avatars.com/api/?name=Admin+TU&background=0D8ABC&color=fff" class="w-10 h-10 rounded-full">
+                        <div class="text-sm"><p class="font-bold">Siti Aminah</p><p class="text-gray-500">Staf Admin</p></div>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="flex-1 p-8 overflow-y-auto">
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="dashboard-panel p-6 flex items-center gap-4 border-l-4 border-blue-500">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+                        <div><p class="text-gray-500 text-sm">Menunggu Review</p><h3 class="text-2xl font-bold" id="stat-pending">0</h3></div>
+                    </div>
+                    <div class="dashboard-panel p-6 flex items-center gap-4 border-l-4 border-yellow-500">
+                        <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-share"></i></div>
+                        <div><p class="text-gray-500 text-sm">Diteruskan ke Kepsek</p><h3 class="text-2xl font-bold" id="stat-forwarded">0</h3></div>
+                    </div>
+                    <div class="dashboard-panel p-6 flex items-center gap-4 border-l-4 border-green-500">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-check-double"></i></div>
+                        <div><p class="text-gray-500 text-sm">Selesai Hari Ini</p><h3 class="text-2xl font-bold" id="stat-resolved">0</h3></div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="dashboard-panel overflow-hidden">
+                    <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                        <h3 class="font-bold text-lg">Daftar Permintaan Masuk</h3>
+                        <input type="text" placeholder="Cari tamu..." class="border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-sm border-b">
+                                <th class="p-4 font-semibold">Tiket</th>
+                                <th class="p-4 font-semibold">Tamu & Instansi</th>
+                                <th class="p-4 font-semibold">Tipe & Keperluan</th>
+                                <th class="p-4 font-semibold">Status</th>
+                                <th class="p-4 font-semibold text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-gray-100">
+                            <!-- Rows akan digenerate oleh JS -->
+                            <tr><td colspan="5" class="p-8 text-center text-gray-400">Belum ada data tamu.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 4: PRINCIPAL DASHBOARD (KEPALA SEKOLAH)                            -->
+    <!-- ========================================================================= -->
+    <div id="page-principal" class="page bg-principalBg text-white flex h-full">
+        <!-- Sidebar Kepsek -->
+        <div class="w-20 lg:w-64 bg-black/50 border-r border-white/10 flex flex-col items-center lg:items-start z-10 transition-all">
+            <div class="p-6 w-full text-center lg:text-left border-b border-white/10">
+                <i class="fa-solid fa-crown text-3xl text-accent lg:mb-2 block"></i>
+                <h2 class="font-bold text-lg hidden lg:block text-accent">Ruang Pimpinan</h2>
+            </div>
+            <nav class="flex-1 w-full py-4 space-y-2">
+                <a href="#" class="flex items-center justify-center lg:justify-start gap-4 bg-accent/20 text-accent px-6 py-4 border-r-4 border-accent"><i class="fa-solid fa-envelope-open-text text-xl"></i> <span class="font-medium hidden lg:block">Inbox Pesan</span></a>
+                <a href="#" class="flex items-center justify-center lg:justify-start gap-4 text-gray-400 hover:text-white px-6 py-4 transition"><i class="fa-solid fa-calendar-check text-xl"></i> <span class="font-medium hidden lg:block">Agenda Saya</span></a>
+            </nav>
+            <div class="p-4 w-full border-t border-white/10">
+                <button onclick="logout()" class="w-full flex justify-center lg:justify-start items-center gap-3 text-red-400 hover:text-red-300 px-2 py-2"><i class="fa-solid fa-right-from-bracket text-xl"></i> <span class="hidden lg:block font-medium">Keluar</span></button>
+            </div>
+        </div>
+
+        <!-- Main Content Kepsek -->
+        <div class="flex-1 flex flex-col h-full relative overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-800 to-principalBg">
+            <header class="p-8 pb-4 flex justify-between items-end">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">Selamat Datang, Bapak Kepala Sekolah</h1>
+                    <p class="text-gray-400 mt-1">Berikut adalah permohonan tamu yang telah disaring oleh Admin.</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-accent text-sm font-bold tracking-widest uppercase" id="current-date">Senin, 14 Sep</p>
+                </div>
+            </header>
+            
+            <main class="flex-1 p-8 flex gap-6 overflow-hidden">
+                <!-- Inbox List -->
+                <div class="w-1/3 bg-white/5 border border-white/10 rounded-2xl flex flex-col overflow-hidden">
+                    <div class="p-4 border-b border-white/10 bg-white/5"><h3 class="font-semibold"><i class="fa-solid fa-inbox text-accent mr-2"></i> Kotak Masuk</h3></div>
+                    <div class="flex-1 overflow-y-auto p-2 space-y-2" id="kepsek-inbox-list">
+                        <!-- Data Mockup -->
+                        <div class="text-center text-gray-500 mt-10 p-4 border border-dashed border-gray-600 rounded-xl mx-4">Tidak ada pesan masuk.</div>
+                    </div>
+                </div>
+
+                <!-- Inbox Detail Panel -->
+                <div class="flex-1 bg-black/40 border border-white/10 rounded-2xl p-8 flex flex-col relative" id="kepsek-detail-panel">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 opacity-50" id="kepsek-empty-state">
+                        <i class="fa-regular fa-envelope-open text-6xl mb-4"></i>
+                        <p>Pilih pesan di sebelah kiri untuk membaca detail.</p>
+                    </div>
+                    
+                    <!-- Content (Hidden default) -->
+                    <div id="kepsek-active-content" class="hidden h-full flex flex-col">
+                        <div class="flex justify-between items-start mb-6 border-b border-white/10 pb-6">
+                            <div>
+                                <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30 mb-3 inline-block" id="k-type">WALK-IN</span>
+                                <h2 class="text-3xl font-bold mb-1" id="k-name">Budi Santoso</h2>
+                                <p class="text-gray-400" id="k-agency"><i class="fa-regular fa-building mr-1"></i> PT Maju Mundur</p>
+                            </div>
+                            <div class="text-right text-sm text-gray-500" id="k-ticket">Tiket: WLK-1234</div>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto">
+                            <h4 class="text-sm text-gray-400 uppercase tracking-wider mb-2">Isi Pesan / Keperluan:</h4>
+                            <div class="bg-white/5 p-6 rounded-xl border border-white/10 text-lg leading-relaxed mb-6" id="k-purpose">
+                                Ingin membahas penawaran kerjasama alat peraga sekolah.
+                            </div>
+                            
+                            <div id="k-schedule-info" class="hidden bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl flex gap-6 text-emerald-400">
+                                <div><i class="fa-regular fa-calendar mr-2"></i> <span id="k-date"></span></div>
+                                <div><i class="fa-regular fa-clock mr-2"></i> <span id="k-time"></span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto pt-6 flex gap-4 border-t border-white/10">
+                            <button onclick="respondKepsek('APPROVE')" class="flex-1 bg-accent hover:bg-yellow-500 text-primary py-4 rounded-xl font-bold text-lg transition shadow-lg"><i class="fa-solid fa-check-circle mr-2"></i> Setujui Pertemuan</button>
+                            <button onclick="respondKepsek('REJECT')" class="flex-1 bg-red-900/50 hover:bg-red-800 text-red-200 border border-red-700 py-4 rounded-xl font-bold text-lg transition"><i class="fa-solid fa-xmark-circle mr-2"></i> Tolak Halus</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MASTER JAVASCRIPT LOGIC (SPA & MOCK DATABASE)                             -->
+    <!-- ========================================================================= -->
     <script>
-        // Utilities
+        // --- 1. MOCK DATABASE ---
+        let database = []; // Array of guest objects
+        let currentKepsekViewId = null;
+
+        // --- 2. GLOBAL UTILS ---
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             let icon = 'fa-info-circle', color = 'bg-blue-600';
-            if(type === 'error') { icon = 'fa-circle-xmark'; color = 'bg-red-600'; }
-            if(type === 'success') { icon = 'fa-circle-check'; color = 'bg-emerald-600'; }
+            if(type === 'error') { icon = 'fa-circle-xmark'; color = 'bg-red-500'; }
+            if(type === 'success') { icon = 'fa-circle-check'; color = 'bg-emerald-500'; }
             
             toast.className = `${color} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300`;
             toast.innerHTML = `<i class="fa-solid ${icon} text-xl"></i> <span class="font-medium">${msg}</span>`;
@@ -297,141 +365,239 @@
         function navigate(pageId) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            if(pageId !== 'page-guest') stopCamera();
+            
+            // Background management
+            const kioskBgs = document.getElementById('kiosk-bgs');
+            if(pageId === 'page-admin' || pageId === 'page-principal') {
+                kioskBgs.style.display = 'none';
+                if(pageId === 'page-admin') renderAdminTable();
+                if(pageId === 'page-principal') renderKepsekInbox();
+            } else {
+                kioskBgs.style.display = 'block';
+            }
         }
 
-        // Slideshow
-        let currentBg = 1;
-        setInterval(() => {
-            document.getElementById(`bg-${currentBg}`).classList.remove('active');
-            currentBg = currentBg === 2 ? 1 : 2;
-            document.getElementById(`bg-${currentBg}`).classList.add('active');
-        }, 6000);
+        function generateID(prefix) {
+            return prefix + '-' + Math.floor(1000 + Math.random() * 9000);
+        }
 
-        // Guest Form (Walk-In) Logic
+        // Set Real Date
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
+
+        // --- 3. KIOSK GUEST LOGIC ---
         function nextStep(step) {
-            if (step === 2) {
-                if(!document.getElementById('g-name').value || !document.getElementById('g-phone').value || !document.getElementById('g-agency').value) {
-                    showToast("Harap lengkapi semua data identitas", "error"); return;
-                }
-            }
-            if (step === 3) {
-                if(!document.getElementById('g-purpose').value || !document.getElementById('g-detail').value) {
-                    showToast("Harap lengkapi tujuan dan pesan", "error"); return;
-                }
-            }
-            if (step === 4) {
-                if(!document.getElementById('g-consent').checked) {
-                    showToast("Anda harus menyetujui kebijakan privasi data", "error"); return;
-                }
-                startCamera();
-            }
-
             document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
             document.getElementById(`step-${step}`).classList.add('active');
-            
-            document.getElementById('progress-bar').style.width = [25, 50, 75, 100][step-1] + '%';
-            
+            document.getElementById('progress-bar').style.width = [33, 66, 100][step-1] + '%';
             const ind = document.getElementById(`ind-${step}`);
             if(ind) {
                 ind.classList.replace('bg-primary', 'bg-accent');
-                ind.classList.remove('border-white/30', 'text-white'); ind.classList.add('text-primary', 'shadow-lg');
-                document.getElementById(`text-ind-${step}`).classList.replace('text-white/50', 'text-accent');
+                ind.classList.remove('border-white/30', 'text-white'); ind.classList.add('text-primary');
             }
         }
-
         function prevStep(step) {
             document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
             document.getElementById(`step-${step}`).classList.add('active');
-            document.getElementById('progress-bar').style.width = [25, 50, 75, 100][step-1] + '%';
+            document.getElementById('progress-bar').style.width = [33, 66, 100][step-1] + '%';
         }
 
-        function resetGuestForm() {
-            document.querySelectorAll('#page-guest input[type="text"], #page-guest input[type="tel"], #page-guest textarea, #page-guest select').forEach(el => el.value = '');
-            document.getElementById('g-consent').checked = false;
-            stopCamera();
-            document.getElementById('canvas-face').classList.add('hidden');
-            document.getElementById('lbl-face').classList.remove('hidden');
+        function submitWalkIn() {
+            const name = document.getElementById('w-name').value;
+            const agency = document.getElementById('w-agency').value;
+            const purpose = document.getElementById('w-purpose').value;
+            if(!name || !purpose) return showToast("Data identitas dan keperluan wajib diisi!", "error");
             
-            for(let i=2; i<=4; i++) {
-                let ind = document.getElementById(`ind-${i}`);
-                ind.classList.replace('bg-accent', 'bg-primary');
-                ind.classList.add('border-white/30', 'text-white'); ind.classList.remove('text-primary', 'shadow-lg');
-                document.getElementById(`text-ind-${i}`).classList.replace('text-accent', 'text-white/50');
-            }
+            const data = {
+                id: generateID('WLK'), type: 'Walk-In', name, agency, purpose, status: 'PENDING', date: new Date().toLocaleTimeString()
+            };
+            database.push(data);
+            
+            showToast("Buku tamu diisi. Menunggu verifikasi Admin.", "success");
+            navigate('page-main');
+            document.querySelectorAll('input, textarea').forEach(el => el.value = ''); // Reset
             prevStep(1);
-        }
-
-        // Camera API
-        let videoStream = null;
-        async function startCamera() {
-            try {
-                const video = document.getElementById('camera-stream');
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                video.srcObject = videoStream;
-                document.getElementById('cam-placeholder').style.display = 'none';
-            } catch (err) {
-                showToast("Izin kamera ditolak. Silakan berikan izin melalui browser.", "error");
-            }
-        }
-
-        function stopCamera() {
-            if (videoStream) { videoStream.getTracks().forEach(track => track.stop()); videoStream = null; }
-        }
-
-        function capturePhoto(type) {
-            if(!videoStream) { showToast("Kamera belum aktif", "error"); return; }
-            const video = document.getElementById('camera-stream');
-            const canvas = document.getElementById(`canvas-${type}`);
-            
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            canvas.classList.remove('hidden');
-            document.getElementById(`lbl-${type}`).classList.add('hidden');
-            showToast("Foto berhasil direkam", 'success');
-        }
-
-        // Submission Logic (For both Walk-in & Schedule)
-        function submitGuest() {
-            if(document.getElementById('canvas-face').classList.contains('hidden')) {
-                showToast("Wajib merekam foto wajah untuk Walk-in", "error"); return;
-            }
-            stopCamera();
-            showTicketModal("Walk-in Berhasil!", "Pesan telah diteruskan ke Kepala Sekolah.", "WLK");
         }
 
         function submitSchedule(e) {
             e.preventDefault();
-            // Form is automatically validated via HTML5 'required' attributes
-            showTicketModal("Jadwal Diajukan!", "Menunggu konfirmasi dan persetujuan Admin.", "RSV");
+            const data = {
+                id: generateID('RSV'), type: 'Reservasi',
+                name: document.getElementById('s-name').value,
+                agency: document.getElementById('s-agency').value,
+                purpose: document.getElementById('s-purpose').value,
+                schDate: document.getElementById('s-date').value,
+                schTime: document.getElementById('s-time').value,
+                status: 'PENDING', date: new Date().toLocaleTimeString()
+            };
+            database.push(data);
+            showToast("Jadwal diajukan. Menunggu review Admin.", "success");
+            navigate('page-main');
+            e.target.reset();
         }
 
-        function showTicketModal(title, desc, prefix) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const rndCode = prefix + '-' + chars.charAt(Math.floor(Math.random()*chars.length)) + Math.floor(1000 + Math.random() * 9000);
+        // --- 4. AUTHENTICATION LOGIC ---
+        function processLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const user = document.getElementById('l-user').value.toLowerCase();
+            const pass = document.getElementById('l-pass').value;
             
-            document.getElementById('ticket-title').innerText = title;
-            document.getElementById('ticket-desc').innerText = desc;
-            document.getElementById('ticket-number').innerText = rndCode;
-            
-            const modal = document.getElementById('ticket-modal');
-            const content = document.getElementById('ticket-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => { content.classList.replace('scale-0', 'scale-100'); }, 10);
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifikasi...';
+            setTimeout(() => {
+                btn.innerHTML = 'Autentikasi <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>';
+                if (user === 'admin' && pass === 'admin') {
+                    showToast("Login Admin Sukses", "success");
+                    navigate('page-admin');
+                } else if (user === 'kepsek' && pass === 'kepsek') {
+                    showToast("Login Kepala Sekolah Sukses", "success");
+                    navigate('page-principal');
+                } else {
+                    showToast("Kredensial salah!", "error");
+                }
+                document.getElementById('l-user').value = '';
+                document.getElementById('l-pass').value = '';
+            }, 800);
         }
 
-        function closeTicket() {
-            const modal = document.getElementById('ticket-modal');
-            const content = document.getElementById('ticket-content');
-            content.classList.replace('scale-100', 'scale-0');
-            setTimeout(() => { 
-                modal.classList.add('hidden'); 
-                navigate('page-main');
-                resetGuestForm();
-                // Reset schedule form as well
-                document.querySelectorAll('#page-schedule form')[0].reset();
-            }, 300);
+        function logout() {
+            navigate('page-main');
+            showToast("Berhasil Logout.", "info");
+        }
+
+        // --- 5. ADMIN DASHBOARD LOGIC ---
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            
+            let pendingCount = 0, fwdCount = 0, rsvCount = 0;
+            
+            if(database.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">Belum ada data antrean masuk.</td></tr>`;
+                return;
+            }
+
+            database.forEach(item => {
+                if(item.status === 'PENDING') pendingCount++;
+                if(item.status === 'FORWARDED') fwdCount++;
+                if(item.status === 'RESOLVED') rsvCount++;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b hover:bg-gray-50 transition";
+                
+                let badgeClass = item.status === 'PENDING' ? 'bg-gray-200 text-gray-700' : (item.status === 'FORWARDED' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700');
+                
+                let actionBtn = item.status === 'PENDING' ? 
+                    `<button onclick="adminForward('${item.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition">Teruskan ke Kepsek</button>` : 
+                    `<span class="text-sm text-gray-400"><i class="fa-solid fa-check"></i> Selesai</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-4 font-mono text-sm">${item.id}</td>
+                    <td class="p-4">
+                        <p class="font-bold text-gray-800">${item.name}</p>
+                        <p class="text-xs text-gray-500">${item.agency}</p>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-xs font-bold ${item.type === 'Walk-In' ? 'text-purple-600' : 'text-emerald-600'} border border-current px-2 py-0.5 rounded mr-2">${item.type.toUpperCase()}</span>
+                        <span class="text-sm text-gray-600 truncate max-w-[150px] inline-block align-bottom" title="${item.purpose}">${item.purpose}</span>
+                    </td>
+                    <td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${badgeClass}">${item.status}</span></td>
+                    <td class="p-4 text-right">${actionBtn}</td>
+                `;
+                tbody.prepend(tr);
+            });
+
+            document.getElementById('stat-pending').innerText = pendingCount;
+            document.getElementById('stat-forwarded').innerText = fwdCount;
+            document.getElementById('stat-resolved').innerText = rsvCount;
+        }
+
+        function adminForward(id) {
+            const index = database.findIndex(x => x.id === id);
+            if(index > -1) {
+                database[index].status = 'FORWARDED';
+                showToast(`Tiket ${id} berhasil diteruskan ke Dasbor Kepsek.`, "success");
+                renderAdminTable();
+            }
+        }
+
+        // --- 6. PRINCIPAL DASHBOARD LOGIC ---
+        function renderKepsekInbox() {
+            const listContainer = document.getElementById('kepsek-inbox-list');
+            listContainer.innerHTML = '';
+            
+            // Filter hanya yang diforward Admin
+            const fwdData = database.filter(x => x.status === 'FORWARDED');
+            
+            if(fwdData.length === 0) {
+                listContainer.innerHTML = `<div class="text-center text-gray-500 mt-10 p-4 border border-dashed border-gray-600 rounded-xl mx-4">Tidak ada pesan masuk.</div>`;
+                closeKepsekDetail();
+                return;
+            }
+
+            fwdData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-xl cursor-pointer transition border ${currentKepsekViewId === item.id ? 'bg-accent/10 border-accent/50' : 'bg-white/5 border-white/5 hover:bg-white/10'}`;
+                div.onclick = () => openKepsekDetail(item.id);
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold truncate pr-2">${item.name}</span>
+                        <span class="text-xs text-gray-400 whitespace-nowrap">${item.date}</span>
+                    </div>
+                    <p class="text-sm text-accent truncate mb-2">${item.agency}</p>
+                    <p class="text-xs text-gray-400 line-clamp-2">${item.purpose}</p>
+                `;
+                listContainer.prepend(div);
+            });
+        }
+
+        function openKepsekDetail(id) {
+            currentKepsekViewId = id;
+            renderKepsekInbox(); // Re-render to highlight active item
+            
+            const item = database.find(x => x.id === id);
+            if(!item) return;
+
+            document.getElementById('kepsek-empty-state').classList.add('hidden');
+            document.getElementById('kepsek-active-content').classList.remove('hidden');
+            
+            document.getElementById('k-ticket').innerText = 'Tiket: ' + item.id;
+            document.getElementById('k-name').innerText = item.name;
+            document.getElementById('k-agency').innerHTML = `<i class="fa-regular fa-building mr-1"></i> ${item.agency}`;
+            document.getElementById('k-purpose').innerText = item.purpose;
+            
+            const typeBadge = document.getElementById('k-type');
+            typeBadge.innerText = item.type.toUpperCase();
+            
+            const schInfo = document.getElementById('k-schedule-info');
+            if(item.type === 'Reservasi') {
+                typeBadge.className = 'text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30 mb-3 inline-block';
+                schInfo.classList.remove('hidden');
+                document.getElementById('k-date').innerText = item.schDate;
+                document.getElementById('k-time').innerText = item.schTime;
+            } else {
+                typeBadge.className = 'text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded border border-purple-500/30 mb-3 inline-block';
+                schInfo.classList.add('hidden');
+            }
+        }
+
+        function closeKepsekDetail() {
+            currentKepsekViewId = null;
+            document.getElementById('kepsek-empty-state').classList.remove('hidden');
+            document.getElementById('kepsek-active-content').classList.add('hidden');
+        }
+
+        function respondKepsek(action) {
+            const index = database.findIndex(x => x.id === currentKepsekViewId);
+            if(index > -1) {
+                database[index].status = 'RESOLVED'; // Done
+                let msg = action === 'APPROVE' ? 'Pertemuan Disetujui.' : 'Permohonan Ditolak Halus.';
+                showToast(msg, action === 'APPROVE' ? 'success' : 'info');
+                
+                // Refresh View
+                renderKepsekInbox();
+                closeKepsekDetail();
+            }
         }
     </script>
 </body>
