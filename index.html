@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiTamu - Kiosk & Portal Keamanan</title>
+    <title>SiTamu - Buku Tamu & Jadwal Kepala Sekolah</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -11,9 +11,7 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: {
-                    colors: { primary: '#0A2540', accent: '#D4AF37' }
-                }
+                extend: { colors: { primary: '#0A2540', accent: '#D4AF37' } }
             }
         }
     </script>
@@ -21,7 +19,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #000; overflow: hidden; }
         
-        /* Carousel Background */
+        /* Background Carousel */
         .bg-slide { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease; z-index: -2; }
         .bg-slide.active { opacity: 1; }
         .bg-overlay { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.7), rgba(10, 37, 64, 0.95)); z-index: -1; }
@@ -33,14 +31,15 @@
         .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.95); }
         .page.active { opacity: 1; pointer-events: auto; transform: scale(1); }
 
-        /* Face Scanner Animation */
-        .scanner-container { position: relative; overflow: hidden; border-radius: 50%; width: 300px; height: 300px; border: 4px solid #D4AF37; box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); margin: 0 auto; }
-        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #00ff88; box-shadow: 0 0 15px #00ff88; animation: scan 2s linear infinite; z-index: 10; display: none; }
-        @keyframes scan { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        
+        /* Wizard Steps */
         .wizard-step { display: none; animation: fadeIn 0.4s; }
         .wizard-step.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scanner Animation for Login */
+        .login-scanner { position: relative; overflow: hidden; border-radius: 1rem; width: 100%; height: 220px; border: 2px solid #D4AF37; }
+        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #00ff88; box-shadow: 0 0 15px #00ff88; animation: scan 2s linear infinite; display: none; z-index: 10; }
+        @keyframes scan { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
     </style>
 </head>
 <body class="text-white h-screen w-screen relative select-none">
@@ -52,89 +51,197 @@
 
     <div id="toast-container" class="fixed bottom-5 right-5 flex flex-col gap-3" style="z-index: 9999;"></div>
 
-    <!-- ================= PAGE 0: KIOSK FACE UNLOCK ================= -->
-    <div id="page-unlock" class="page active flex flex-col justify-center items-center h-full relative">
-        <button onclick="navigate('page-login')" class="absolute top-8 right-8 text-white/50 hover:text-white transition"><i class="fa-solid fa-lock"></i> Portal Pegawai</button>
-        
-        <div class="text-center">
-            <h1 class="text-4xl font-bold mb-2 tracking-tight">Kiosk SiTamu Terkunci</h1>
-            <p class="text-gray-400 mb-10">Pindai wajah Anda untuk memulai layanan buku tamu</p>
-            
-            <div class="scanner-container relative bg-black/50">
-                <video id="kiosk-camera" autoplay playsinline class="absolute inset-0 w-full h-full object-cover hidden"></video>
-                <div class="scanner-line" id="scanner-line"></div>
-                <div id="kiosk-cam-icon" class="absolute inset-0 flex flex-col items-center justify-center text-accent/50">
-                    <i class="fa-solid fa-face-viewfinder text-7xl mb-4"></i>
-                    <span>Kamera Standby</span>
-                </div>
-            </div>
-
-            <button id="btn-scan" onclick="startFaceScanUnlock()" class="mt-10 bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-primary px-8 py-3 rounded-full font-bold transition">
-                <i class="fa-solid fa-expand"></i> MULAI PEMINDAIAN
-            </button>
-            <p id="scan-status" class="mt-4 text-emerald-400 font-semibold h-6"></p>
-        </div>
-    </div>
-
-    <!-- ================= PAGE 1: MAIN MENU (LOBBY) ================= -->
-    <div id="page-main" class="page flex flex-col justify-center items-center h-full relative">
-        <button onclick="lockKiosk()" class="absolute top-8 left-8 border border-red-500/50 hover:bg-red-500/20 text-red-400 px-6 py-2 rounded-full font-semibold transition flex items-center gap-2">
-            <i class="fa-solid fa-power-off"></i> Kunci Kiosk
-        </button>
+    <!-- ================= PAGE 1: MAIN LOBBY ================= -->
+    <div id="page-main" class="page active flex flex-col justify-center items-center h-full relative">
         <button onclick="navigate('page-login')" class="absolute top-8 right-8 border border-white/40 hover:bg-white/20 text-white px-6 py-2 rounded-full font-semibold transition flex items-center gap-2">
-            <i class="fa-solid fa-user-tie"></i> Portal Pegawai
+            <i class="fa-solid fa-user-tie"></i> Portal Kepala Sekolah
         </button>
         
         <div class="text-center mt-12 glass-panel p-12 rounded-3xl w-11/12 max-w-3xl border-t border-white/30">
-            <div class="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(16,185,129,0.4)] border border-emerald-500/50">
-                <i class="fa-solid fa-check-double text-4xl text-emerald-400"></i>
+            <div class="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(212,175,55,0.4)] border border-accent/50">
+                <i class="fa-solid fa-building-columns text-4xl text-accent"></i>
             </div>
-            <h1 class="text-5xl font-bold mb-4">Akses Diberikan</h1>
-            <p class="text-xl text-gray-200 mb-10 font-light">Selamat datang di Lobby Digital. Silakan isi buku tamu pimpinan.</p>
-            <button onclick="navigate('page-guest')" class="bg-accent hover:bg-yellow-500 text-primary px-10 py-5 rounded-full text-2xl font-bold transition transform hover:scale-105 shadow-xl flex items-center gap-4 mx-auto w-full max-w-md justify-center">
-                <i class="fa-solid fa-clipboard-user"></i> ISI BUKU TAMU
+            <h1 class="text-5xl font-bold mb-4 tracking-tight">Selamat Datang</h1>
+            <p class="text-xl text-gray-200 mb-10 font-light">Sistem Digital Penerimaan Tamu & Pengajuan Jadwal<br>Silakan isi buku tamu untuk mengajukan pertemuan.</p>
+            <button onclick="startGuestFlow()" class="bg-accent hover:bg-yellow-500 text-primary px-10 py-5 rounded-full text-2xl font-bold transition transform hover:scale-105 shadow-xl flex items-center gap-4 mx-auto w-full max-w-md justify-center">
+                <i class="fa-solid fa-calendar-plus"></i> AJUKAN JADWAL TAMU
             </button>
         </div>
     </div>
 
-    <!-- ================= PAGE 2: GUEST WIZARD (Ringkasan dari sebelumnya) ================= -->
+    <!-- ================= PAGE 2: GUEST WIZARD (DENGAN JADWAL) ================= -->
     <div id="page-guest" class="page flex flex-col h-full pt-10 px-8">
         <div class="flex justify-between items-center mb-6 max-w-5xl mx-auto w-full">
-            <button onclick="navigate('page-main')" class="text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-2xl font-bold">Formulir Tamu</h2>
+            <button onclick="navigate('page-main'); resetGuestForm();" class="text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 class="text-2xl font-bold">Formulir Pengajuan Kunjungan</h2>
             <div class="w-12"></div>
         </div>
-        <div class="glass-panel rounded-3xl max-w-5xl mx-auto w-full flex-1 mb-10 flex flex-col p-8 bg-white/5 justify-center items-center text-center">
-            <i class="fa-solid fa-hammer text-6xl text-gray-400 mb-6"></i>
-            <h3 class="text-2xl font-bold mb-2">Modul Tamu Siap</h3>
-            <p class="text-gray-400 max-w-md">Formulir multi-tahap (Identitas -> Tujuan -> Persetujuan -> Foto KTP) yang telah kita buat sebelumnya terintegrasi di sini.</p>
-            <button onclick="showToast('Data tamu berhasil dikirim ke Admin!', 'success'); navigate('page-main');" class="mt-8 bg-accent text-primary px-8 py-3 rounded-xl font-bold">Kirim Simulasi Kunjungan</button>
+
+        <div class="glass-panel rounded-3xl max-w-5xl mx-auto w-full flex-1 mb-10 overflow-hidden flex flex-col p-8 bg-white/5">
+            <!-- Progress Bar -->
+            <div class="flex justify-between mb-8 relative">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-white/20 -z-10 rounded"></div>
+                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-accent -z-10 rounded transition-all duration-300" style="width: 25%"></div>
+                
+                <div class="step-indicator flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-lg"><i class="fa-solid fa-user"></i></div>
+                    <span class="text-xs text-accent">Identitas</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center">
+                    <div id="ind-2" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-calendar-days"></i></div>
+                    <span id="text-ind-2" class="text-xs text-white/50">Jadwal & Tujuan</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center">
+                    <div id="ind-3" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-shield-halved"></i></div>
+                    <span id="text-ind-3" class="text-xs text-white/50">Persetujuan</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center">
+                    <div id="ind-4" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-camera"></i></div>
+                    <span id="text-ind-4" class="text-xs text-white/50">Verifikasi</span>
+                </div>
+            </div>
+
+            <div class="flex-1 relative">
+                <!-- STEP 1: Identitas -->
+                <div id="step-1" class="wizard-step active h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 1: Identitas Diri</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Nama Lengkap *</label>
+                            <input type="text" id="g-name" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none" placeholder="Budi Santoso">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">No. HP / WhatsApp *</label>
+                            <input type="tel" id="g-phone" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none" placeholder="08123456789">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm text-gray-300 mb-2">Instansi / Perusahaan *</label>
+                            <input type="text" id="g-agency" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none" placeholder="PT. Teknologi / Pribadi">
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-end">
+                        <button onclick="nextStep(2)" class="bg-white/20 hover:bg-white/30 border border-white/30 px-8 py-3 rounded-xl font-semibold transition flex items-center gap-2">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Jadwal & Tujuan (FITUR BARU) -->
+                <div id="step-2" class="wizard-step h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 2: Pengajuan Jadwal & Tujuan</h3>
+                    <div class="grid grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Rencana Tanggal Hadir *</label>
+                            <input type="date" id="g-date" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none style-color-scheme-dark">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Waktu / Jam (Perkiraan) *</label>
+                            <input type="time" id="g-time" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm text-gray-300 mb-2">Kategori Keperluan *</label>
+                        <select id="g-purpose" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none appearance-none">
+                            <option value="" class="text-black">Pilih Tujuan...</option>
+                            <option value="rapat" class="text-black">Rapat / Diskusi</option>
+                            <option value="penawaran" class="text-black">Penawaran Barang/Jasa</option>
+                            <option value="undangan" class="text-black">Undangan Acara</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-300 mb-2">Pesan Untuk Kepala Sekolah *</label>
+                        <textarea id="g-detail" rows="2" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent outline-none resize-none" placeholder="Tulis pesan atau agenda Anda di sini..."></textarea>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-between">
+                        <button onclick="prevStep(1)" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
+                        <button onclick="nextStep(3)" class="bg-white/20 hover:bg-white/30 border border-white/30 px-8 py-3 rounded-xl font-semibold transition flex items-center gap-2">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Persetujuan -->
+                <div id="step-3" class="wizard-step h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 3: Persetujuan Keamanan</h3>
+                    <div class="bg-black/40 border border-yellow-500/30 p-6 rounded-xl flex-1 text-sm text-gray-300 space-y-4">
+                        <p>Berdasarkan kebijakan keamanan sekolah, identitas pengunjung wajib direkam.</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Jadwal yang Anda ajukan akan ditinjau langsung oleh Kepala Sekolah.</li>
+                            <li>Anda akan diminta untuk mengambil foto wajah dan KTP/Identitas pada langkah berikutnya.</li>
+                            <li>Data biometrik Anda dienkripsi dan akan dihapus dalam 90 hari.</li>
+                        </ul>
+                        <label class="flex items-start gap-3 mt-6 cursor-pointer bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
+                            <input type="checkbox" id="g-consent" class="mt-1 w-5 h-5 accent-accent cursor-pointer">
+                            <span class="text-white font-semibold">Saya setuju menyerahkan data identitas untuk pengajuan jadwal ini.</span>
+                        </label>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-between">
+                        <button onclick="prevStep(2)" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
+                        <button onclick="nextStep(4)" class="bg-accent hover:bg-yellow-500 text-primary px-8 py-3 rounded-xl font-bold transition flex items-center gap-2">Setuju & Lanjut Kamera <i class="fa-solid fa-camera"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Kamera Tamu -->
+                <div id="step-4" class="wizard-step h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-4 text-accent">Langkah 4: Verifikasi Identitas Tamu</h3>
+                    <div class="flex gap-6 h-64">
+                        <div class="flex-1 bg-black rounded-xl overflow-hidden relative border border-white/20 flex items-center justify-center">
+                            <video id="guest-camera-stream" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                        </div>
+                        <div class="w-1/3 flex flex-col gap-4">
+                            <div class="flex-1 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center relative overflow-hidden">
+                                <canvas id="canvas-face" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                                <span id="lbl-face" class="text-xs text-gray-400">Preview Wajah</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-6 justify-center">
+                        <button onclick="captureGuestPhoto('face')" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-semibold"><i class="fa-solid fa-user-viewfinder"></i> Ambil Foto Wajah</button>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-between">
+                        <button onclick="prevStep(3); stopGuestCamera();" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
+                        <button onclick="submitGuest()" class="bg-accent hover:bg-yellow-500 text-primary px-10 py-3 rounded-xl font-bold transition shadow-lg">KIRIM PENGAJUAN <i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ================= PAGE 3: LOGIN (Sesuai PRD - Auth Module) ================= -->
+    <!-- TICKET MODAL -->
+    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white text-primary p-10 rounded-3xl max-w-md w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300" id="ticket-content">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-check"></i></div>
+            <h2 class="text-2xl font-bold mb-2">Pengajuan Berhasil!</h2>
+            <p class="text-gray-600 mb-6">Jadwal Anda telah dikirim langsung ke Dasbor Kepala Sekolah untuk disetujui.</p>
+            <div class="bg-gray-100 rounded-xl p-4 mb-8">
+                <span class="block text-sm text-gray-500 mb-1">Nomor Resi / Tiket Anda:</span>
+                <span class="block text-5xl font-black text-primary tracking-widest" id="ticket-number">A-042</span>
+            </div>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-4 rounded-xl font-bold text-lg">Selesai</button>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 3: LOGIN KEPALA SEKOLAH (DENGAN FACE SCAN DI AKHIR) ================= -->
     <div id="page-login" class="page flex items-center justify-center h-full">
-        <button onclick="navigate('page-unlock')" class="absolute top-8 left-8 text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel">
+        <button onclick="navigate('page-main'); stopLoginCamera();" class="absolute top-8 left-8 text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel">
             <i class="fa-solid fa-home"></i>
         </button>
         
-        <div class="glass-panel p-10 rounded-3xl w-full max-w-md bg-primary/90 border border-white/20 shadow-2xl relative overflow-hidden transition-all duration-300" id="login-container">
+        <div class="glass-panel p-10 rounded-3xl w-full max-w-md bg-primary/90 border border-white/20 shadow-2xl relative overflow-hidden transition-all duration-300">
             <div class="absolute top-0 left-0 w-full h-1 bg-accent"></div>
             
-            <!-- FORM LOGIN UTAMA -->
-            <div id="form-login-step">
+            <!-- Tahap 1: Kredensial Password -->
+            <div id="login-step-cred">
                 <div class="text-center mb-8">
-                    <i class="fa-solid fa-shield-halved text-4xl text-accent mb-4"></i>
-                    <h2 class="text-2xl font-bold">Portal Keamanan</h2>
-                    <p class="text-sm text-gray-400 mt-1">Sistem Tata Usaha & Pimpinan</p>
+                    <i class="fa-solid fa-user-tie text-4xl text-accent mb-4"></i>
+                    <h2 class="text-2xl font-bold">Portal Kepala Sekolah</h2>
+                    <p class="text-sm text-gray-400 mt-1">Sistem Manajemen Jadwal & Tamu</p>
                 </div>
 
-                <form onsubmit="processLogin(event)">
+                <form onsubmit="processCredentials(event)">
                     <div class="mb-5">
-                        <label class="block text-sm text-gray-300 mb-2">Email / Username</label>
+                        <label class="block text-sm text-gray-300 mb-2">Username Akses</label>
                         <div class="relative">
                             <i class="fa-solid fa-user absolute left-4 top-3.5 text-gray-400"></i>
-                            <input type="text" id="l-user" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-accent" placeholder="admin / kepsek / wakasek" required>
+                            <input type="text" id="l-user" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-accent" placeholder="kepsek" required>
                         </div>
                     </div>
                     <div class="mb-6 relative">
@@ -144,47 +251,34 @@
                             <input type="password" id="l-pass" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 pl-10 pr-12 text-white focus:outline-none focus:border-accent" required>
                             <button type="button" onclick="togglePassword()" class="absolute right-4 top-3.5 text-gray-400 hover:text-white"><i id="eye-icon" class="fa-solid fa-eye"></i></button>
                         </div>
-                        <div class="flex justify-between items-center mt-3">
-                            <span id="lockout-msg" class="text-xs text-red-400 hidden"><i class="fa-solid fa-ban"></i> Terkunci. Coba lagi nanti.</span>
-                            <button type="button" onclick="openForgotModal()" class="text-xs text-accent hover:underline ml-auto">Lupa Password?</button>
-                        </div>
                     </div>
-                    <button type="submit" id="btn-login" class="w-full bg-accent hover:bg-yellow-500 text-primary py-3.5 rounded-xl font-bold transition flex justify-center items-center gap-2">
-                        Autentikasi <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <button type="submit" id="btn-cred" class="w-full bg-accent hover:bg-yellow-500 text-primary py-3.5 rounded-xl font-bold transition flex justify-center items-center gap-2">
+                        Lanjut ke Verifikasi Wajah <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </form>
             </div>
 
-            <!-- FORM 2FA (KHUSUS KEPSEK) -->
-            <div id="form-2fa-step" class="hidden">
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                    <h2 class="text-2xl font-bold">Verifikasi 2 Langkah</h2>
-                    <p class="text-sm text-gray-400 mt-2">Kode OTP telah dikirim ke email Kepala Sekolah. (Simulasi: Ketik 123456)</p>
+            <!-- Tahap 2: Verifikasi Face Scan Akhir -->
+            <div id="login-step-face" class="hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold">Verifikasi Biometrik</h2>
+                    <p class="text-sm text-gray-400 mt-1">Keamanan Lapis Kedua Kepala Sekolah</p>
                 </div>
-                <div class="flex justify-between gap-2 mb-8">
-                    <input type="text" maxlength="1" class="otp-input w-12 h-14 bg-black/40 border border-white/30 rounded-lg text-center text-2xl font-bold focus:border-accent focus:outline-none" oninput="moveToNext(this, 1)" id="otp-0">
-                    <input type="text" maxlength="1" class="otp-input w-12 h-14 bg-black/40 border border-white/30 rounded-lg text-center text-2xl font-bold focus:border-accent focus:outline-none" oninput="moveToNext(this, 2)" id="otp-1">
-                    <input type="text" maxlength="1" class="otp-input w-12 h-14 bg-black/40 border border-white/30 rounded-lg text-center text-2xl font-bold focus:border-accent focus:outline-none" oninput="moveToNext(this, 3)" id="otp-2">
-                    <input type="text" maxlength="1" class="otp-input w-12 h-14 bg-black/40 border border-white/30 rounded-lg text-center text-2xl font-bold focus:border-accent focus:outline-none" oninput="moveToNext(this, 4)" id="otp-3">
-                    <input type="text" maxlength="1" class="otp-input w-12 h-14 bg-black/40 border border-white/30 rounded-lg text-center text-2xl font-bold focus:border-accent focus:outline-none" oninput="moveToNext(this, 5)" id="otp-4">
-                    <input type="text" maxlength="1" class="otp-input w-12 h-14 bg-black/40 border border-white/30 rounded-lg text-center text-2xl font-bold focus:border-accent focus:outline-none" id="otp-5">
+                
+                <div class="login-scanner bg-black/50 relative mb-6">
+                    <video id="login-camera" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                    <div class="scanner-line" id="login-scanner-line"></div>
+                    <div id="login-cam-icon" class="absolute inset-0 flex flex-col items-center justify-center text-accent/50 hidden">
+                        <i class="fa-solid fa-video-slash text-4xl mb-2"></i>
+                        <span>Kamera Nonaktif</span>
+                    </div>
                 </div>
-                <button onclick="verifyOTP()" class="w-full bg-accent hover:bg-yellow-500 text-primary py-3.5 rounded-xl font-bold transition mb-4">Verifikasi & Masuk</button>
-                <button onclick="cancel2FA()" class="w-full text-gray-400 hover:text-white text-sm py-2">Batal & Kembali</button>
+
+                <p id="login-scan-status" class="text-center text-emerald-400 font-semibold h-6 mb-4">Memulai pemindai...</p>
+                
+                <button onclick="cancelLoginFace()" class="w-full text-gray-400 hover:text-white text-sm py-2">Batal & Kembali</button>
             </div>
 
-        </div>
-    </div>
-
-    <!-- MODAL LUPA PASSWORD -->
-    <div id="modal-forgot" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-        <div class="glass-panel p-8 rounded-2xl max-w-sm w-full relative border border-white/20 scale-0 transition-transform duration-300" id="forgot-content">
-            <button onclick="closeForgotModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h3 class="text-xl font-bold mb-2">Reset Password</h3>
-            <p class="text-sm text-gray-400 mb-6">Masukkan email yang terdaftar. Link reset akan berlaku selama 15 menit.</p>
-            <input type="email" id="f-email" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-accent mb-4" placeholder="email@sekolah.sch.id">
-            <button onclick="sendResetLink()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold transition">Kirim Link Reset</button>
         </div>
     </div>
 
@@ -210,64 +304,108 @@
             document.getElementById(pageId).classList.add('active');
         }
 
-        // === KIOSK FACE UNLOCK LOGIC ===
-        let kioskStream = null;
-        async function startFaceScanUnlock() {
-            const btn = document.getElementById('btn-scan');
-            const video = document.getElementById('kiosk-camera');
-            const icon = document.getElementById('kiosk-cam-icon');
-            const line = document.getElementById('scanner-line');
-            const status = document.getElementById('scan-status');
+        function startGuestFlow() { navigate('page-guest'); resetGuestForm(); }
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghidupkan Kamera...';
+        // === GUEST WIZARD LOGIC ===
+        function nextStep(step) {
+            if (step === 2) {
+                if(!document.getElementById('g-name').value || !document.getElementById('g-phone').value) {
+                    showToast("Nama & No HP wajib diisi", "error"); return;
+                }
+            }
+            if (step === 3) {
+                if(!document.getElementById('g-date').value || !document.getElementById('g-time').value || !document.getElementById('g-purpose').value) {
+                    showToast("Harap tentukan tanggal, waktu, dan tujuan jadwal", "error"); return;
+                }
+            }
+            if (step === 4) {
+                if(!document.getElementById('g-consent').checked) {
+                    showToast("Persetujuan privasi wajib dicentang", "error"); return;
+                }
+                startGuestCamera();
+            }
+
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
             
-            try {
-                // Minta akses kamera
-                kioskStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                video.srcObject = kioskStream;
-                video.classList.remove('hidden');
-                icon.classList.add('hidden');
-                
-                btn.innerHTML = '<i class="fa-solid fa-fingerprint"></i> Menganalisa Biometrik...';
-                line.style.display = 'block'; // Tampilkan laser hijau
-                status.innerText = "Mendeteksi wajah...";
-
-                // Simulasi proses AI (3 detik)
-                setTimeout(() => {
-                    status.innerText = "Wajah Terdeteksi! Membuka sistem...";
-                    status.classList.remove('text-emerald-400'); status.classList.add('text-accent');
-                    
-                    setTimeout(() => {
-                        // Hentikan kamera & navigasi ke Main Lobby
-                        kioskStream.getTracks().forEach(track => track.stop());
-                        video.classList.add('hidden');
-                        icon.classList.remove('hidden');
-                        line.style.display = 'none';
-                        status.innerText = "";
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fa-solid fa-expand"></i> MULAI PEMINDAIAN';
-                        
-                        navigate('page-main');
-                        showToast("Kiosk Terbuka. Selamat Datang.", "success");
-                    }, 1000);
-                }, 3000);
-
-            } catch (err) {
-                showToast("Izin kamera ditolak. Tidak bisa membuka Kiosk.", "error");
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-expand"></i> MULAI PEMINDAIAN';
+            const prog = [25, 50, 75, 100];
+            document.getElementById('progress-bar').style.width = prog[step-1] + '%';
+            
+            const ind = document.getElementById(`ind-${step}`);
+            if(ind) {
+                ind.classList.remove('bg-primary', 'border-white/30', 'text-white');
+                ind.classList.add('bg-accent', 'text-primary', 'border-none', 'shadow-lg');
+                document.getElementById(`text-ind-${step}`).classList.remove('text-white/50');
+                document.getElementById(`text-ind-${step}`).classList.add('text-accent');
             }
         }
 
-        function lockKiosk() {
-            navigate('page-unlock');
-            showToast("Kiosk berhasil dikunci kembali.", "warning");
+        function prevStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            const prog = [25, 50, 75, 100];
+            document.getElementById('progress-bar').style.width = prog[step-1] + '%';
         }
 
-        // === AUTHENTICATION LOGIC (Sesuai PRD) ===
-        let loginAttempts = 0;
-        let isLocked = false;
+        function resetGuestForm() {
+            document.querySelectorAll('input:not([type="checkbox"]), textarea, select').forEach(el => el.value = '');
+            document.getElementById('g-consent').checked = false;
+            stopGuestCamera();
+            document.getElementById('canvas-face').classList.add('hidden');
+            document.getElementById('lbl-face').classList.remove('hidden');
+            for(let i=2; i<=4; i++) {
+                let ind = document.getElementById(`ind-${i}`);
+                if(ind) {
+                    ind.classList.add('bg-primary', 'border-white/30', 'text-white');
+                    ind.classList.remove('bg-accent', 'text-primary', 'border-none', 'shadow-lg');
+                    document.getElementById(`text-ind-${i}`).classList.add('text-white/50');
+                    document.getElementById(`text-ind-${i}`).classList.remove('text-accent');
+                }
+            }
+            prevStep(1);
+        }
+
+        let guestStream = null;
+        async function startGuestCamera() {
+            try {
+                guestStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('guest-camera-stream').srcObject = guestStream;
+            } catch (e) { showToast("Gagal akses kamera.", "error"); }
+        }
+        function stopGuestCamera() {
+            if (guestStream) { guestStream.getTracks().forEach(t => t.stop()); guestStream = null; }
+        }
+        function captureGuestPhoto(type) {
+            if(!guestStream) return;
+            const video = document.getElementById('guest-camera-stream');
+            const canvas = document.getElementById(`canvas-${type}`);
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.classList.remove('hidden');
+            document.getElementById(`lbl-${type}`).classList.add('hidden');
+            showToast(`Foto wajah berhasil direkam`, 'success');
+        }
+
+        function submitGuest() {
+            if(document.getElementById('canvas-face').classList.contains('hidden')) {
+                showToast("Wajib mengambil foto verifikasi", "error"); return;
+            }
+            stopGuestCamera();
+            document.getElementById('ticket-number').innerText = 'JDW-' + Math.floor(1000 + Math.random() * 9000);
+            const modal = document.getElementById('ticket-modal');
+            const content = document.getElementById('ticket-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => { content.classList.remove('scale-0'); content.classList.add('scale-100'); }, 10);
+        }
+        function closeTicket() {
+            document.getElementById('ticket-content').classList.remove('scale-100'); 
+            document.getElementById('ticket-content').classList.add('scale-0');
+            setTimeout(() => { document.getElementById('ticket-modal').classList.add('hidden'); navigate('page-main'); resetGuestForm(); }, 300);
+        }
+
+
+        // === LOGIN KHUSUS KEPALA SEKOLAH LOGIC ===
+        let loginStream = null;
 
         function togglePassword() {
             const input = document.getElementById('l-pass');
@@ -279,111 +417,74 @@
             }
         }
 
-        function processLogin(e) {
+        function processCredentials(e) {
             e.preventDefault();
-            if (isLocked) {
-                showToast("Sistem terkunci sementara karena aktivitas mencurigakan.", "error");
-                return;
-            }
-
-            const btn = document.getElementById('btn-login');
+            const btn = document.getElementById('btn-cred');
             const user = document.getElementById('l-user').value.toLowerCase();
             const pass = document.getElementById('l-pass').value;
             
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memverifikasi...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memeriksa...';
             
             setTimeout(() => {
-                btn.innerHTML = 'Autentikasi <i class="fa-solid fa-arrow-right-to-bracket"></i>';
+                btn.innerHTML = 'Lanjut ke Verifikasi Wajah <i class="fa-solid fa-arrow-right"></i>';
                 
-                // MOCK CREDENTIALS
-                if (user === 'admin' && pass === 'admin') {
-                    loginSuccess('ADMIN');
-                } else if (user === 'wakasek' && pass === 'wakasek') {
-                    loginSuccess('VICE_PRINCIPAL');
-                } else if (user === 'kepsek' && pass === 'kepsek') {
-                    // AUTH_SEC_005: 2FA Wajib untuk PRINCIPAL
-                    trigger2FA();
+                // HANYA ROLE KEPSEK YANG ADA
+                if (user === 'kepsek' && pass === 'kepsek') {
+                    showToast("Kredensial Valid. Lanjutkan pemindaian wajah.", "success");
+                    triggerFaceScanLogin();
                 } else {
-                    handleFailedLogin();
+                    showToast("Username atau Password salah.", "error");
                 }
             }, 1000);
         }
 
-        function loginSuccess(role) {
-            loginAttempts = 0; // Reset
-            showToast(`Login Berhasil! Role: ${role}. (Masuk ke Dasbor)`, "success");
-            // Di sistem nyata: window.location.href = '/dashboard';
-        }
-
-        function handleFailedLogin() {
-            loginAttempts++;
-            if (loginAttempts >= 3) {
-                // AUTH_SEC_003: Rate Limiting / Lockout
-                isLocked = true;
-                document.getElementById('lockout-msg').classList.remove('hidden');
-                document.getElementById('btn-login').classList.add('opacity-50', 'cursor-not-allowed');
-                showToast("Terlalu banyak percobaan gagal. Akun dikunci sementara.", "error");
+        async function triggerFaceScanLogin() {
+            document.getElementById('login-step-cred').classList.add('hidden');
+            document.getElementById('login-step-face').classList.remove('hidden');
+            
+            const video = document.getElementById('login-camera');
+            const line = document.getElementById('login-scanner-line');
+            const status = document.getElementById('login-scan-status');
+            
+            try {
+                loginStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = loginStream;
+                line.style.display = 'block';
+                status.innerText = "Posisikan wajah Anda dalam bingkai...";
                 
-                // Simulasi lock 15 detik (di PRD 15 menit)
+                // Simulasi Analisa Wajah Kepala Sekolah (3 Detik)
                 setTimeout(() => {
-                    isLocked = false;
-                    loginAttempts = 0;
-                    document.getElementById('lockout-msg').classList.add('hidden');
-                    document.getElementById('btn-login').classList.remove('opacity-50', 'cursor-not-allowed');
-                    showToast("Kunci dibuka. Silakan coba login kembali.", "info");
-                }, 15000);
-            } else {
-                showToast(`Kredensial salah. Sisa percobaan: ${3 - loginAttempts}`, "error");
+                    status.innerText = "Biometrik Cocok! Autentikasi Sukses.";
+                    status.classList.remove('text-emerald-400'); status.classList.add('text-accent');
+                    line.style.display = 'none';
+                    
+                    setTimeout(() => {
+                        stopLoginCamera();
+                        showToast("Selamat Datang, Bapak/Ibu Kepala Sekolah.", "success");
+                        // Redirect ke Dasbor Asli (Simulasi: reset ke awal)
+                        navigate('page-main');
+                        cancelLoginFace(); 
+                    }, 1500);
+                }, 3000);
+
+            } catch (err) {
+                showToast("Gagal mengakses kamera login.", "error");
+                document.getElementById('login-cam-icon').classList.remove('hidden');
             }
         }
 
-        // --- 2FA Logic ---
-        function trigger2FA() {
-            document.getElementById('form-login-step').classList.add('hidden');
-            document.getElementById('form-2fa-step').classList.remove('hidden');
-            document.getElementById('otp-0').focus();
-            showToast("Sistem mendeteksi login Kepala Sekolah. Membutuhkan OTP.", "warning");
+        function stopLoginCamera() {
+            if (loginStream) { loginStream.getTracks().forEach(t => t.stop()); loginStream = null; }
         }
 
-        function moveToNext(input, nextIndex) {
-            if (input.value.length === 1 && nextIndex < 6) {
-                document.getElementById(`otp-${nextIndex}`).focus();
-            }
-        }
-
-        function verifyOTP() {
-            let otp = '';
-            for(let i=0; i<6; i++) { otp += document.getElementById(`otp-${i}`).value; }
-            
-            if (otp === '123456') { // Mock OTP Valid
-                showToast("Verifikasi 2 Langkah Berhasil!", "success");
-                setTimeout(() => loginSuccess('PRINCIPAL'), 500);
-            } else {
-                showToast("Kode OTP Tidak Valid / Kedaluwarsa.", "error");
-            }
-        }
-
-        function cancel2FA() {
-            document.getElementById('form-2fa-step').classList.add('hidden');
-            document.getElementById('form-login-step').classList.remove('hidden');
-            for(let i=0; i<6; i++) { document.getElementById(`otp-${i}`).value = ''; }
-        }
-
-        // --- FORGOT PASSWORD (AUTH_SEC_004) ---
-        function openForgotModal() {
-            document.getElementById('modal-forgot').classList.remove('hidden');
-            setTimeout(() => document.getElementById('forgot-content').classList.replace('scale-0', 'scale-100'), 10);
-        }
-        function closeForgotModal() {
-            document.getElementById('forgot-content').classList.replace('scale-100', 'scale-0');
-            setTimeout(() => document.getElementById('modal-forgot').classList.add('hidden'), 300);
-        }
-        function sendResetLink() {
-            const email = document.getElementById('f-email').value;
-            if(!email.includes('@')) { showToast("Format email tidak valid.", "error"); return; }
-            
-            showToast(`Link reset aman telah dikirim ke ${email}`, "success");
-            closeForgotModal();
+        function cancelLoginFace() {
+            stopLoginCamera();
+            document.getElementById('login-step-face').classList.add('hidden');
+            document.getElementById('login-step-cred').classList.remove('hidden');
+            document.getElementById('l-pass').value = '';
+            document.getElementById('login-scan-status').innerText = "Memulai pemindai...";
+            document.getElementById('login-scan-status').classList.remove('text-accent');
+            document.getElementById('login-scan-status').classList.add('text-emerald-400');
         }
     </script>
 </body>
