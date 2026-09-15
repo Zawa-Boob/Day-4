@@ -1,1 +1,571 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiTamu - Sistem Penerimaan Tamu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0A2540',
+                        accent: '#D4AF37',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A2540;
+            overflow: hidden; /* Mencegah scroll pada mode Kiosk */
+        }
+        
+        /* Carousel Background */
+        .bg-slide {
+            position: absolute;
+            top: 0; left: 0; w-full h-full;
+            width: 100vw; height: 100vh;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -2;
+        }
+        .bg-slide.active { opacity: 1; }
+        .bg-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(10, 37, 64, 0.6), rgba(10, 37, 64, 0.9));
+            z-index: -1;
+        }
 
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* SPA Transitions */
+        .page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: scale(0.98);
+        }
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        /* Wizard Steps */
+        .wizard-step { display: none; animation: fadeIn 0.4s; }
+        .wizard-step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Toast Container */
+        #toast-container { z-index: 9999; }
+    </style>
+</head>
+<body class="text-white h-screen w-screen relative select-none">
+
+    <!-- Background Slideshow -->
+    <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
+    <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
+    <div id="bg-3" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070');"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 flex flex-col gap-3"></div>
+
+    <!-- ================= PAGE 1: MAIN MENU ================= -->
+    <div id="page-main" class="page active flex flex-col justify-center items-center h-full relative">
+        <button onclick="navigate('page-login')" class="absolute top-8 right-8 border border-white/40 hover:bg-white/20 text-white px-6 py-2 rounded-full font-semibold transition flex items-center gap-2">
+            <i class="fa-solid fa-lock text-sm"></i> Login Pegawai
+        </button>
+        
+        <div class="text-center mt-12 glass-panel p-12 rounded-3xl w-11/12 max-w-3xl border-t border-white/30">
+            <div class="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(212,175,55,0.4)] border border-accent/50">
+                <i class="fa-solid fa-building-columns text-4xl text-accent"></i>
+            </div>
+            <h1 class="text-5xl font-bold mb-4 tracking-tight">Selamat Datang</h1>
+            <p class="text-xl text-gray-200 mb-10 font-light">Sistem Digital Penerimaan Tamu (SiTamu)<br>Silakan isi buku tamu sebelum menemui pimpinan.</p>
+            <button id="btn-isi-tamu" onclick="startGuestFlow()" class="bg-accent hover:bg-yellow-500 text-primary px-10 py-5 rounded-full text-2xl font-bold transition transform hover:scale-105 shadow-xl flex items-center gap-4 mx-auto w-full max-w-md justify-center">
+                <i class="fa-solid fa-clipboard-user"></i> ISI BUKU TAMU
+            </button>
+        </div>
+        <div class="absolute bottom-8 text-gray-400 text-sm">SiTamu v2.0.0 © 2026 - Dilindungi Enkripsi</div>
+    </div>
+
+    <!-- ================= PAGE 2: GUEST WIZARD ================= -->
+    <div id="page-guest" class="page flex flex-col h-full pt-10 px-8">
+        <div class="flex justify-between items-center mb-6 max-w-5xl mx-auto w-full">
+            <button onclick="navigate('page-main'); resetGuestForm();" class="text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 class="text-2xl font-bold">Registrasi Tamu</h2>
+            <div class="w-12"></div> <!-- Spacer -->
+        </div>
+
+        <div class="glass-panel rounded-3xl max-w-5xl mx-auto w-full flex-1 mb-10 overflow-hidden flex flex-col p-8 bg-white/5">
+            <!-- Progress Bar -->
+            <div class="flex justify-between mb-8 relative">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-white/20 -z-10 rounded"></div>
+                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-accent -z-10 rounded transition-all duration-300" style="width: 25%"></div>
+                
+                <div class="step-indicator flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-lg"><i class="fa-solid fa-user"></i></div>
+                    <span class="text-xs text-accent">Identitas</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center">
+                    <div id="ind-2" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-briefcase"></i></div>
+                    <span id="text-ind-2" class="text-xs text-white/50">Tujuan</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center">
+                    <div id="ind-3" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-shield-halved"></i></div>
+                    <span id="text-ind-3" class="text-xs text-white/50">Persetujuan</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center">
+                    <div id="ind-4" class="w-10 h-10 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition"><i class="fa-solid fa-camera"></i></div>
+                    <span id="text-ind-4" class="text-xs text-white/50">Verifikasi</span>
+                </div>
+            </div>
+
+            <!-- Formulir Kontainer -->
+            <div class="flex-1 relative">
+                <!-- STEP 1: Identitas -->
+                <div id="step-1" class="wizard-step active h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 1: Identitas Diri</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Nama Lengkap *</label>
+                            <input type="text" id="g-name" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Contoh: Budi Santoso">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">No. HP / WhatsApp *</label>
+                            <input type="tel" id="g-phone" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Contoh: 08123456789">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm text-gray-300 mb-2">Instansi / Perusahaan *</label>
+                            <input type="text" id="g-agency" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Contoh: PT. Teknologi Jaya / Pribadi">
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-end">
+                        <button onclick="nextStep(2)" class="bg-white/20 hover:bg-white/30 border border-white/30 px-8 py-3 rounded-xl font-semibold transition flex items-center gap-2">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Tujuan -->
+                <div id="step-2" class="wizard-step h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 2: Tujuan Kunjungan</h3>
+                    <div class="grid gap-6">
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Kategori Keperluan *</label>
+                            <select id="g-purpose" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent appearance-none">
+                                <option value="" class="text-black">Pilih Tujuan...</option>
+                                <option value="rapat" class="text-black">Rapat Terjadwal</option>
+                                <option value="penawaran" class="text-black">Penawaran Barang/Jasa</option>
+                                <option value="undangan" class="text-black">Undangan Acara</option>
+                                <option value="lainnya" class="text-black">Keperluan Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-2">Detail Pesan / Keperluan (Maks 500 karakter) *</label>
+                            <textarea id="g-detail" rows="4" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent resize-none" placeholder="Jelaskan secara singkat keperluan Anda bertemu dengan pimpinan..."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-between">
+                        <button onclick="prevStep(1)" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
+                        <button onclick="nextStep(3)" class="bg-white/20 hover:bg-white/30 border border-white/30 px-8 py-3 rounded-xl font-semibold transition flex items-center gap-2">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Persetujuan / UU PDP -->
+                <div id="step-3" class="wizard-step h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-accent">Langkah 2.5: Persetujuan Data Pribadi (UU PDP)</h3>
+                    <div class="bg-black/40 border border-yellow-500/30 p-6 rounded-xl flex-1 overflow-y-auto text-sm text-gray-300 leading-relaxed space-y-4">
+                        <p><strong class="text-white text-base">Pernyataan Privasi dan Pengumpulan Data</strong></p>
+                        <p>Untuk menjaga keamanan lingkungan sekolah, kami mengumpulkan data pribadi Anda meliputi <strong>Foto Wajah</strong> dan <strong>Foto Identitas (KTP/SIM)</strong>.</p>
+                        <p>Sesuai dengan UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi:</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Data ini hanya digunakan untuk keperluan verifikasi tamu oleh Kepala Sekolah dan keamanan internal.</li>
+                            <li>Data Anda akan dienkripsi dan disimpan secara aman di server kami.</li>
+                            <li>Data akan dihapus secara otomatis (retensi) setelah 90 hari kecuali diperlukan untuk investigasi.</li>
+                            <li>Kami tidak akan menjual atau membagikan data Anda kepada pihak ketiga manapun.</li>
+                        </ul>
+                        <label class="flex items-start gap-3 mt-6 cursor-pointer bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
+                            <input type="checkbox" id="g-consent" class="mt-1 w-5 h-5 accent-accent cursor-pointer">
+                            <span class="text-white font-semibold">Saya telah membaca dan menyetujui pengambilan foto wajah dan identitas saya untuk keperluan keamanan sekolah.</span>
+                        </label>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-between">
+                        <button onclick="prevStep(2)" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
+                        <button onclick="nextStep(4)" class="bg-accent hover:bg-yellow-500 text-primary px-8 py-3 rounded-xl font-bold transition flex items-center gap-2 shadow-lg">Setuju & Aktifkan Kamera <i class="fa-solid fa-camera"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Kamera Verifikasi -->
+                <div id="step-4" class="wizard-step h-full flex flex-col">
+                    <h3 class="text-xl font-semibold mb-4 text-accent">Langkah 3: Verifikasi Wajah & ID</h3>
+                    <div class="flex gap-6 h-64">
+                        <!-- Camera Area -->
+                        <div class="flex-1 bg-black rounded-xl overflow-hidden relative border border-white/20 flex flex-col items-center justify-center">
+                            <video id="camera-stream" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <div id="cam-placeholder" class="text-center z-10 text-gray-500">
+                                <i class="fa-solid fa-video-slash text-4xl mb-2"></i>
+                                <p>Kamera Nonaktif</p>
+                            </div>
+                        </div>
+                        <!-- Preview Area -->
+                        <div class="w-1/3 flex flex-col gap-4">
+                            <div class="flex-1 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center overflow-hidden relative">
+                                <canvas id="canvas-face" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                                <span id="lbl-face" class="text-xs text-gray-400">Preview Wajah</span>
+                            </div>
+                            <div class="flex-1 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center overflow-hidden relative">
+                                <canvas id="canvas-ktp" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                                <span id="lbl-ktp" class="text-xs text-gray-400">Preview KTP</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-6 justify-center">
+                        <button onclick="capturePhoto('face')" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition"><i class="fa-solid fa-user-viewfinder"></i> Ambil Foto Wajah</button>
+                        <button onclick="capturePhoto('ktp')" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition"><i class="fa-solid fa-id-card"></i> Ambil Foto KTP</button>
+                    </div>
+
+                    <div class="mt-auto pt-6 flex justify-between">
+                        <button onclick="prevStep(3); stopCamera();" class="text-gray-300 hover:text-white px-4 py-3 font-semibold transition">Kembali</button>
+                        <button onclick="submitGuest()" class="bg-accent hover:bg-yellow-500 text-primary px-10 py-3 rounded-xl font-bold transition flex items-center gap-2 shadow-[0_0_15px_rgba(212,175,55,0.5)]">KIRIM PESAN <i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TICKET MODAL -->
+    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white text-primary p-10 rounded-3xl max-w-md w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300" id="ticket-content">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-check"></i></div>
+            <h2 class="text-3xl font-bold mb-2">Registrasi Sukses!</h2>
+            <p class="text-gray-600 mb-6">Pesan Anda telah diteruskan ke Admin untuk peninjauan Kepala Sekolah.</p>
+            <div class="bg-gray-100 rounded-xl p-4 mb-8">
+                <span class="block text-sm text-gray-500 mb-1">Nomor Antrean Anda:</span>
+                <span class="block text-5xl font-black text-primary tracking-widest" id="ticket-number">A-042</span>
+            </div>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-4 rounded-xl font-bold text-lg">Selesai & Kembali</button>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 3: LOGIN (MULTI-ROLE) ================= -->
+    <div id="page-login" class="page flex items-center justify-center h-full">
+        <button onclick="navigate('page-main')" class="absolute top-8 left-8 text-white hover:text-accent transition text-lg bg-black/20 p-3 rounded-full h-12 w-12 flex justify-center items-center glass-panel">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        
+        <div class="glass-panel p-10 rounded-3xl w-full max-w-md bg-primary/80 border border-white/20 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-accent"></div>
+            <div class="text-center mb-8">
+                <i class="fa-solid fa-lock text-3xl text-accent mb-4"></i>
+                <h2 class="text-2xl font-bold">Portal Pegawai</h2>
+                <p class="text-sm text-gray-400 mt-1">Staf TU & Pimpinan</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="mb-5">
+                    <label class="block text-sm text-gray-300 mb-2">Email / Username</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="text" id="l-user" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-accent" placeholder="admin / kepsek" required>
+                    </div>
+                </div>
+                <div class="mb-6 relative">
+                    <label class="block text-sm text-gray-300 mb-2">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="password" id="l-pass" class="w-full bg-black/40 border border-white/20 rounded-xl py-3 pl-10 pr-12 text-white focus:outline-none focus:border-accent" placeholder="••••••••" required>
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-3.5 text-gray-400 hover:text-white">
+                            <i id="eye-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="flex justify-end mt-2">
+                        <a href="#" class="text-xs text-accent hover:underline">Lupa Password?</a>
+                    </div>
+                </div>
+                
+                <button type="submit" id="btn-login" class="w-full bg-accent hover:bg-yellow-500 text-primary py-3.5 rounded-xl font-bold transition flex justify-center items-center gap-2">
+                    Masuk Dashboard <i class="fa-solid fa-right-to-bracket"></i>
+                </button>
+                
+                <div class="mt-6 text-center text-xs text-gray-500 border-t border-white/10 pt-4">
+                    Area terbatas. Akses dicatat (Audit Log).<br>Gagal login 3x akun akan dikunci.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- UI & UX Logic ---
+        let idleTimer;
+        const IDLE_TIMEOUT = 60000; // 60 detik idle timeout (kiosk mode rules)
+
+        function resetTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                if(document.getElementById('page-guest').classList.contains('active')) {
+                    showToast("Sesi kedaluwarsa karena tidak ada aktivitas.", "warning");
+                    navigate('page-main');
+                    resetGuestForm();
+                }
+            }, IDLE_TIMEOUT);
+        }
+
+        // Event listeners untuk mereset idle timer
+        ['click', 'touchstart', 'mousemove', 'keydown'].forEach(evt => 
+            document.addEventListener(evt, resetTimer, false)
+        );
+
+        // Slideshow Background
+        let currentBg = 1;
+        setInterval(() => {
+            document.getElementById(`bg-${currentBg}`).classList.remove('active');
+            currentBg = currentBg === 3 ? 1 : currentBg + 1;
+            document.getElementById(`bg-${currentBg}`).classList.add('active');
+        }, 5000);
+
+        // SPA Navigation
+        function navigate(pageId) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            if(pageId !== 'page-guest') stopCamera(); // Matikan kamera jika keluar form
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let icon = 'fa-info-circle';
+            let color = 'bg-blue-600';
+            if (type === 'error') { icon = 'fa-circle-xmark'; color = 'bg-red-600'; }
+            if (type === 'success') { icon = 'fa-circle-check'; color = 'bg-emerald-600'; }
+            if (type === 'warning') { icon = 'fa-triangle-exclamation'; color = 'bg-yellow-600'; }
+
+            toast.className = `${color} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-xl"></i> <span class="font-medium">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => { toast.classList.remove('translate-y-10', 'opacity-0'); }, 10);
+            
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- GUEST WIZARD LOGIC ---
+        function startGuestFlow() {
+            const btn = document.getElementById('btn-isi-tamu');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> MEMUAT...';
+            btn.classList.add('opacity-80', 'pointer-events-none');
+            
+            setTimeout(() => {
+                navigate('page-guest');
+                btn.innerHTML = '<i class="fa-solid fa-clipboard-user"></i> ISI BUKU TAMU';
+                btn.classList.remove('opacity-80', 'pointer-events-none');
+                resetTimer();
+            }, 500);
+        }
+
+        function nextStep(step) {
+            // Validation before moving
+            if (step === 2) {
+                if(!document.getElementById('g-name').value || !document.getElementById('g-phone').value || !document.getElementById('g-agency').value) {
+                    showToast("Harap lengkapi semua data identitas", "error"); return;
+                }
+            }
+            if (step === 3) {
+                if(!document.getElementById('g-purpose').value || !document.getElementById('g-detail').value) {
+                    showToast("Harap lengkapi tujuan dan pesan", "error"); return;
+                }
+            }
+            if (step === 4) {
+                if(!document.getElementById('g-consent').checked) {
+                    showToast("Anda harus menyetujui kebijakan privasi data (UU PDP)", "error"); return;
+                }
+                startCamera(); // Nyalakan kamera saat masuk step 4
+            }
+
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            // Update Progress Bar
+            const prog = [25, 50, 75, 100];
+            document.getElementById('progress-bar').style.width = prog[step-1] + '%';
+            
+            // Update UI step indicator
+            const ind = document.getElementById(`ind-${step}`);
+            if(ind) {
+                ind.classList.remove('bg-primary', 'border-white/30', 'text-white');
+                ind.classList.add('bg-accent', 'text-primary', 'border-none', 'shadow-lg');
+                document.getElementById(`text-ind-${step}`).classList.remove('text-white/50');
+                document.getElementById(`text-ind-${step}`).classList.add('text-accent');
+            }
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            const prog = [25, 50, 75, 100];
+            document.getElementById('progress-bar').style.width = prog[step-1] + '%';
+        }
+
+        function resetGuestForm() {
+            document.querySelectorAll('input[type="text"], input[type="tel"], textarea, select').forEach(el => el.value = '');
+            document.getElementById('g-consent').checked = false;
+            stopCamera();
+            document.getElementById('canvas-face').classList.add('hidden');
+            document.getElementById('canvas-ktp').classList.add('hidden');
+            document.getElementById('lbl-face').classList.remove('hidden');
+            document.getElementById('lbl-ktp').classList.remove('hidden');
+            
+            // Reset indicators
+            for(let i=2; i<=4; i++) {
+                let ind = document.getElementById(`ind-${i}`);
+                ind.classList.add('bg-primary', 'border-white/30', 'text-white');
+                ind.classList.remove('bg-accent', 'text-primary', 'border-none', 'shadow-lg');
+                document.getElementById(`text-ind-${i}`).classList.add('text-white/50');
+                document.getElementById(`text-ind-${i}`).classList.remove('text-accent');
+            }
+            prevStep(1);
+        }
+
+        // --- CAMERA INTEGRATION (UU PDP & Biometrics) ---
+        let videoStream = null;
+        
+        async function startCamera() {
+            try {
+                const video = document.getElementById('camera-stream');
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = videoStream;
+                document.getElementById('cam-placeholder').style.display = 'none';
+            } catch (err) {
+                console.error("Camera error:", err);
+                showToast("Izin kamera ditolak atau kamera tidak ditemukan.", "error");
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+        }
+
+        function capturePhoto(type) {
+            if(!videoStream) { showToast("Kamera belum aktif", "error"); return; }
+            
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById(`canvas-${type}`);
+            const lbl = document.getElementById(`lbl-${type}`);
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.classList.remove('hidden');
+            lbl.classList.add('hidden');
+            showToast(`Foto ${type.toUpperCase()} berhasil diambil`, 'success');
+        }
+
+        function submitGuest() {
+            if(document.getElementById('canvas-face').classList.contains('hidden')) {
+                showToast("Wajib mengambil Foto Wajah", "error"); return;
+            }
+            
+            // Simulasikan pengiriman API (MOCK)
+            stopCamera();
+            
+            // Generate Random Ticket
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const rndCode = chars.charAt(Math.floor(Math.random() * chars.length)) + '-' + Math.floor(100 + Math.random() * 900);
+            document.getElementById('ticket-number').innerText = rndCode;
+            
+            // Tampilkan Modal
+            const modal = document.getElementById('ticket-modal');
+            const content = document.getElementById('ticket-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => { content.classList.remove('scale-0'); content.classList.add('scale-100'); }, 10);
+        }
+
+        function closeTicket() {
+            const modal = document.getElementById('ticket-modal');
+            const content = document.getElementById('ticket-content');
+            content.classList.remove('scale-100'); content.classList.add('scale-0');
+            setTimeout(() => { 
+                modal.classList.add('hidden'); 
+                navigate('page-main');
+                resetGuestForm();
+            }, 300);
+        }
+
+        // --- AUTHENTICATION LOGIC ---
+        function togglePassword() {
+            const input = document.getElementById('l-pass');
+            const icon = document.getElementById('eye-icon');
+            if(input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash', 'text-accent');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash', 'text-accent');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const user = document.getElementById('l-user').value.toLowerCase();
+            const pass = document.getElementById('l-pass').value;
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifikasi...';
+            
+            // Mocking Role-based authentication logic
+            setTimeout(() => {
+                btn.innerHTML = 'Masuk Dashboard <i class="fa-solid fa-right-to-bracket"></i>';
+                
+                if (user === 'admin' && pass === 'admin123') {
+                    showToast("Login sukses! Masuk ke Dasbor Tata Usaha.", "success");
+                } else if (user === 'kepsek' && pass === 'kepsek123') {
+                    showToast("Login sukses! Masuk ke Dasbor Kepala Sekolah.", "success");
+                } else {
+                    showToast("Kredensial tidak valid. Sisa percobaan: 2", "error");
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
