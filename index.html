@@ -3,26 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiTamu - Enterprise Edition (Kiosk Secure)</title>
-    <!-- Tailwind CSS -->
+    <title>SiTamu - Enterprise Edition (Kiosk & Dasbor)</title>
+    <!-- Tailwind CSS (Framework) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
+    <!-- FontAwesome (Ikon Lengkap) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Konfigurasi Tema (Sesuai PRD) -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0A2540',
-                        accent: '#D4AF37',
-                        surface: '#1A365D'
+                        primary: '#0A2540', /* Navy Blue - Otoritas */
+                        accent: '#D4AF37',  /* Elegant Gold */
+                        surface: '#1A365D',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107'
                     }
                 }
             }
         }
     </script>
 
+    <!-- Gaya CSS Kustom & Animasi -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -34,27 +39,38 @@
         .bg-slide.active { opacity: 1; }
         .bg-overlay { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.7), rgba(10, 37, 64, 0.95)); z-index: -1; }
         
-        /* Glassmorphism */
+        /* Efek Kaca (Glassmorphism) */
         .glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+        .glass-card { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); border-color: rgba(212, 175, 55, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* SPA Transitions */
+        /* Animasi Transisi Halaman (SPA) */
         .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.98); overflow-y: auto; }
         .page.active { opacity: 1; pointer-events: auto; transform: scale(1); }
         
-        /* Scan Anim */
+        /* Animasi Form Berjenjang */
+        .wizard-step { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .wizard-step.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Animasi Scanner QR */
         .scan-line { width: 100%; height: 2px; background: #D4AF37; box-shadow: 0 0 10px #D4AF37, 0 0 20px #D4AF37; position: absolute; top: 0; animation: scanAnim 2s infinite linear; }
         @keyframes scanAnim { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
+        /* Scrollbar Kustom */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(136, 136, 136, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(136, 136, 136, 0.8); }
 
-        /* Dasbor Styles */
-        .dash-sidebar { width: 280px; height: 100vh; background-color: #0A2540; color: white; position: fixed; left: 0; top: 0; z-index: 40; }
+        /* Dasbor Kepala Sekolah Styles */
+        .dash-sidebar { width: 280px; height: 100vh; background-color: #0A2540; color: white; position: fixed; left: 0; top: 0; z-index: 40; border-right: 1px solid rgba(255,255,255,0.1); }
         .dash-content { margin-left: 280px; padding: 2rem; min-height: 100vh; background-color: #F8F9FA; color: #333; }
         .stat-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); }
         .data-table th { background-color: #f3f4f6; color: #4b5563; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1rem; text-align: left; }
-        .data-table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+        .data-table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; color: #1f2937; font-size: 0.875rem; }
+        .data-table tr:hover { background-color: #f9fafb; }
         .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
         .badge-pending { background-color: #fef3c7; color: #92400e; }
         .badge-approved { background-color: #d1fae5; color: #065f46; }
@@ -63,33 +79,41 @@
 </head>
 <body class="kiosk-mode select-none">
 
-    <!-- Backgrounds Kiosk -->
+    <!-- ========================================================================= -->
+    <!-- BAGIAN 1: BACKGROUND & GLOBAL UI ELEMENTS (UNTUK KIOSK)                   -->
+    <!-- ========================================================================= -->
     <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
     <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
     <div class="bg-overlay" id="global-overlay"></div>
 
     <div id="toast-container" class="fixed bottom-5 right-5 flex flex-col gap-3" style="z-index: 9999;"></div>
 
+    <!-- Tombol Khusus Presentasi (Simulasi) -->
+    <div class="fixed bottom-4 left-4 z-50 flex gap-2">
+        <button onclick="navigate('page-main')" class="bg-black/50 border border-white/20 text-white/50 hover:text-white text-xs px-3 py-1 rounded-full backdrop-blur-md transition">
+            <i class="fa-solid fa-desktop mr-1"></i> Mode Lobi
+        </button>
+        <button onclick="navigate('page-principal')" class="bg-accent/80 border border-accent text-primary font-bold text-xs px-3 py-1 rounded-full backdrop-blur-md hover:bg-accent transition shadow-lg">
+            <i class="fa-solid fa-user-tie mr-1"></i> Masuk Dasbor Kepsek
+        </button>
+    </div>
+
     <!-- ========================================================================= -->
-    <!-- PAGE 1: LOBI UTAMA (TAMPILAN ORANG AWAM)                                  -->
+    <!-- BAGIAN 2: PAGE MAIN (LOBI UTAMA - REDESIGNED)                             -->
     <!-- ========================================================================= -->
     <div id="page-main" class="page active flex flex-col justify-center items-center min-h-full py-10 px-4 relative">
-        
-        <!-- HIDDEN ENTRY POINT UNTUK KEPALA SEKOLAH -->
-        <!-- Gembok transparan di pojok kanan atas, sangat samar untuk orang awam -->
-        <button onclick="openPrincipalLogin()" class="absolute top-8 right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50">
-            <i class="fa-solid fa-lock text-xl"></i>
-        </button>
-
         <div class="text-center glass-panel p-10 rounded-3xl w-full max-w-5xl border-t border-white/30">
+            <!-- Header Lobi -->
             <div class="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(212,175,55,0.4)] border border-accent/50">
                 <i class="fa-solid fa-building-columns text-4xl text-accent"></i>
             </div>
             <h1 class="text-5xl font-bold mb-3 tracking-tight">Sistem Digital SiTamu</h1>
-            <p class="text-lg text-gray-300 mb-10 font-light">Selamat datang. Silakan pilih layanan tamu di bawah ini.</p>
+            <p class="text-lg text-gray-300 mb-10 font-light">Selamat datang. Silakan pilih layanan yang Anda butuhkan di bawah ini.</p>
             
+            <!-- Grid Pilihan Layanan -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                <!-- Smart Check-In -->
+                
+                <!-- Opsi 1: Smart Check-In (Usulan Baru) -->
                 <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/10 border border-white/20 p-8 rounded-2xl transition transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition"></div>
                     <div class="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-blue-400/30">
@@ -99,7 +123,7 @@
                     <p class="text-gray-400 text-sm leading-relaxed">Jalur cepat. Scan QR Code Undangan Anda atau isi form tamu instan untuk tamu/kurir tanpa jadwal.</p>
                 </button>
                 
-                <!-- Schedule Form -->
+                <!-- Opsi 2: Schedule Form (Yang Disukai User) -->
                 <button onclick="navigate('page-schedule');" class="bg-white/5 hover:bg-white/10 border border-white/20 p-8 rounded-2xl transition transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center">
                     <div class="absolute top-0 left-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition"></div>
                     <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-emerald-400/30">
@@ -108,35 +132,13 @@
                     <h3 class="text-2xl font-bold mb-2 text-white">Buat Jadwal Temu</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">Reservasi waktu. Ajukan rencana pertemuan dengan Kepala Sekolah (Tentukan tanggal & lokasi).</p>
                 </button>
+
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MODAL KEAMANAN: LOGIN KEPALA SEKOLAH                                      -->
-    <!-- ========================================================================= -->
-    <div id="modal-auth-kepsek" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex items-center justify-center">
-        <div class="glass-panel p-8 rounded-2xl max-w-sm w-full relative border border-accent/50 scale-0 transition-transform duration-300" id="auth-content">
-            <button onclick="closePrincipalLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="text-center mb-6">
-                <i class="fa-solid fa-shield-halved text-4xl text-accent mb-2"></i>
-                <h3 class="text-xl font-bold text-white">Otorisasi Eksekutif</h3>
-                <p class="text-xs text-gray-400">Masukkan kata sandi Kepala Sekolah</p>
-            </div>
-            <form onsubmit="verifyPrincipalLogin(event)">
-                <div class="relative mb-6">
-                    <i class="fa-solid fa-key absolute left-4 top-3.5 text-gray-400"></i>
-                    <input type="password" id="kepsek-pin" class="w-full bg-black/60 border border-white/20 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-accent text-center tracking-widest" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full bg-accent hover:bg-yellow-500 text-primary py-3 rounded-xl font-bold transition shadow-[0_0_15px_rgba(212,175,55,0.4)]">
-                    Buka Dasbor <i class="fa-solid fa-unlock ml-1"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- PAGE 2: CHECK-IN (JALUR CEPAT TAMU)                                       -->
+    <!-- BAGIAN 3: PAGE CHECK-IN (USULAN PENGGANTI "ISI BUKU TAMU")                -->
     <!-- ========================================================================= -->
     <div id="page-checkin" class="page flex flex-col min-h-full py-10 px-8">
         <div class="flex justify-between items-center mb-8 max-w-5xl mx-auto w-full shrink-0">
@@ -151,14 +153,16 @@
                 <div class="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div class="w-48 h-48 border-2 border-dashed border-gray-500 group-hover:border-accent rounded-2xl relative mb-6 flex items-center justify-center bg-black/40">
                     <i class="fa-solid fa-qrcode text-6xl text-gray-400 group-hover:text-accent transition"></i>
+                    <!-- Garis Scanner Animasi -->
                     <div class="hidden group-hover:block scan-line"></div>
+                    <!-- Sudut Scanner -->
                     <div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-accent rounded-tl-lg"></div>
                     <div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-accent rounded-tr-lg"></div>
                     <div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-accent rounded-bl-lg"></div>
                     <div class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-accent rounded-br-lg"></div>
                 </div>
                 <h3 class="text-2xl font-bold mb-2">Scan QR Undangan</h3>
-                <p class="text-gray-400 text-sm">Jika Anda menerima undangan via Email/WhatsApp, hadapkan QR Code ke kamera.</p>
+                <p class="text-gray-400 text-sm">Jika Anda menerima undangan via Email/WhatsApp, hadapkan QR Code ke kamera perangkat ini.</p>
                 <div id="qr-status" class="mt-4 text-emerald-400 font-bold hidden">Memverifikasi Data...</div>
             </div>
 
@@ -202,7 +206,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 3: SCHEDULE (RESERVASI)                                              -->
+    <!-- BAGIAN 4: PAGE SCHEDULE (YANG DISUKAI, DENGAN PENYEMPURNAAN)              -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex flex-col min-h-full py-10 px-8">
         <div class="flex justify-between items-center mb-6 max-w-4xl mx-auto w-full shrink-0">
@@ -212,12 +216,14 @@
         </div>
 
         <div class="glass-panel rounded-3xl max-w-4xl mx-auto w-full mb-10 p-10 bg-white/5 relative overflow-hidden">
+            <!-- Dekorasi Air -->
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-            <p class="text-gray-300 mb-8 border-b border-white/10 pb-6 text-sm">Formulir ini digunakan untuk melakukan reservasi waktu dan tempat dengan Kepala Sekolah. Pengajuan akan ditinjau dan dikonfirmasi melalui Email/WhatsApp.</p>
+            
+            <p class="text-gray-300 mb-8 border-b border-white/10 pb-6 text-sm">Formulir ini digunakan untuk melakukan reservasi waktu dan tempat dengan Kepala Sekolah. Admin akan meninjau dan memberikan konfirmasi persetujuan melalui Email/WhatsApp yang Anda cantumkan.</p>
             
             <form onsubmit="submitSchedule(event)">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    <!-- Info Personal -->
+                    <!-- Kiri: Info Personal -->
                     <div class="space-y-4">
                         <h3 class="text-lg font-bold text-emerald-400 mb-2"><i class="fa-solid fa-id-badge mr-2"></i> 1. Info Pemohon</h3>
                         <div>
@@ -240,7 +246,7 @@
                         </div>
                     </div>
 
-                    <!-- Info Waktu & Tempat -->
+                    <!-- Kanan: Info Waktu & Tempat -->
                     <div class="space-y-4">
                         <h3 class="text-lg font-bold text-emerald-400 mb-2"><i class="fa-solid fa-clock mr-2"></i> 2. Rencana Pertemuan</h3>
                         <div class="flex gap-4">
@@ -266,17 +272,18 @@
                     </div>
                 </div>
 
-                <!-- Agenda -->
+                <!-- Bawah: Agenda -->
                 <div class="mb-8">
-                    <h3 class="text-lg font-bold text-emerald-400 mb-2"><i class="fa-solid fa-file-lines mr-2"></i> 3. Agenda</h3>
+                    <h3 class="text-lg font-bold text-emerald-400 mb-2"><i class="fa-solid fa-file-lines mr-2"></i> 3. Agenda & Lampiran</h3>
                     <div class="flex gap-4">
                         <div class="flex-1">
                             <textarea rows="3" required class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400 outline-none resize-none" placeholder="Tuliskan tujuan dan agenda spesifik pertemuan ini..."></textarea>
                         </div>
+                        <!-- Fitur Upload Dokumen Pendukung -->
                         <div class="w-1/3 border-2 border-dashed border-white/20 hover:border-emerald-400 rounded-xl flex flex-col items-center justify-center bg-black/20 cursor-pointer transition relative group">
                             <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx">
                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 group-hover:text-emerald-400 mb-2 transition"></i>
-                            <span class="text-xs text-gray-400 text-center px-2">Upload Undangan (PDF)</span>
+                            <span class="text-xs text-gray-400 text-center px-2">Upload Proposal/Undangan Resmi (PDF)</span>
                         </div>
                     </div>
                 </div>
@@ -291,7 +298,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: PRINCIPAL DASHBOARD (HANYA BISA DIAKSES VIA PASSWORD KEPSEK)      -->
+    <!-- BAGIAN 5: PAGE PRINCIPAL (DASBOR KHUSUS KEPALA SEKOLAH)                 -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page bg-gray-50 flex" style="color: #333; overflow: hidden;">
         
@@ -314,10 +321,14 @@
                 <button onclick="switchTab('tab-schedule')" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-schedule">
                     <i class="fa-solid fa-calendar-days w-5"></i> Manajemen Jadwal
                 </button>
+                <div class="pt-4 mt-4 border-t border-white/10">
+                    <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Sistem</p>
+                    <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/5 text-gray-400 transition"><i class="fa-solid fa-gear w-5"></i> Pengaturan</button>
+                </div>
             </nav>
             <div class="p-4 border-t border-white/10">
                 <button onclick="logoutPrincipal()" class="w-full flex items-center justify-center gap-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white py-3 rounded-lg transition font-medium">
-                    <i class="fa-solid fa-power-off"></i> Kunci & Keluar
+                    <i class="fa-solid fa-power-off"></i> Keluar Dasbor
                 </button>
             </div>
         </aside>
@@ -337,7 +348,7 @@
                     <div class="flex items-center gap-3">
                         <div class="text-right">
                             <p class="text-sm font-bold text-gray-700">Kepala Sekolah</p>
-                            <p class="text-xs text-green-600"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Online Terenkripsi</p>
+                            <p class="text-xs text-gray-500">Administrator</p>
                         </div>
                         <img src="https://ui-avatars.com/api/?name=Kepala+Sekolah&background=0A2540&color=fff" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-gray-200">
                     </div>
@@ -346,6 +357,7 @@
 
             <!-- TAB: OVERVIEW -->
             <div id="tab-overview" class="dash-tab block p-8">
+                <!-- Stats Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="stat-card border-l-4 border-blue-500">
                         <div><p class="text-sm text-gray-500 font-medium mb-1">Total Tamu Hari Ini</p><h3 class="text-3xl font-bold text-gray-800">12</h3></div>
@@ -361,6 +373,7 @@
                     </div>
                 </div>
                 
+                <!-- Quick Look Table -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                         <h3 class="font-bold text-gray-800"><i class="fa-solid fa-bolt text-accent mr-2"></i>Aktivitas Terkini</h3>
@@ -369,7 +382,9 @@
                     <div class="overflow-x-auto">
                         <table class="w-full data-table">
                             <thead><tr><th>Waktu</th><th>Nama / Instansi</th><th>Jenis</th><th>Status</th></tr></thead>
-                            <tbody id="quick-activity-list"></tbody>
+                            <tbody id="quick-activity-list">
+                                <!-- Dipopulasi via JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -390,7 +405,9 @@
                             <thead class="sticky top-0 bg-gray-100 z-10 shadow-sm">
                                 <tr><th>Masuk</th><th>Identitas Tamu</th><th>Tujuan / Pesan</th><th>Status</th><th>Aksi</th></tr>
                             </thead>
-                            <tbody id="inbox-list"></tbody>
+                            <tbody id="inbox-list">
+                                <!-- Dipopulasi via JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -408,7 +425,9 @@
                             <thead class="bg-gray-100">
                                 <tr><th>Pemohon</th><th>Rencana Waktu</th><th>Lokasi</th><th>Status</th><th class="text-right">Tindakan Kepsek</th></tr>
                             </thead>
-                            <tbody id="schedule-list"></tbody>
+                            <tbody id="schedule-list">
+                                <!-- Dipopulasi via JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -418,7 +437,7 @@
     </div>
 
     <!-- MODAL POPUP: Notifikasi Kiosk -->
-    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
+    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
         <div class="bg-white text-primary p-10 rounded-3xl max-w-md w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300" id="ticket-content">
             <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-check"></i></div>
             <h2 class="text-2xl font-bold mb-2" id="ticket-title">Sukses</h2>
@@ -428,7 +447,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- LOGIKA JAVASCRIPT                                                         -->
+    <!-- LOGIKA JAVASCRIPT (SPA, UI Interaktif, Dummy Data Dasbor)                 -->
     <!-- ========================================================================= -->
     <script>
         // --- Sistem Routing & Visual ---
@@ -436,6 +455,7 @@
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             
+            // Atur background visibility
             const bgOverlay = document.getElementById('global-overlay');
             const bgs = document.querySelectorAll('.bg-slide');
             if (pageId === 'page-principal') {
@@ -463,45 +483,6 @@
             setTimeout(() => { toast.classList.add('translate-y-5', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // --- SISTEM LOGIN KEPALA SEKOLAH ---
-        function openPrincipalLogin() {
-            const modal = document.getElementById('modal-auth-kepsek');
-            const content = document.getElementById('auth-content');
-            modal.classList.remove('hidden');
-            document.getElementById('kepsek-pin').value = ''; // Kosongkan input
-            setTimeout(() => { 
-                content.classList.replace('scale-0', 'scale-100'); 
-                document.getElementById('kepsek-pin').focus();
-            }, 10);
-        }
-
-        function closePrincipalLogin() {
-            const modal = document.getElementById('modal-auth-kepsek');
-            const content = document.getElementById('auth-content');
-            content.classList.replace('scale-100', 'scale-0');
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
-        }
-
-        function verifyPrincipalLogin(e) {
-            e.preventDefault();
-            const pin = document.getElementById('kepsek-pin').value;
-            
-            // Password Simulasi: kepsek123
-            if (pin === 'kepsek123') {
-                closePrincipalLogin();
-                showToast("Otorisasi Berhasil. Selamat Datang.", "success");
-                setTimeout(() => { navigate('page-principal'); }, 300);
-            } else {
-                showToast("Akses Ditolak. Kata sandi salah.", "error");
-                document.getElementById('kepsek-pin').value = '';
-            }
-        }
-
-        function logoutPrincipal() {
-            showToast("Sesi Dasbor Berakhir. Kiosk Terkunci Kembali.", "success");
-            navigate('page-main');
-        }
-
         // --- Logika Kiosk Tamu ---
         function simulateQRScan() {
             const status = document.getElementById('qr-status');
@@ -515,7 +496,7 @@
         function submitFastGuest(e) {
             e.preventDefault();
             showTicketModal("Tamu/Kurir Tercatat!", "Admin akan segera menghampiri Anda di lobi.");
-            e.target.reset();
+            e.target.reset(); // clear form
         }
 
         function submitSchedule(e) {
@@ -542,10 +523,12 @@
 
         // --- Logika Dasbor Kepala Sekolah (Principal System) ---
         function switchTab(tabId) {
+            // Sembunyikan semua tab content
             document.querySelectorAll('.dash-tab').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
             document.getElementById(tabId).classList.add('block');
             
+            // Ubah gaya tombol sidebar aktif
             document.querySelectorAll('.dash-nav-btn').forEach(btn => {
                 btn.classList.remove('bg-white/10', 'text-white');
                 btn.classList.add('hover:bg-white/5', 'text-gray-400');
@@ -554,8 +537,14 @@
             activeBtn.classList.add('bg-white/10', 'text-white');
             activeBtn.classList.remove('hover:bg-white/5', 'text-gray-400');
             
+            // Ubah Judul Header
             const titles = { 'tab-overview': 'Ringkasan Sistem', 'tab-inbox': 'Pesan dari Lobi', 'tab-schedule': 'Manajemen Jadwal' };
             document.getElementById('dash-title').innerText = titles[tabId];
+        }
+
+        function logoutPrincipal() {
+            showToast("Keluar dari dasbor aman.", "success");
+            navigate('page-main');
         }
 
         // --- DUMMY DATA UNTUK DASBOR ---
@@ -578,6 +567,7 @@
             return '';
         }
 
+        // Render Data Tabel Activity
         const actBody = document.getElementById('quick-activity-list');
         dummyActivities.forEach(act => {
             actBody.innerHTML += `<tr>
@@ -588,8 +578,10 @@
             </tr>`;
         });
         
+        // Render Data Tabel Inbox Lobi
         const inboxBody = document.getElementById('inbox-list');
         for(let i=0; i<8; i++) {
+            // Generate multiple rows for demo
             inboxBody.innerHTML += `<tr>
                 <td class="text-xs text-gray-500">Hari ini<br><span class="font-bold text-gray-700">0${9+i}:15 WIB</span></td>
                 <td><div class="font-bold text-gray-800">Tamu / Vendor ${i+1}</div><div class="text-xs text-gray-500">Instansi ABC</div></td>
@@ -599,6 +591,7 @@
             </tr>`;
         }
 
+        // Render Data Tabel Jadwal
         function renderSchedules() {
             const schBody = document.getElementById('schedule-list');
             schBody.innerHTML = '';
@@ -624,11 +617,13 @@
         }
         renderSchedules();
 
+        // Fungsi Aksi Kepala Sekolah (Terima/Tolak Jadwal)
         function actionSchedule(id, actionStr) {
             const index = dummySchedules.findIndex(s => s.id === id);
             if(index !== -1) {
                 dummySchedules[index].status = actionStr;
-                renderSchedules();
+                renderSchedules(); // Re-render tabel
+                
                 if(actionStr === 'APPROVED') {
                     showToast("Jadwal disetujui. Sistem akan mengirim email ke pemohon.", "success");
                 } else {
@@ -636,6 +631,7 @@
                 }
             }
         }
+        
     </script>
 </body>
 </html>
