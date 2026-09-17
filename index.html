@@ -1558,6 +1558,144 @@
             showToast("Pengaturan profil dan transmisi status berhasil disimpan.", "success"); 
         }
 
+        /* --- FITUR 1: BUKU TAMU LANGSUNG (WIZARD & KAMERA) --- */
+let checkinStream = null;
+
+function goToCheckinStep(stepNumber) {
+    if (stepNumber === 2) {
+        if(!document.getElementById('w-name').value || !document.getElementById('w-phone').value || !document.getElementById('w-agency').value) {
+            showToast("Lengkapi semua kolom identitas wajib (*)", "error"); return;
+        }
+    } else if (stepNumber === 3) {
+        if(!document.getElementById('w-target').value || !document.getElementById('w-detail').value) {
+            showToast("Pilih tujuan dan tuliskan rincian pesan (*)", "error"); return;
+        }
+    } else if (stepNumber === 4) {
+        if(!document.getElementById('w-consent').checked) {
+            showToast("Persetujuan pengambilan gambar diwajibkan", "error"); return;
+        }
+        startCheckinCamera();
+    }
+
+    document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+    document.getElementById(`step-${stepNumber}`).classList.add('active');
+    
+    const pct = ['0%', '33%', '66%', '100%'];
+    document.getElementById('wizard-progress').style.width = pct[stepNumber-1];
+    
+    for(let i=1; i<=4; i++) {
+        const ind = document.getElementById(`ind-${i}`);
+        const icon = ind.querySelector('.step-icon');
+        const text = ind.querySelector('.step-text');
+        
+        if (i <= stepNumber) {
+            ind.classList.add('active');
+            icon.classList.remove('bg-primary', 'border-white/30', 'text-white');
+            icon.classList.add('bg-accent', 'text-primary', 'shadow-[0_0_15px_rgba(212,175,55,0.5)]', 'border-transparent');
+            text.classList.replace('text-white/50', 'text-accent');
+        } else {
+            ind.classList.remove('active');
+            icon.classList.remove('bg-accent', 'text-primary', 'shadow-[0_0_15px_rgba(212,175,55,0.5)]', 'border-transparent');
+            icon.classList.add('bg-primary', 'border-white/30', 'text-white');
+            text.classList.replace('text-accent', 'text-white/50');
+        }
+    }
+}
+
+function resetCheckinWizard() {
+    document.querySelectorAll('#page-checkin input[type="text"], #page-checkin input[type="tel"], #page-checkin textarea, #page-checkin select').forEach(el => el.value = '');
+    document.getElementById('w-consent').checked = false;
+    document.getElementById('checkin-canvas').classList.add('hidden');
+    stopCheckinCamera();
+    goToCheckinStep(1);
+}
+
+async function startCheckinCamera() {
+    try {
+        const vid = document.getElementById('checkin-camera');
+        checkinStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        vid.srcObject = checkinStream;
+        vid.onloadedmetadata = () => document.getElementById('checkin-cam-status').style.display = 'none';
+    } catch(e) { showToast("Gagal mengakses kamera perangkat.", "error"); }
+}
+
+function stopCheckinCamera() {
+    if (checkinStream) { checkinStream.getTracks().forEach(t => t.stop()); checkinStream = null; }
+    document.getElementById('checkin-cam-status').style.display = 'flex';
+}
+
+function takeCheckinPicture() {
+    if(!checkinStream) { showToast("Kamera tidak aktif.", "error"); return; }
+    const v = document.getElementById('checkin-camera'), c = document.getElementById('checkin-canvas');
+    c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    c.classList.remove('hidden');
+    showToast("Wajah berhasil direkam.", "success");
+}
+
+function submitCheckin() {
+    if(document.getElementById('checkin-canvas').classList.contains('hidden')) { showToast("Wajib merekam wajah.", "error"); return; }
+    stopCheckinCamera();
+    showTicketModal("Tamu Lobi Tercatat!", "Silakan tunggu di lobi. Anda masuk dalam antrean reguler.");
+    resetCheckinWizard();
+}
+
+/* --- FITUR 2: CEK STATUS TIKET --- */
+function openTicketStatusModal() { 
+    const m = document.getElementById('modal-status'), c = document.getElementById('status-content'); 
+    m.classList.remove('hidden'); 
+    document.getElementById('ticket-input').value = ''; 
+    document.getElementById('ticket-result').classList.add('hidden'); 
+    setTimeout(()=>c.classList.replace('scale-0','scale-100'), 10); 
+}
+
+function closeTicketStatusModal() { 
+    const c = document.getElementById('status-content'); 
+    c.classList.replace('scale-100','scale-0'); 
+    setTimeout(()=>document.getElementById('modal-status').classList.add('hidden'), 300); 
+}
+
+function checkTicketStatus(e) {
+    e.preventDefault();
+    const input = document.getElementById('ticket-input').value.toUpperCase();
+    if(input.length < 5) { showToast("Format tiket tidak valid.", "error"); return; }
+    
+    showToast("Mencari data di server...", "info");
+    setTimeout(() => {
+        document.getElementById('ticket-result').classList.remove('hidden');
+        if(input.length % 2 === 0) {
+            document.getElementById('res-badge').innerText = "DISETUJUI KEPSEK";
+            document.getElementById('res-badge').className = "text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30";
+        } else {
+            document.getElementById('res-badge').innerText = "MENUNGGU (PENDING)";
+            document.getElementById('res-badge').className = "text-[10px] font-bold bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30";
+        }
+    }, 1000);
+}
+
+/* --- FITUR 3: INFO PENGUMUMAN PUBLIK --- */
+function renderPublicInfo() {
+    const list = document.getElementById('public-announcement-list');
+    if(list && list.innerHTML.trim() === '') {
+        const announcements = [
+            { date: "17 Okt 2026", title: "Penerimaan Siswa Baru", desc: "Pendaftaran gelombang pertama dibuka bulan depan. Hubungi panitia di lobi." },
+            { date: "15 Okt 2026", title: "Rapat Komite Sekolah", desc: "Diadakan di Aula Utama. Undangan telah dikirim via email." },
+            { date: "10 Okt 2026", title: "Pemeliharaan Kiosk", desc: "Pembaruan sistem SiTamu telah selesai." }
+        ];
+        
+        list.innerHTML = '';
+        announcements.forEach(a => {
+            list.innerHTML += `
+                <div class="bg-black/40 p-4 rounded-xl border border-white/10 hover:border-orange-500/50 transition">
+                    <span class="text-[10px] font-bold text-orange-400 bg-orange-400/10 px-2 py-1 rounded mb-2 inline-block">${a.date}</span>
+                    <h4 class="text-sm font-bold text-white mb-1">${a.title}</h4>
+                    <p class="text-xs text-gray-400">${a.desc}</p>
+                </div>
+            `;
+        });
+    }
+}
+
     </script>
 </body>
 </html>
