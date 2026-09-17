@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>SiTamu - Ultimate Edition (QR, Wizard & Dasbor Kepsek)</title>
+    <title>SiTamu - Enterprise Edition (Kiosk & Dasbor Kepsek)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,8 +18,7 @@
                         primary: '#0A2540',
                         accent: '#D4AF37', /* Gold elegan */
                         surface: '#1A365D',
-                        fem_accent: '#B8860B', /* Dark Goldenrod untuk dasbor */
-                        qr_glow: '#00FF88' /* Neon hijau untuk Scanner QR */
+                        fem_accent: '#B8860B' /* Dark Goldenrod untuk dasbor */
                     }
                 }
             }
@@ -43,22 +42,6 @@
         .glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
         .page { position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.98); overflow-y: auto; overflow-x: hidden; }
         .page.active { opacity: 1; pointer-events: auto; transform: scale(1); }
-
-        /* ================= HIGH-TECH QR SCANNER ================= */
-        .qr-scanner-box { position: relative; width: 100%; max-width: 320px; aspect-ratio: 1/1; margin: 0 auto; overflow: hidden; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.2); background-color: #000; border: 2px solid rgba(255,255,255,0.1); }
-        .qr-video { width: 100%; height: 100%; object-fit: cover; }
-        .qr-overlay-corner { position: absolute; width: 40px; height: 40px; border-color: #00FF88; border-style: solid; transition: all 0.3s ease; }
-        .qr-overlay-corner.tl { top: 15px; left: 15px; border-width: 4px 0 0 4px; border-top-left-radius: 10px; }
-        .qr-overlay-corner.tr { top: 15px; right: 15px; border-width: 4px 4px 0 0; border-top-right-radius: 10px; }
-        .qr-overlay-corner.bl { bottom: 15px; left: 15px; border-width: 0 0 4px 4px; border-bottom-left-radius: 10px; }
-        .qr-overlay-corner.br { bottom: 15px; right: 15px; border-width: 0 4px 4px 0; border-bottom-right-radius: 10px; }
-        
-        .qr-laser { position: absolute; top: 20px; left: 5%; width: 90%; height: 3px; background: #00FF88; box-shadow: 0 0 15px #00FF88, 0 0 30px #00FF88; animation: laserScan 2.5s infinite ease-in-out; border-radius: 50%; }
-        @keyframes laserScan { 0%, 100% { top: 20px; opacity: 0; } 10% { opacity: 1; } 50% { top: calc(100% - 20px); opacity: 1; } 90% { opacity: 1; } }
-        
-        .qr-scanning-active .qr-overlay-corner { border-color: #D4AF37; box-shadow: 0 0 15px #D4AF37; }
-        .qr-scanning-active .qr-laser { background: #D4AF37; box-shadow: 0 0 15px #D4AF37, 0 0 30px #D4AF37; animation: laserScanFast 0.5s infinite linear; }
-        @keyframes laserScanFast { 0% { top: 20%; opacity: 1; } 50% { top: 80%; opacity: 1; } 100% { top: 20%; opacity: 1; } }
 
         /* ================= WIZARD ANIMATIONS & TIMELINE ================= */
         .wizard-step { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -105,7 +88,7 @@
         .badge-approved { background-color: #D1FAE5; color: #047857; border: 1px solid #A7F3D0; }
         .badge-rejected { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
 
-        /* Custom Toggle Switch for Settings */
+        /* Custom Toggle Switch */
         .toggle-checkbox:checked { right: 0; border-color: #10B981; }
         .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
         .toggle-checkbox:checked + .toggle-label:before { transform: translateX(100%); }
@@ -114,7 +97,7 @@
 
         /* CSS Bar Chart */
         .chart-container { display: flex; align-items: flex-end; height: 200px; gap: 1rem; padding-top: 1rem; }
-        .chart-bar-wrap { flex: 1; display: flex; flex-col; justify-content: flex-end; align-items: center; group; position: relative; cursor: pointer; }
+        .chart-bar-wrap { flex: 1; display: flex; flex-col; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; }
         .chart-bar { width: 100%; background: linear-gradient(to top, #0A2540, #1A365D); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
         .chart-bar-wrap:hover .chart-bar { background: linear-gradient(to top, #D4AF37, #FDE047); }
         .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -149,24 +132,27 @@
         </button>
 
         <div class="text-center glass-panel p-6 md:p-10 rounded-3xl w-full max-w-5xl border-t border-white/30 relative overflow-hidden mt-8 md:mt-0">
+            <!-- Dekorasi Cahaya -->
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accent/20 blur-[80px] rounded-full pointer-events-none"></div>
 
-            <div class="w-20 h-20 md:w-28 md:h-28 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-[0_0_30px_rgba(212,175,55,0.4)] border border-accent/50 relative z-10">
-                <i class="fa-solid fa-building-columns text-4xl md:text-5xl text-accent"></i>
+            <!-- LOGO SEKOLAH (Menggantikan ikon Museum) -->
+            <div class="w-28 h-28 md:w-36 md:h-36 bg-white rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-[0_0_30px_rgba(212,175,55,0.6)] border-4 border-accent relative z-10 overflow-hidden">
+                <!-- Anda bisa mengganti URL di src ini dengan file logo sekolah Anda (misal: "logo-sekolah.png") -->
+                <img src="https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200" alt="Logo Sekolah" id="school-logo" class="w-full h-full object-cover">
             </div>
             
             <h1 class="text-4xl md:text-6xl font-bold mb-2 md:mb-4 tracking-tight text-white drop-shadow-lg">SiTamu</h1>
-            <p class="text-base md:text-xl text-gray-300 mb-8 md:mb-12 font-light">Sistem Digital Penerimaan Tamu Ibu Kepala Sekolah</p>
+            <p class="text-base md:text-xl text-gray-300 mb-8 md:mb-12 font-light px-4">Sistem Digital Penerimaan Tamu Ibu Kepala Sekolah</p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 text-left relative z-10">
-                <!-- OPSI 1: SMART CHECK-IN (QR SCANNER) -->
-                <button onclick="navigate('page-qr-scanner'); startQRCamera();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-6 md:p-8 rounded-2xl md:rounded-3xl transition duration-300 transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center shadow-lg">
-                    <div class="absolute top-0 right-0 w-32 h-32 md:w-40 md:h-40 bg-qr_glow/10 rounded-full blur-3xl group-hover:bg-qr_glow/30 transition duration-500"></div>
-                    <div class="w-16 h-16 md:w-20 md:h-20 bg-qr_glow/20 rounded-full flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition duration-300 border border-qr_glow/30 shadow-[0_0_15px_rgba(0,255,136,0.3)]">
-                        <i class="fa-solid fa-qrcode text-2xl md:text-4xl text-qr_glow"></i>
+                <!-- OPSI 1: BUKU TAMU LANGSUNG (Menggantikan Smart Check-In QR) -->
+                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-6 md:p-8 rounded-2xl md:rounded-3xl transition duration-300 transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center shadow-lg">
+                    <div class="absolute top-0 right-0 w-32 h-32 md:w-40 md:h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/30 transition duration-500"></div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-500/20 rounded-full flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition duration-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                        <i class="fa-solid fa-pen-to-square text-2xl md:text-4xl text-blue-400"></i>
                     </div>
-                    <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Smart Check-In</h3>
-                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed px-2">Jalur Cepat/VIP. Scan QR Code Undangan Anda di lensa kamera untuk akses instan.</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Buku Tamu Langsung</h3>
+                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed px-2">Untuk tamu/kurir yang sudah berada di lobi. Isi form singkat agar segera dilayani.</p>
                 </button>
                 
                 <!-- OPSI 2: RESERVASI JADWAL -->
@@ -201,16 +187,16 @@
             
             <div class="timeline px-2">
                 <div class="timeline-item">
-                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Smart Check-In (Jalur Cepat)</h4>
-                    <p class="text-xs md:text-sm text-gray-300">Gunakan fitur ini dengan mendekatkan QR Code undangan Anda ke kamera tablet/Kiosk. Portal akan memvalidasi otomatis.</p>
+                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Buku Tamu Langsung</h4>
+                    <p class="text-xs md:text-sm text-gray-300">Pilih opsi ini jika Anda sudah berada di lokasi sekolah dan ingin segera bertemu dengan staf/Kepala Sekolah.</p>
                 </div>
                 <div class="timeline-item">
-                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Tamu Reguler (Tanpa QR)</h4>
-                    <p class="text-xs md:text-sm text-gray-300">Jika Anda tidak memiliki QR Code, masuk ke Smart Check-In lalu tekan tombol "Isi Buku Tamu Manual" di bagian bawah layar.</p>
+                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Lengkapi Data</h4>
+                    <p class="text-xs md:text-sm text-gray-300">Sistem akan meminta Anda mengisi nama, instansi, rincian pesan, dan diakhiri dengan foto wajah lewat kamera perangkat ini.</p>
                 </div>
                 <div class="timeline-item">
                     <h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Reservasi / Buat Jadwal</h4>
-                    <p class="text-xs md:text-sm text-gray-300">Pilih menu "Buat Jadwal Temu" untuk mengajukan pertemuan di hari lain. Sistem akan meminta detail lengkap.</p>
+                    <p class="text-xs md:text-sm text-gray-300">Gunakan opsi "Buat Jadwal Temu" untuk mengajukan pertemuan di hari mendatang beserta pemotretan identitas pengaju.</p>
                 </div>
             </div>
             
@@ -244,66 +230,12 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 2: QR SCANNER (SMART CHECK-IN VIP)                                   -->
+    <!-- PAGE 2: BUKU TAMU LANGSUNG (WIZARD)                                       -->
     <!-- ========================================================================= -->
-    <div id="page-qr-scanner" class="page flex flex-col min-h-screen py-6 md:py-10 px-4 md:px-8">
-        
-        <div class="flex justify-between items-center mb-6 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
-            <button onclick="navigate('page-main'); stopQRCamera();" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel shadow-lg"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-xl md:text-3xl font-bold tracking-wide text-center">Smart Check-In</h2>
-            <div class="w-10 md:w-12"></div>
-        </div>
-
-        <div class="glass-panel rounded-2xl md:rounded-3xl max-w-4xl mx-auto w-full flex-1 mb-8 overflow-hidden flex flex-col p-6 md:p-10 bg-white/5 relative items-center justify-center">
-            
-            <div class="text-center mb-8">
-                <h3 class="text-2xl md:text-3xl font-bold text-white mb-2" id="qr-title">Pindai QR Undangan</h3>
-                <p class="text-sm md:text-base text-gray-400" id="qr-subtitle">Arahkan layar HP atau cetakan QR Code Anda ke dalam kotak pemindai.</p>
-            </div>
-
-            <!-- Viewfinder Area Berteknologi Tinggi -->
-            <div class="qr-scanner-box" id="qr-frame">
-                <!-- Video stream diprioritaskan kamera belakang di HP -->
-                <video id="qr-video" autoplay playsinline class="qr-video"></video>
-                
-                <!-- Animasi Sudut & Laser -->
-                <div class="qr-overlay-corner tl"></div>
-                <div class="qr-overlay-corner tr"></div>
-                <div class="qr-overlay-corner bl"></div>
-                <div class="qr-overlay-corner br"></div>
-                <div class="qr-laser" id="qr-laser-line"></div>
-                
-                <!-- Status Kamera -->
-                <div id="qr-cam-status" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 text-gray-400">
-                    <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-qr_glow"></i>
-                    <p class="text-xs font-bold uppercase tracking-widest">Menyiapkan Lensa...</p>
-                </div>
-            </div>
-
-            <!-- Pesan Proses Scanning -->
-            <div class="mt-8 h-12 flex items-center justify-center">
-                <p id="qr-process-text" class="text-qr_glow font-bold text-base md:text-lg tracking-widest uppercase hidden animate-pulse">
-                    <i class="fa-solid fa-fingerprint mr-2"></i> Memvalidasi Enkripsi...
-                </p>
-            </div>
-
-            <!-- Fallback untuk Tamu Reguler / Manual -->
-            <div class="mt-auto pt-8 border-t border-white/10 w-full text-center">
-                <p class="text-xs md:text-sm text-gray-400 mb-3">Tidak memiliki QR Code atau Anda Tamu Baru?</p>
-                <button onclick="navigate('page-manual-checkin'); stopQRCamera(); resetWizardForm();" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 md:px-8 py-3 rounded-full font-semibold transition flex items-center justify-center mx-auto gap-2 text-xs md:text-sm shadow-md">
-                    <i class="fa-solid fa-keyboard"></i> Isi Buku Tamu Manual
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- PAGE 2B: MANUAL CHECK-IN WIZARD (FALLBACK DARI QR)                        -->
-    <!-- ========================================================================= -->
-    <div id="page-manual-checkin" class="page flex flex-col min-h-screen py-6 md:py-10 px-4 md:px-8">
+    <div id="page-checkin" class="page flex flex-col min-h-screen py-6 md:py-10 px-4 md:px-8">
         <div class="flex justify-between items-center mb-6 max-w-5xl mx-auto w-full shrink-0 mt-4 md:mt-0">
-            <button onclick="navigate('page-qr-scanner'); startQRCamera();" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel shadow-lg"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-xl md:text-3xl font-bold tracking-wide">Buku Tamu Manual</h2>
+            <button onclick="navigate('page-main'); resetCheckinWizard();" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel shadow-lg"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-xl md:text-3xl font-bold tracking-wide">Buku Tamu Langsung</h2>
             <div class="w-10 md:w-12"></div>
         </div>
 
@@ -349,7 +281,7 @@
                         </div>
                     </div>
                     <div class="mt-auto pt-6 flex justify-end">
-                        <button onclick="goToStep(2)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 w-full md:w-auto shadow-lg">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                        <button type="button" onclick="goToCheckinStep(2)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 w-full md:w-auto shadow-lg">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
 
@@ -372,8 +304,8 @@
                         </div>
                     </div>
                     <div class="mt-auto pt-6 flex flex-col-reverse md:flex-row justify-between gap-3">
-                        <button onclick="goToStep(1)" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Kembali</button>
-                        <button onclick="goToStep(3)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                        <button type="button" onclick="goToCheckinStep(1)" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Kembali</button>
+                        <button type="button" onclick="goToCheckinStep(3)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
 
@@ -393,8 +325,8 @@
                         <span class="text-white text-xs md:text-sm font-semibold select-none">Saya menyetujui pengambilan gambar wajah saya via kamera.</span>
                     </label>
                     <div class="mt-auto pt-4 flex flex-col-reverse md:flex-row justify-between gap-3">
-                        <button onclick="goToStep(2)" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Kembali</button>
-                        <button onclick="goToStep(4)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto">Buka Kamera <i class="fa-solid fa-camera"></i></button>
+                        <button type="button" onclick="goToCheckinStep(2)" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Kembali</button>
+                        <button type="button" onclick="goToCheckinStep(4)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto">Buka Kamera <i class="fa-solid fa-camera"></i></button>
                     </div>
                 </div>
 
@@ -404,19 +336,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <!-- Kamera Depan -->
                         <div class="bg-black rounded-2xl overflow-hidden relative border border-white/20 flex items-center justify-center h-48 md:h-64 shadow-inner">
-                            <video id="manual-camera" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
-                            <div id="manual-cam-status" class="text-center z-10 text-gray-500 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-2 text-accent"></i></div>
+                            <video id="checkin-camera" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <div id="checkin-cam-status" class="text-center z-10 text-gray-500 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-2 text-accent"></i></div>
                         </div>
                         <!-- Canvas -->
                         <div class="bg-white/5 border border-white/20 rounded-2xl flex flex-col items-center justify-center overflow-hidden relative h-48 md:h-64">
-                            <canvas id="manual-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
-                            <div id="manual-lbl" class="text-center"><i class="fa-solid fa-image-portrait text-3xl text-gray-600 mb-2"></i><p class="text-xs text-gray-500">Hasil Foto Wajah</p></div>
+                            <canvas id="checkin-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                            <div id="checkin-lbl" class="text-center"><i class="fa-solid fa-image-portrait text-3xl text-gray-600 mb-2"></i><p class="text-xs text-gray-500">Hasil Foto Wajah</p></div>
                         </div>
                     </div>
-                    <button onclick="takeManualPicture()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 md:py-4 rounded-full font-bold flex items-center justify-center gap-3 transition mx-auto mb-6 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:scale-105 transform"><i class="fa-solid fa-camera"></i> Ambil Foto Wajah</button>
+                    <button type="button" onclick="takeCheckinPicture()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 md:py-4 rounded-full font-bold flex items-center justify-center gap-3 transition mx-auto mb-6 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:scale-105 transform"><i class="fa-solid fa-camera"></i> Ambil Foto Wajah</button>
                     <div class="mt-auto pt-4 border-t border-white/10 flex flex-col-reverse md:flex-row justify-between gap-3">
-                        <button onclick="goToStep(3); stopManualCamera();" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Ulangi</button>
-                        <button onclick="submitManualCheckin()" class="bg-gradient-to-r from-accent to-fem_accent hover:from-yellow-400 hover:to-accent text-primary px-8 py-3 md:py-4 rounded-xl font-black transition flex justify-center items-center gap-2 shadow-lg w-full md:w-auto md:text-lg">KIRIM DATA <i class="fa-solid fa-paper-plane"></i></button>
+                        <button type="button" onclick="goToCheckinStep(3); stopCheckinCamera();" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Ulangi</button>
+                        <button type="button" onclick="submitCheckin()" class="bg-gradient-to-r from-accent to-fem_accent hover:from-yellow-400 hover:to-accent text-primary px-8 py-3 md:py-4 rounded-xl font-black transition flex justify-center items-center gap-2 shadow-lg w-full md:w-auto md:text-lg">KIRIM DATA <i class="fa-solid fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
@@ -424,18 +356,18 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 3: SCHEDULE FORM (RESERVASI FULL)                                    -->
+    <!-- PAGE 3: SCHEDULE FORM DENGAN CAMERA (FASE 4)                              -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex flex-col min-h-screen py-6 md:py-10 px-4 md:px-8">
         <div class="flex justify-between items-center mb-6 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
-            <button onclick="navigate('page-main')" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel shadow-lg"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="navigate('page-main'); stopScheduleCamera();" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel shadow-lg"><i class="fa-solid fa-arrow-left"></i></button>
             <h2 class="text-xl md:text-3xl font-bold tracking-wide">Pengajuan Jadwal</h2>
             <div class="w-10 md:w-12"></div>
         </div>
 
         <div class="glass-panel rounded-2xl md:rounded-3xl max-w-4xl mx-auto w-full mb-8 p-6 md:p-10 bg-white/5 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-            <p class="text-xs md:text-sm text-gray-300 mb-8 border-b border-white/10 pb-6">Formulir reservasi ini digunakan untuk mengajukan pertemuan di masa mendatang. Admin akan mengkonfirmasi status persetujuan melalui Email atau WhatsApp Anda.</p>
+            <p class="text-xs md:text-sm text-gray-300 mb-8 border-b border-white/10 pb-6">Formulir reservasi ini digunakan untuk mengajukan pertemuan di masa mendatang. Sesuai instruksi keamanan, **pengajuan jadwal wajib menyertakan foto wajah pemohon** agar Ibu Kepala Sekolah mengenali Anda.</p>
             
             <form id="form-schedule" onsubmit="submitScheduleForm(event)">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
@@ -497,13 +429,41 @@
                         <div class="w-full md:w-1/3 border-2 border-dashed border-white/20 hover:border-emerald-400 rounded-xl flex flex-col items-center justify-center bg-black/20 cursor-pointer transition relative group p-6">
                             <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx" onchange="updateFileName(this)">
                             <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 group-hover:text-emerald-400 mb-3 transition" id="file-icon"></i>
-                            <span class="text-xs text-gray-400 text-center px-2 font-medium" id="file-name">Klik/Tap lampirkan Proposal (PDF)</span>
+                            <span class="text-xs text-gray-400 text-center px-2 font-medium" id="file-name">Klik/Tap lampirkan Proposal (Opsional)</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- NEW: PHASE 4 - CAM SCANNER UNTUK JADWAL -->
+                <div class="mb-8">
+                    <h3 class="text-base md:text-lg font-bold text-emerald-400 mb-2 border-b border-emerald-900 pb-2"><i class="fa-solid fa-camera mr-2"></i>4. Pemindaian Wajah (Cam Scanner)</h3>
+                    <p class="text-[10px] md:text-xs text-gray-400 mb-4">Ibu Kepala Sekolah mewajibkan foto wajah asli pengaju jadwal untuk keamanan dan pengenalan sebelum pertemuan.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 bg-black/20 p-4 rounded-xl border border-white/10">
+                        <div class="bg-black rounded-xl overflow-hidden relative border border-white/20 h-48 md:h-64 shadow-inner flex flex-col items-center justify-center">
+                            <!-- Tombol untuk menyalakan kamera (Agar tidak autoplay saat form baru dibuka) -->
+                            <button type="button" id="btn-start-sch-cam" onclick="startScheduleCamera()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-bold transition z-10 shadow-lg"><i class="fa-solid fa-video mr-2"></i> Nyalakan Kamera</button>
+                            
+                            <video id="schedule-camera" autoplay playsinline class="absolute inset-0 w-full h-full object-cover hidden"></video>
+                        </div>
+                        <div class="bg-white/5 border border-white/20 rounded-xl flex flex-col items-center justify-center overflow-hidden relative h-48 md:h-64">
+                            <canvas id="schedule-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                            <div id="schedule-lbl" class="text-center p-4">
+                                <i class="fa-solid fa-image-portrait text-4xl text-gray-600 mb-2"></i>
+                                <p class="text-xs text-gray-500">Hasil Pemindaian Wajah</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <button type="button" onclick="takeSchedulePicture()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-bold flex items-center justify-center gap-3 transition shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:scale-105 transform">
+                            <i class="fa-solid fa-camera-viewfinder"></i> Rekam & Simpan Wajah
+                        </button>
+                    </div>
+                </div>
+
                 <div class="flex justify-end pt-6 border-t border-white/10">
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-xl font-bold transition flex items-center justify-center gap-2 w-full md:w-auto shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:-translate-y-1">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-xl font-bold transition flex items-center justify-center gap-2 w-full md:w-auto shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:-translate-y-1 text-lg">
                         Ajukan Jadwal Sekarang <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -524,11 +484,10 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: DASBOR IBU KEPALA SEKOLAH (RESPONSIVE & FEMALE UI)                -->
+    <!-- PAGE 4: DASBOR IBU KEPALA SEKOLAH (TETAP SAMA - VERSI ENTERPRISE)         -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page bg-gray-50 flex" style="color: #333; overflow: hidden;">
         
-        <!-- Mobile Sidebar Overlay -->
         <div class="mobile-overlay" id="mobile-sidebar-overlay" onclick="toggleMobileSidebar()"></div>
 
         <!-- Sidebar Navigation -->
@@ -546,9 +505,7 @@
                 <button class="md:hidden text-gray-400 hover:text-white transition" onclick="toggleMobileSidebar()"><i class="fa-solid fa-xmark text-2xl"></i></button>
             </div>
             
-            <div class="px-6 pt-6 pb-2">
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Menu Utama</p>
-            </div>
+            <div class="px-6 pt-6 pb-2"><p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Menu Utama</p></div>
             
             <nav class="flex-1 px-4 space-y-1 overflow-y-auto">
                 <button onclick="switchTab('tab-overview'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium transition" id="nav-overview">
@@ -561,14 +518,11 @@
                     <i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Manajemen Jadwal</span>
                 </button>
                 
-                <div class="pt-6 pb-2 mt-2 border-t border-white/10">
-                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Analitik & Sistem</p>
-                </div>
+                <div class="pt-6 pb-2 mt-2 border-t border-white/10"><p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Analitik & Sistem</p></div>
                 
                 <button onclick="switchTab('tab-reports'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-reports">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i> <span>Laporan Kunjungan</span>
                 </button>
-                
                 <button onclick="switchTab('tab-settings'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-settings">
                     <i class="fa-solid fa-sliders w-5 text-center"></i> <span>Pengaturan Status</span>
                 </button>
@@ -744,10 +698,7 @@
                     </div>
                     
                     <div class="p-4 md:p-8 space-y-6 md:space-y-8">
-                        <!-- Toggle Status -->
                         <form id="form-settings" onsubmit="saveSettings(event)" class="space-y-6">
-                            
-                            <!-- Radio Buttons Custom -->
                             <div class="space-y-3">
                                 <label class="block text-xs md:text-sm font-bold text-gray-700 mb-3">Pilih Status Kehadiran Saat Ini:</label>
                                 
@@ -770,7 +721,6 @@
                                 </label>
                             </div>
 
-                            <!-- Auto Reply Option -->
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div>
                                     <p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Pesan Balasan Otomatis</p>
@@ -791,12 +741,11 @@
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- ENGINE JAVASCRIPT LENGKAP (LOGIC, CAMERA, MOCK DB, ANIMATION)             -->
+    <!-- ENGINE JAVASCRIPT (ROUTING, CAMERA API, MOCK DB, ANIMATION)               -->
     <!-- ========================================================================= -->
     <script>
         /* --- 1. BACKGROUND LOOP --- */
@@ -837,7 +786,7 @@
             toast.className = `${color} border text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-5 opacity-0 transition-all duration-300 z-[9999]`;
             if(type === 'warning') toast.classList.remove('text-white');
             
-            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span class="font-semibold text-sm tracking-wide">${msg}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg shrink-0"></i> <span class="font-semibold text-sm tracking-wide">${msg}</span>`;
             container.appendChild(toast);
             
             setTimeout(() => toast.classList.remove('translate-y-5', 'opacity-0'), 10);
@@ -870,55 +819,9 @@
         function showTicketModal(title, desc) { document.getElementById('ticket-title').innerText = title; document.getElementById('ticket-desc').innerText = desc; const m = document.getElementById('ticket-modal'), c = document.getElementById('ticket-content'); m.classList.remove('hidden'); setTimeout(()=>c.classList.replace('scale-0','scale-100'), 10); }
         function closeTicket() { const c = document.getElementById('ticket-content'); c.classList.replace('scale-100','scale-0'); setTimeout(()=>{ document.getElementById('ticket-modal').classList.add('hidden'); navigate('page-main'); }, 300); }
 
-        /* --- 4. QR SCANNER ENGINE --- */
-        let qrStream = null;
-        let qrTimeout = null;
-        
-        async function startQRCamera() {
-            try {
-                const video = document.getElementById('qr-video');
-                const statusBox = document.getElementById('qr-cam-status');
-                const scannerFrame = document.getElementById('qr-frame');
-                const processText = document.getElementById('qr-process-text');
-                
-                scannerFrame.classList.remove('qr-scanning-active');
-                processText.classList.add('hidden');
-                document.getElementById('qr-title').innerText = "Pindai QR Undangan";
-                document.getElementById('qr-subtitle').innerText = "Arahkan layar HP atau cetakan QR Code Anda ke dalam kotak pemindai.";
-                
-                const constraints = { video: { facingMode: "environment" }, audio: false };
-                qrStream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = qrStream;
-                
-                video.onloadedmetadata = () => {
-                    statusBox.style.display = 'none';
-                    // DEMO: Auto-scan success after 4 seconds
-                    qrTimeout = setTimeout(() => {
-                        scannerFrame.classList.add('qr-scanning-active');
-                        processText.classList.remove('hidden');
-                        document.getElementById('qr-title').innerText = "QR Code Terdeteksi!";
-                        document.getElementById('qr-subtitle').innerText = "Mohon tahan posisi perangkat Anda...";
-                        
-                        setTimeout(() => {
-                            stopQRCamera();
-                            showTicketModal("Akses VIP Diberikan!", "Selamat datang kembali. Pintu otomatis terbuka.");
-                        }, 2500);
-                    }, 4000);
-                };
-            } catch (err) {
-                showToast("Tidak dapat mengakses kamera belakang perangkat.", "error");
-                document.getElementById('qr-cam-status').innerHTML = '<i class="fa-solid fa-video-slash text-2xl text-red-500 mb-2"></i><p class="text-xs">Kamera Diblokir</p>';
-            }
-        }
-        function stopQRCamera() {
-            if (qrStream) { qrStream.getTracks().forEach(track => track.stop()); qrStream = null; }
-            clearTimeout(qrTimeout);
-            document.getElementById('qr-cam-status').style.display = 'flex';
-        }
-
-        /* --- 5. MANUAL WIZARD ENGINE (FALLBACK DARI QR) --- */
-        let manualStream = null;
-        function goToStep(stepNumber) {
+        /* --- 4. CHECK-IN WIZARD LOGIC --- */
+        let checkinStream = null;
+        function goToCheckinStep(stepNumber) {
             if (stepNumber === 2) {
                 if(!document.getElementById('w-name').value || !document.getElementById('w-phone').value || !document.getElementById('w-agency').value) {
                     showToast("Lengkapi semua kolom identitas wajib (*)", "error"); return;
@@ -931,7 +834,7 @@
                 if(!document.getElementById('w-consent').checked) {
                     showToast("Mohon setujui kebijakan privasi kamera", "error"); return;
                 }
-                startManualCamera();
+                startCheckinCamera();
             }
 
             document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
@@ -958,11 +861,11 @@
                 }
             }
         }
-        function resetWizardForm() {
-            document.querySelectorAll('#page-manual-checkin input[type="text"], #page-manual-checkin input[type="tel"], #page-manual-checkin textarea, #page-manual-checkin select').forEach(el => el.value = '');
+        function resetCheckinWizard() {
+            document.querySelectorAll('#page-checkin input[type="text"], #page-checkin input[type="tel"], #page-checkin textarea, #page-checkin select').forEach(el => el.value = '');
             document.getElementById('w-consent').checked = false;
-            document.getElementById('manual-canvas').classList.add('hidden');
-            stopManualCamera();
+            document.getElementById('checkin-canvas').classList.add('hidden');
+            stopCheckinCamera();
             
             document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
             document.getElementById('step-1').classList.add('active');
@@ -977,33 +880,36 @@
                 ind.querySelector('.step-text').classList.replace('text-accent', 'text-white/50');
             }
         }
-        async function startManualCamera() {
+        async function startCheckinCamera() {
             try {
-                const vid = document.getElementById('manual-camera');
-                manualStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                vid.srcObject = manualStream;
-                vid.onloadedmetadata = () => document.getElementById('manual-cam-status').style.display = 'none';
-            } catch(e) { showToast("Gagal mengakses kamera Selfie.", "error"); }
+                const vid = document.getElementById('checkin-camera');
+                checkinStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                vid.srcObject = checkinStream;
+                vid.onloadedmetadata = () => document.getElementById('checkin-cam-status').style.display = 'none';
+            } catch(e) { showToast("Gagal mengakses kamera.", "error"); }
         }
-        function stopManualCamera() {
-            if (manualStream) { manualStream.getTracks().forEach(t => t.stop()); manualStream = null; }
-            document.getElementById('manual-cam-status').style.display = 'flex';
+        function stopCheckinCamera() {
+            if (checkinStream) { checkinStream.getTracks().forEach(t => t.stop()); checkinStream = null; }
+            document.getElementById('checkin-cam-status').style.display = 'flex';
         }
-        function takeManualPicture() {
-            if(!manualStream) { showToast("Kamera tidak aktif.", "error"); return; }
-            const v = document.getElementById('manual-camera'), c = document.getElementById('manual-canvas');
+        function takeCheckinPicture() {
+            if(!checkinStream) { showToast("Kamera tidak aktif.", "error"); return; }
+            const v = document.getElementById('checkin-camera'), c = document.getElementById('checkin-canvas');
             c.width = v.videoWidth; c.height = v.videoHeight;
             c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
             c.classList.remove('hidden');
             showToast("Wajah berhasil direkam.", "success");
         }
-        function submitManualCheckin() {
-            if(document.getElementById('manual-canvas').classList.contains('hidden')) { showToast("Wajib merekam wajah.", "warning"); return; }
-            stopManualCamera();
-            showTicketModal("Check-In Manual Selesai!", "Silakan tunggu di lobi. Anda ada dalam antrean reguler.");
+        function submitCheckin() {
+            if(document.getElementById('checkin-canvas').classList.contains('hidden')) { showToast("Wajib merekam wajah.", "warning"); return; }
+            stopCheckinCamera();
+            showTicketModal("Check-In Buku Tamu Selesai!", "Silakan tunggu di lobi. Anda ada dalam antrean reguler kami.");
+            resetCheckinWizard();
         }
 
-        /* --- 6. SCHEDULE FORM ENGINE --- */
+        /* --- 5. SCHEDULE FORM ENGINE DENGAN CAMERA --- */
+        let schStream = null;
+        
         function updateFileName(input) {
             const nameEl = document.getElementById('file-name');
             const iconEl = document.getElementById('file-icon');
@@ -1013,21 +919,60 @@
                 iconEl.classList.replace('fa-cloud-arrow-up', 'fa-file-circle-check');
                 iconEl.classList.add('text-emerald-400');
             } else {
-                nameEl.innerText = 'Klik/Tap lampirkan Proposal (PDF)';
+                nameEl.innerText = 'Klik/Tap lampirkan Proposal (Opsional)';
                 nameEl.classList.replace('text-emerald-400', 'text-gray-400');
                 iconEl.classList.replace('fa-file-circle-check', 'fa-cloud-arrow-up');
                 iconEl.classList.remove('text-emerald-400');
             }
         }
+        
+        async function startScheduleCamera() {
+            try {
+                const vid = document.getElementById('schedule-camera');
+                const btn = document.getElementById('btn-start-sch-cam');
+                schStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                vid.srcObject = schStream;
+                vid.classList.remove('hidden');
+                btn.classList.add('hidden'); // Hide button once camera is on
+            } catch(e) { 
+                showToast("Kamera diblokir oleh peramban (browser).", "error"); 
+            }
+        }
+        
+        function stopScheduleCamera() {
+            if (schStream) { schStream.getTracks().forEach(t => t.stop()); schStream = null; }
+            document.getElementById('schedule-camera').classList.add('hidden');
+            document.getElementById('btn-start-sch-cam').classList.remove('hidden');
+        }
+        
+        function takeSchedulePicture() {
+            if(!schStream) { showToast("Silakan Nyalakan Kamera terlebih dahulu.", "error"); return; }
+            const v = document.getElementById('schedule-camera'), c = document.getElementById('schedule-canvas');
+            c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+            c.classList.remove('hidden');
+            showToast("Wajah berhasil direkam dan dilampirkan.", "success");
+        }
+
         function submitScheduleForm(e) {
             e.preventDefault();
-            showTicketModal("Jadwal Diajukan!", "Permohonan terkirim ke Admin. Tunggu konfirmasi via kontak Anda.");
+            // Validasi apakah foto kamera sudah diambil (wajib)
+            if(document.getElementById('schedule-canvas').classList.contains('hidden')) {
+                showToast("Pengajuan Gagal. Anda wajib merekam foto wajah pemohon pada bagian 4.", "error"); 
+                return;
+            }
+            
+            stopScheduleCamera();
+            showTicketModal("Jadwal Diajukan!", "Permohonan lengkap beserta foto telah terkirim ke Admin Kepsek.");
+            
+            // Reset
             e.target.reset();
+            document.getElementById('schedule-canvas').classList.add('hidden');
             const input = document.getElementById('form-schedule').querySelector('input[type="file"]');
             Object.defineProperty(input, 'files', {value: []}); updateFileName(input); 
         }
 
-        /* --- 7. DASHBOARD ENGINE (TABS & MOBILE SIDEBAR) --- */
+        /* --- 6. DASHBOARD ENGINE (TABS & MOBILE SIDEBAR) --- */
         function switchTab(tabId) {
             document.querySelectorAll('.dash-tab').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
@@ -1066,7 +1011,7 @@
         }
         function saveSettings(e) { e.preventDefault(); showToast("Pengaturan status berhasil disinkronkan ke Kiosk.", "success"); }
 
-        /* --- 8. DASHBOARD MOCK DATA & RENDERER --- */
+        /* --- 7. DASHBOARD MOCK DATA & RENDERER --- */
         const simDB = {
             activities: [
                 { time: '10:45', name: 'Budi Santoso', cat: 'Tamu VIP', status: 'PENDING' },
@@ -1093,7 +1038,7 @@
 
         function renderActivities() {
             const tbody = document.getElementById('quick-activity-list');
-            tbody.innerHTML = '';
+            if(!tbody) return; tbody.innerHTML = '';
             simDB.activities.forEach(act => {
                 tbody.innerHTML += `<tr>
                     <td class="text-gray-500 font-semibold text-xs md:text-sm"><i class="fa-regular fa-clock mr-1 text-gray-400"></i>${act.time}</td>
