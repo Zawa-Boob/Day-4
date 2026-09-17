@@ -3,187 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiTamu - Enterprise Edition (Kiosk & Dasbor Eksekutif)</title>
-    <!-- Tailwind CSS -->
+    <!-- Meta tag untuk memastikan rendering responsif di perangkat mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>SiTamu - Enterprise Edition (Responsive & Dynamic)</title>
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
+    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0A2540',
-                        accent: '#D4AF37', /* Gold elegan */
+                        primary: '#0A2540', /* Warna utama institusi (Navy) */
+                        accent: '#D4AF37',  /* Warna emas elegan */
                         surface: '#1A365D',
-                        fem_accent: '#B8860B' /* Dark Goldenrod untuk variasi feminin elegan */
+                        fem_accent: '#B8860B' /* Sentuhan feminin untuk dasbor Ibu Kepsek */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
 
+    <!-- Kustom CSS Terpadu (Menangani animasi, scrollbar, responsivitas khusus) -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
-        /* ================= BASE STYLES ================= */
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: hidden; }
-        .kiosk-mode { background-color: #000; color: white; }
+        /* ==========================================================================
+           1. BASE STYLES & KIOSK MODE
+           ========================================================================== */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8f9fa; 
+            overflow-x: hidden; 
+            /* Mencegah highlight biru saat di-tap di mobile */
+            -webkit-tap-highlight-color: transparent; 
+        }
         
-        /* Background & Overlay Kiosk */
-        .bg-slide { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease; z-index: -2; }
-        .bg-slide.active { opacity: 1; }
-        .bg-overlay { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.75), rgba(10, 37, 64, 0.98)); z-index: -1; }
+        .kiosk-mode { 
+            background-color: #000; 
+            color: white; 
+            overflow: hidden; /* Lock scroll di main menu untuk kiosk desktop */
+        }
         
-        /* Glassmorphism & UI Elements */
-        .glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
-        .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.98); overflow-y: auto; }
-        .page.active { opacity: 1; pointer-events: auto; transform: scale(1); }
-        .scan-line { width: 100%; height: 2px; background: #D4AF37; box-shadow: 0 0 10px #D4AF37, 0 0 20px #D4AF37; position: absolute; top: 0; animation: scanAnim 2s infinite linear; }
-        @keyframes scanAnim { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        /* Untuk mobile di mode kiosk, izinkan scroll vertikal jika konten melebihi layar */
+        @media (max-width: 768px) {
+            .kiosk-mode { overflow-y: auto; overflow-x: hidden; }
+        }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        /* ==========================================================================
+           2. DYNAMIC BACKGROUND SYSTEM (5 WALLPAPERS)
+           ========================================================================== */
+        .bg-slide { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background-size: cover; 
+            background-position: center; 
+            opacity: 0; 
+            transition: opacity 1.5s ease-in-out; 
+            z-index: -2; 
+        }
+        .bg-slide.active { opacity: 1; transform: scale(1.02); transition: opacity 1.5s ease-in-out, transform 10s linear; }
+        
+        .bg-overlay { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: linear-gradient(to bottom, rgba(10, 37, 64, 0.75), rgba(10, 37, 64, 0.98)); 
+            z-index: -1; 
+        }
+
+        /* ==========================================================================
+           3. UI COMPONENTS (GLASSMORPHISM, PAGES, WIZARD)
+           ========================================================================== */
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); 
+        }
+        
+        .page { 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; min-height: 100%; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.5s ease, transform 0.5s ease; 
+            transform: scale(0.98); 
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+        .page.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+            transform: scale(1); 
+        }
+
+        /* Form Wizard Animasi & Progress */
+        .wizard-step { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .wizard-step.active { display: block; }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .step-indicator { transition: all 0.3s ease; }
+        .step-indicator.active .step-icon { 
+            background-color: #D4AF37; 
+            color: #0A2540; 
+            border-color: transparent; 
+            box-shadow: 0 0 15px rgba(212,175,55,0.5); 
+            transform: scale(1.1);
+        }
+        .step-indicator.active .step-text { color: #D4AF37; font-weight: bold; }
+
+        /* Custom Scrollbar for better UI on Desktop */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
 
-        /* ================= GUIDE TIMELINE (TATA CARA) ================= */
-        .timeline { position: relative; padding-left: 2rem; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+        /* Guide Timeline */
+        .timeline { position: relative; padding-left: 2rem; margin-top: 1.5rem; }
         .timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: rgba(212, 175, 55, 0.3); }
         .timeline-item { position: relative; padding-bottom: 2rem; }
-        .timeline-item::before { content: ''; position: absolute; left: -1.85rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: #D4AF37; border: 3px solid #0A2540; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
-        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-item::before { content: ''; position: absolute; left: -1.85rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: #D4AF37; border: 3px solid #0A2540; }
 
-        /* ================= DASHBOARD STYLES ================= */
-        .dash-sidebar { width: 280px; height: 100vh; background-color: #0A2540; color: white; position: fixed; left: 0; top: 0; z-index: 40; border-right: 1px solid rgba(212, 175, 55, 0.2); }
-        .dash-content { margin-left: 280px; padding: 2rem; min-height: 100vh; background-color: #F0F4F8; color: #333; }
+        /* ==========================================================================
+           4. DASHBOARD STYLES & MOBILE RESPONSIVENESS
+           ========================================================================== */
+        /* Sidebar layout untuk Desktop */
+        .dash-sidebar { 
+            width: 280px; height: 100vh; 
+            background-color: #0A2540; color: white; 
+            position: fixed; left: 0; top: 0; z-index: 50; 
+            border-right: 1px solid rgba(212, 175, 55, 0.2); 
+            transition: transform 0.3s ease;
+        }
+        .dash-content { 
+            margin-left: 280px; 
+            padding: 2rem; 
+            min-height: 100vh; 
+            background-color: #F0F4F8; 
+            color: #333; 
+            transition: margin-left 0.3s ease;
+        }
         
+        /* Modifikasi sidebar untuk Mobile (Slide In/Out) */
+        @media (max-width: 768px) {
+            .dash-sidebar { transform: translateX(-100%); }
+            .dash-sidebar.mobile-open { transform: translateX(0); box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
+            .dash-content { margin-left: 0; padding: 1rem; }
+            .mobile-overlay { 
+                position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; 
+                display: none; opacity: 0; transition: opacity 0.3s ease;
+            }
+            .mobile-overlay.active { display: block; opacity: 1; }
+        }
+
+        /* Dashboard Components */
         .stat-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; }
         .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-color: rgba(212,175,55,0.4); }
         
         .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; }
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; }
-        .data-table tr:hover { background-color: #f8fafc; }
         
-        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        /* Badges */
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .badge-pending { background-color: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
         .badge-approved { background-color: #D1FAE5; color: #047857; border: 1px solid #A7F3D0; }
         .badge-rejected { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
 
-        /* Custom Toggle Switch for Settings */
-        .toggle-checkbox:checked { right: 0; border-color: #10B981; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
-        .toggle-checkbox:checked + .toggle-label:before { transform: translateX(100%); }
-        .toggle-label { width: 3rem; height: 1.5rem; background-color: #CBD5E1; border-radius: 9999px; position: relative; cursor: pointer; transition: background-color 0.3s; }
-        .toggle-label:before { content: ''; position: absolute; top: 0.125rem; left: 0.125rem; width: 1.25rem; height: 1.25rem; background-color: white; border-radius: 50%; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-        /* CSS Bar Chart */
-        .chart-container { display: flex; align-items: flex-end; height: 200px; gap: 1rem; padding-top: 1rem; }
-        .chart-bar-wrap { flex: 1; display: flex; flex-col; justify-content: flex-end; align-items: center; group; position: relative; }
-        .chart-bar { width: 100%; background: linear-gradient(to top, #0A2540, #1A365D); border-radius: 4px 4px 0 0; transition: height 0.5s ease, background 0.3s; }
-        .chart-bar:hover { background: linear-gradient(to top, #D4AF37, #FDE047); }
-        .chart-tooltip { position: absolute; top: -30px; background: #333; color: #fff; text-xs; padding: 4px 8px; border-radius: 4px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
-        .chart-bar-wrap:hover .chart-tooltip { opacity: 1; }
+        /* Chart */
+        .chart-container { display: flex; align-items: flex-end; height: 200px; gap: 0.5rem; padding-top: 1rem; }
+        @media (min-width: 768px) { .chart-container { gap: 1rem; } }
+        .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; }
+        .chart-bar { width: 100%; background: linear-gradient(to top, #0A2540, #1A365D); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
+        .chart-bar-wrap:hover .chart-bar { background: linear-gradient(to top, #D4AF37, #FDE047); }
+        .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
+        
+        /* Input & Form Focus States */
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
+        .dash-content input:focus, .dash-content select:focus, .dash-content textarea:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
     </style>
 </head>
 <body class="kiosk-mode select-none">
 
     <!-- ========================================================================= -->
-    <!-- BACKGROUND & OVERLAYS KIOSK                                               -->
+    <!-- LAYER 1: 5 BACKGROUND SLIDESHOW ENGINE                                    -->
     <!-- ========================================================================= -->
+    <!-- 5 gambar background resolusi tinggi (Kantor/Sekolah/Lobi) -->
     <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
     <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
+    <div id="bg-3" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069');"></div>
+    <div id="bg-4" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070');"></div>
+    <div id="bg-5" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=2069');"></div>
+    
+    <!-- Gradient Overlay agar teks putih selalu terbaca -->
     <div class="bg-overlay" id="global-overlay"></div>
+    
+    <!-- Toast Notification Container (Fixed) -->
     <div id="toast-container" class="fixed bottom-5 right-5 flex flex-col gap-3" style="z-index: 9999;"></div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 1: LOBI UTAMA (KIOSK TAMU)                                           -->
+    <!-- PAGE 1: LOBI UTAMA (RESPONSIVE)                                           -->
     <!-- ========================================================================= -->
-    <div id="page-main" class="page active flex flex-col justify-center items-center min-h-full py-10 px-4 relative">
+    <div id="page-main" class="page active flex flex-col justify-center items-center min-h-screen py-10 px-4 md:px-8 relative">
         
         <!-- HIDDEN ENTRY POINT: KEPALA SEKOLAH -->
-        <button onclick="openPrincipalLogin()" class="absolute top-8 right-8 text-white/10 hover:text-white/40 transition p-4 rounded-full z-50 focus:outline-none">
+        <!-- Tombol dibuat kecil dan transparan di pojok kanan atas -->
+        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none" aria-label="Portal Eksekutif">
             <i class="fa-solid fa-lock text-xl"></i>
         </button>
 
-        <!-- KONTEN UTAMA LOBI -->
-        <div class="text-center glass-panel p-10 rounded-3xl w-full max-w-5xl border-t border-white/30 relative overflow-hidden">
-            <!-- Hiasan Cahaya Belakang -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accent/20 blur-[80px] rounded-full pointer-events-none"></div>
+        <!-- KONTEN LOBI (Responsive Width) -->
+        <div class="text-center glass-panel p-6 md:p-12 rounded-3xl w-full max-w-5xl border-t border-white/30 relative overflow-hidden mt-8 md:mt-0">
+            <!-- Hiasan Cahaya Belakang (Glow effect) -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 md:w-64 md:h-32 bg-accent/20 blur-[80px] rounded-full pointer-events-none"></div>
 
-            <div class="w-28 h-28 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(212,175,55,0.4)] border border-accent/50 relative z-10">
-                <i class="fa-solid fa-building-columns text-5xl text-accent"></i>
+            <div class="w-20 h-20 md:w-28 md:h-28 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-[0_0_30px_rgba(212,175,55,0.4)] border border-accent/50 relative z-10">
+                <i class="fa-solid fa-building-columns text-4xl md:text-5xl text-accent"></i>
             </div>
             
-            <h1 class="text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg">SiTamu</h1>
-            <p class="text-xl text-gray-300 mb-12 font-light">Sistem Digital Penerimaan Tamu Ibu Kepala Sekolah</p>
+            <h1 class="text-4xl md:text-6xl font-bold mb-2 md:mb-4 tracking-tight text-white drop-shadow-lg">SiTamu</h1>
+            <p class="text-base md:text-xl text-gray-300 mb-8 md:mb-12 font-light px-2">Sistem Digital Penerimaan Tamu Ibu Kepala Sekolah</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left relative z-10">
-                <!-- Smart Check-In -->
-                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-8 rounded-3xl transition duration-300 transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center shadow-lg">
-                    <div class="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/30 transition duration-500"></div>
-                    <div class="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                        <i class="fa-solid fa-qrcode text-4xl text-blue-400"></i>
+            <!-- Grid Pilihan Layanan (Stack on Mobile, Side-by-side on Desktop) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 text-left relative z-10">
+                
+                <!-- Opsi 1: Walk-In / Smart Check-In -->
+                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-6 md:p-8 rounded-2xl md:rounded-3xl transition duration-300 transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center shadow-lg">
+                    <div class="absolute top-0 right-0 w-32 h-32 md:w-40 md:h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/30 transition duration-500"></div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-500/20 rounded-full flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition duration-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                        <i class="fa-solid fa-qrcode text-2xl md:text-4xl text-blue-400"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-white">Smart Check-In</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed px-4">Tamu Walk-in & Kurir. Silakan pilih opsi ini jika Anda sudah berada di lobi dan ingin segera dilayani.</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Smart Check-In</h3>
+                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Isi buku tamu langsung di tempat. Untuk tamu/kurir yang sudah berada di lobi saat ini.</p>
                 </button>
                 
-                <!-- Schedule Form -->
-                <button onclick="navigate('page-schedule');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-8 rounded-3xl transition duration-300 transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center shadow-lg">
-                    <div class="absolute top-0 left-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/30 transition duration-500"></div>
-                    <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-emerald-400/30 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                        <i class="fa-solid fa-calendar-check text-4xl text-emerald-400"></i>
+                <!-- Opsi 2: Reservasi Jadwal -->
+                <button onclick="navigate('page-schedule');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-6 md:p-8 rounded-2xl md:rounded-3xl transition duration-300 transform hover:-translate-y-2 group relative overflow-hidden flex flex-col items-center text-center shadow-lg">
+                    <div class="absolute top-0 left-0 w-32 h-32 md:w-40 md:h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/30 transition duration-500"></div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition duration-300 border border-emerald-400/30 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                        <i class="fa-solid fa-calendar-check text-2xl md:text-4xl text-emerald-400"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-white">Buat Jadwal Temu</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed px-4">Reservasi khusus. Ajukan rencana pertemuan dengan Ibu Kepala Sekolah untuk tanggal & waktu tertentu.</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Buat Jadwal Temu</h3>
+                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Reservasi waktu khusus. Ajukan pertemuan dengan Ibu Kepala Sekolah untuk tanggal ke depannya.</p>
                 </button>
             </div>
         </div>
 
-        <!-- TOMBOL TATA CARA PENGGUNAAN (FITUR BARU) -->
-        <button onclick="openGuideModal()" class="mt-8 bg-black/40 hover:bg-accent hover:text-primary border border-white/30 text-white px-6 py-3 rounded-full font-semibold transition duration-300 flex items-center gap-3 backdrop-blur-md shadow-lg">
-            <i class="fa-solid fa-circle-question text-lg"></i> Panduan & Tata Cara Penggunaan
+        <!-- Tombol Tata Cara (Bantuan) -->
+        <button onclick="openGuideModal()" class="mt-8 bg-black/40 hover:bg-accent hover:text-primary border border-white/30 text-white px-5 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-semibold transition duration-300 flex items-center gap-2 md:gap-3 backdrop-blur-md shadow-lg">
+            <i class="fa-solid fa-circle-question text-base md:text-lg"></i> Panduan Penggunaan
         </button>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MODAL 1: TATA CARA PENGGUNAAN (GUIDE)                                     -->
+    <!-- MODAL 1: TATA CARA (GUIDE)                                                -->
     <!-- ========================================================================= -->
     <div id="modal-guide" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-8 rounded-3xl max-w-lg w-full relative border border-white/20 scale-0 transition-transform duration-300" id="guide-content">
-            <button onclick="closeGuideModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white bg-white/10 w-10 h-10 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-lg w-full relative border border-white/20 scale-0 transition-transform duration-300 max-h-[90vh] overflow-y-auto" id="guide-content">
+            <button onclick="closeGuideModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/10 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark text-lg md:text-xl"></i></button>
             
-            <div class="text-center mb-6 border-b border-white/10 pb-4">
-                <i class="fa-solid fa-book-open-reader text-4xl text-accent mb-3"></i>
-                <h3 class="text-2xl font-bold text-white tracking-wide">Tata Cara Penggunaan</h3>
-                <p class="text-sm text-gray-400 mt-1">Panduan menggunakan layanan Kiosk SiTamu</p>
+            <div class="text-center mb-6 border-b border-white/10 pb-4 mt-4 md:mt-0">
+                <i class="fa-solid fa-book-open-reader text-3xl md:text-4xl text-accent mb-3"></i>
+                <h3 class="text-xl md:text-2xl font-bold text-white tracking-wide">Tata Cara Penggunaan</h3>
+                <p class="text-xs md:text-sm text-gray-400 mt-1">Panduan interaksi dengan Kiosk SiTamu</p>
             </div>
             
             <div class="timeline px-2">
                 <div class="timeline-item">
-                    <h4 class="text-accent font-bold text-lg mb-1">1. Pilih Layanan</h4>
-                    <p class="text-sm text-gray-300">Pilih <strong>Smart Check-In</strong> jika Anda sudah di lokasi, atau <strong>Buat Jadwal</strong> jika ingin mengajukan pertemuan di hari lain.</p>
+                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Tentukan Layanan</h4>
+                    <p class="text-xs md:text-sm text-gray-300">Pilih <strong>Smart Check-In</strong> jika Anda ingin langsung bertemu staf/kepsek saat ini juga.</p>
                 </div>
                 <div class="timeline-item">
-                    <h4 class="text-accent font-bold text-lg mb-1">2. Lengkapi Identitas</h4>
-                    <p class="text-sm text-gray-300">Masukkan nama, instansi, nomor telepon aktif, serta tujuan kunjungan Anda secara jelas dan ringkas.</p>
+                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Isi Formulir</h4>
+                    <p class="text-xs md:text-sm text-gray-300">Ketik identitas, asal instansi, dan rincian keperluan dengan jelas pada layar sentuh.</p>
                 </div>
                 <div class="timeline-item">
-                    <h4 class="text-accent font-bold text-lg mb-1">3. Verifikasi Data</h4>
-                    <p class="text-sm text-gray-300">Sistem mungkin meminta Anda melakukan <em>scan</em> wajah atau memindai QR Code undangan demi keamanan lingkungan sekolah.</p>
+                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Verifikasi Identitas</h4>
+                    <p class="text-xs md:text-sm text-gray-300">Sesuai aturan keamanan & privasi, arahkan wajah ke kamera tablet untuk validasi biometrik.</p>
                 </div>
                 <div class="timeline-item">
-                    <h4 class="text-accent font-bold text-lg mb-1">4. Terima Bukti / Tiket</h4>
-                    <p class="text-sm text-gray-300">Setelah selesai, sistem akan menampilkan nomor resi/tiket. Silakan duduk di ruang tunggu hingga dipanggil oleh Staf TU.</p>
+                    <h4 class="text-accent font-bold text-base md:text-lg mb-1">4. Tunggu Panggilan</h4>
+                    <p class="text-xs md:text-sm text-gray-300">Catat nomor antrean/tiket di layar. Silakan duduk manis di lobi hingga staf TU menghampiri.</p>
                 </div>
             </div>
             
-            <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3.5 rounded-xl font-bold transition mt-4">
-                Saya Mengerti
-            </button>
+            <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4">Tutup Panduan</button>
         </div>
     </div>
 
@@ -191,292 +309,566 @@
     <!-- MODAL 2: LOGIN IBU KEPALA SEKOLAH                                         -->
     <!-- ========================================================================= -->
     <div id="modal-auth-kepsek" class="fixed inset-0 bg-black/95 backdrop-blur-lg z-[150] hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-10 rounded-3xl max-w-sm w-full relative border border-accent/60 scale-0 transition-transform duration-400 shadow-[0_0_50px_rgba(212,175,55,0.15)]" id="auth-content">
+        <div class="glass-panel p-8 md:p-10 rounded-3xl max-w-sm w-full relative border border-accent/60 scale-0 transition-transform duration-400 shadow-[0_0_50px_rgba(212,175,55,0.15)]" id="auth-content">
             <button onclick="closePrincipalLogin()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
-                <!-- Personalization Avatar -->
-                <img src="https://ui-avatars.com/api/?name=Ibu+Kepsek&background=D4AF37&color=0A2540&size=128&bold=true" alt="Ibu Kepsek" class="w-20 h-20 rounded-full border-2 border-accent mx-auto mb-4 shadow-lg">
-                <h3 class="text-xl font-bold text-white">Otorisasi Eksekutif</h3>
-                <p class="text-xs text-accent/80 mt-1 uppercase tracking-widest">Portal Ibu Kepala Sekolah</p>
+                <!-- Avatar Personalisasi Ibu Kepsek -->
+                <img src="https://ui-avatars.com/api/?name=Ibu+Kepsek&background=D4AF37&color=0A2540&size=128&bold=true" alt="Ibu Kepsek" class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-accent mx-auto mb-4 shadow-lg">
+                <h3 class="text-lg md:text-xl font-bold text-white">Otorisasi Eksekutif</h3>
+                <p class="text-[10px] md:text-xs text-accent/80 mt-1 uppercase tracking-widest">Portal Ibu Kepala Sekolah</p>
             </div>
             <form onsubmit="verifyPrincipalLogin(event)">
                 <div class="relative mb-8">
-                    <i class="fa-solid fa-key absolute left-4 top-3.5 text-accent/50"></i>
-                    <input type="password" id="kepsek-pin" class="w-full bg-black/60 border border-white/20 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-accent text-center tracking-[0.5em] text-lg" placeholder="••••••••" required>
+                    <i class="fa-solid fa-key absolute left-4 top-3 md:top-3.5 text-accent/50 text-sm md:text-base"></i>
+                    <input type="password" id="kepsek-pin" class="w-full bg-black/60 border border-white/20 rounded-xl py-2.5 md:py-3 pl-10 md:pl-12 pr-4 text-white focus:outline-none focus:border-accent text-center tracking-[0.3em] md:tracking-[0.5em] text-base md:text-lg" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-accent to-fem_accent hover:from-yellow-400 hover:to-accent text-primary py-3.5 rounded-xl font-bold transition shadow-[0_0_20px_rgba(212,175,55,0.5)] transform hover:-translate-y-1">
+                <button type="submit" class="w-full bg-gradient-to-r from-accent to-fem_accent hover:from-yellow-400 hover:to-accent text-primary py-3 md:py-3.5 rounded-xl font-bold transition shadow-[0_0_20px_rgba(212,175,55,0.5)] transform hover:-translate-y-1">
                     Buka Dasbor <i class="fa-solid fa-unlock ml-2"></i>
                 </button>
+                <p class="text-[10px] text-gray-500 text-center mt-4 border-t border-white/10 pt-3">Akses terbatas. Dilindungi enkripsi end-to-end.</p>
             </form>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 2 & 3: FORMULIR TAMU (SIMPLIFIKASI UNTUK DEMO CODE)                  -->
+    <!-- PAGE 2: WIZARD FORM (RESTORASI SMART CHECK-IN / BUKU TAMU)                -->
     <!-- ========================================================================= -->
-    <!-- (Formulir Check-in dan Schedule tetap ada, namun kodenya diringkas agar fokus ke fitur baru) -->
-    <div id="page-checkin" class="page flex flex-col justify-center items-center min-h-full py-10 px-8">
-        <div class="glass-panel rounded-3xl p-10 max-w-lg w-full text-center">
-            <h2 class="text-2xl font-bold mb-4">Simulasi Check-In</h2>
-            <p class="text-gray-400 mb-8">Dalam implementasi penuh, halaman ini berisi form identitas tamu dan pemindai QR.</p>
-            <button onclick="showTicketModal('Check-In Berhasil!', 'Data telah terkirim.')" class="bg-blue-600 w-full py-3 rounded-xl font-bold mb-4">Kirim Data Check-In</button>
-            <button onclick="navigate('page-main')" class="text-gray-400 hover:text-white">Kembali ke Lobi</button>
-        </div>
-    </div>
-    <div id="page-schedule" class="page flex flex-col justify-center items-center min-h-full py-10 px-8">
-        <div class="glass-panel rounded-3xl p-10 max-w-lg w-full text-center">
-            <h2 class="text-2xl font-bold mb-4">Simulasi Jadwal</h2>
-            <p class="text-gray-400 mb-8">Dalam implementasi penuh, halaman ini berisi form kalender dan unggah proposal.</p>
-            <button onclick="showTicketModal('Jadwal Diajukan!', 'Menunggu konfirmasi Ibu Kepsek.')" class="bg-emerald-600 w-full py-3 rounded-xl font-bold mb-4">Kirim Pengajuan</button>
-            <button onclick="navigate('page-main')" class="text-gray-400 hover:text-white">Kembali ke Lobi</button>
-        </div>
-    </div>
-
-    <!-- MODAL TIKET UMUM -->
-    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white text-primary p-10 rounded-3xl max-w-md w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300" id="ticket-content">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-check"></i></div>
-            <h2 class="text-2xl font-bold mb-2" id="ticket-title">Sukses</h2>
-            <p class="text-gray-600 mb-8" id="ticket-desc">Data berhasil dikirim.</p>
-            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-4 rounded-xl font-bold transition">Selesai</button>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- PAGE 4: DASBOR IBU KEPALA SEKOLAH (FEMALE PRINCIPAL UI)                   -->
-    <!-- ========================================================================= -->
-    <div id="page-principal" class="page bg-gray-50 flex" style="color: #333; overflow: hidden;">
+    <div id="page-checkin" class="page flex flex-col min-h-screen py-6 md:py-10 px-4 md:px-8">
         
-        <!-- Sidebar Navigation (Diperluas) -->
-        <aside class="dash-sidebar flex flex-col shadow-xl">
-            <div class="p-6 border-b border-white/10 flex items-center gap-4 bg-black/20">
-                <div class="w-12 h-12 bg-gradient-to-br from-accent to-fem_accent rounded-xl flex items-center justify-center text-primary font-bold text-2xl shadow-lg">
-                    <i class="fa-solid fa-crown"></i>
+        <!-- Header Check-in -->
+        <div class="flex justify-between items-center mb-6 max-w-5xl mx-auto w-full shrink-0 mt-4 md:mt-0">
+            <button onclick="navigate('page-main'); resetWizardForm();" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-xl md:text-3xl font-bold tracking-wide">Buku Tamu Langsung</h2>
+            <div class="w-10 md:w-12"></div> <!-- spacer -->
+        </div>
+
+        <!-- Wizard Container (Responsive: padding adjustments) -->
+        <div class="glass-panel rounded-2xl md:rounded-3xl max-w-5xl mx-auto w-full flex-1 mb-8 overflow-hidden flex flex-col p-4 md:p-8 bg-white/5 relative">
+            
+            <!-- Progress Bar / Step Indicators -->
+            <div class="flex justify-between mb-8 md:mb-10 relative px-2 md:px-10 mt-2">
+                <div class="absolute top-1/2 left-4 md:left-12 right-4 md:right-12 h-1 bg-white/20 -z-10 rounded"></div>
+                <div id="wizard-progress" class="absolute top-1/2 left-4 md:left-12 h-1 bg-accent -z-10 rounded transition-all duration-500" style="width: 0%"></div>
+                
+                <div class="step-indicator active flex flex-col items-center" id="ind-1">
+                    <div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 transition-all shadow-[0_0_15px_rgba(212,175,55,0.5)]"><i class="fa-solid fa-id-card text-sm md:text-base"></i></div>
+                    <span class="step-text text-[10px] md:text-xs text-accent font-bold text-center">Identitas</span>
                 </div>
-                <div>
-                    <h2 class="font-bold text-lg leading-tight tracking-wide text-white">Dasbor Eksekutif</h2>
-                    <span class="text-xs text-accent">Ibu Kepala Sekolah</span>
+                <div class="step-indicator flex flex-col items-center" id="ind-2">
+                    <div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition-all"><i class="fa-solid fa-briefcase text-sm md:text-base"></i></div>
+                    <span class="step-text text-[10px] md:text-xs text-white/50 text-center">Tujuan</span>
                 </div>
+                <div class="step-indicator flex flex-col items-center" id="ind-3">
+                    <div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition-all"><i class="fa-solid fa-shield-halved text-sm md:text-base"></i></div>
+                    <span class="step-text text-[10px] md:text-xs text-white/50 text-center">Keamanan</span>
+                </div>
+                <div class="step-indicator flex flex-col items-center" id="ind-4">
+                    <div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition-all"><i class="fa-solid fa-camera-retro text-sm md:text-base"></i></div>
+                    <span class="step-text text-[10px] md:text-xs text-white/50 text-center">Kamera</span>
+                </div>
+            </div>
+
+            <!-- Formulir Wrapper -->
+            <div class="flex-1 relative overflow-y-auto overflow-x-hidden p-1">
+                
+                <!-- STEP 1: IDENTITAS -->
+                <div id="step-1" class="wizard-step active flex flex-col h-full">
+                    <h3 class="text-lg md:text-xl font-bold mb-6 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-1 text-accent mr-2"></i>Informasi Data Diri</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+                        <div>
+                            <label class="block text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Nama Lengkap *</label>
+                            <input type="text" id="w-name" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 md:py-3.5 text-white focus:border-accent transition placeholder-gray-500" placeholder="Ketik nama Anda...">
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Nomor Ponsel (WhatsApp) *</label>
+                            <input type="tel" id="w-phone" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 md:py-3.5 text-white focus:border-accent transition placeholder-gray-500" placeholder="08xxxxxx">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Instansi / Asal Perusahaan *</label>
+                            <input type="text" id="w-agency" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 md:py-3.5 text-white focus:border-accent transition placeholder-gray-500" placeholder="Ketik Pribadi jika tidak mewakili instansi">
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-end">
+                        <button onclick="goToStep(2)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center gap-2 shadow-lg w-full md:w-auto justify-center">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: TUJUAN -->
+                <div id="step-2" class="wizard-step flex flex-col h-full">
+                    <h3 class="text-lg md:text-xl font-bold mb-6 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Maksud Kunjungan</h3>
+                    <div class="grid grid-cols-1 gap-4 md:gap-6 mb-6">
+                        <div>
+                            <label class="block text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Kategori Keperluan *</label>
+                            <select id="w-purpose" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 md:py-3.5 text-white focus:border-accent transition appearance-none cursor-pointer">
+                                <option value="" class="text-black bg-white">-- Pilih Tujuan --</option>
+                                <option value="rapat" class="text-black bg-white">Bertemu Staf/Kepsek</option>
+                                <option value="dokumen" class="text-black bg-white">Menyerahkan Dokumen/Paket</option>
+                                <option value="penawaran" class="text-black bg-white">Penawaran Kerjasama</option>
+                                <option value="lainnya" class="text-black bg-white">Keperluan Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Rincian Pesan *</label>
+                            <textarea id="w-detail" rows="4" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-accent transition resize-none placeholder-gray-500" placeholder="Tuliskan secara singkat keperluan Anda..."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-6 flex flex-col-reverse md:flex-row justify-between gap-3">
+                        <button onclick="goToStep(1)" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Kembali</button>
+                        <button onclick="goToStep(3)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: KEPATUHAN PDP -->
+                <div id="step-3" class="wizard-step flex flex-col h-full">
+                    <h3 class="text-lg md:text-xl font-bold mb-4 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-3 text-accent mr-2"></i>Persetujuan Privasi Data</h3>
+                    
+                    <div class="bg-black/30 border border-yellow-500/30 p-4 md:p-6 rounded-xl flex-1 text-xs md:text-sm text-gray-300 leading-relaxed space-y-4 overflow-y-auto mb-6">
+                        <p class="font-bold text-white text-sm md:text-base mb-2"><i class="fa-solid fa-shield-halved text-accent mr-2"></i>Keamanan & UU PDP</p>
+                        <p>Sistem ini menerapkan standar keamanan sesuai dengan perundang-undangan pelindungan data pribadi yang berlaku. Kami perlu merekam data biometrik (foto wajah) Anda sebagai bukti kehadiran fisik di lingkungan sekolah.</p>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-400">
+                            <li>Data visual hanya digunakan untuk identifikasi keamanan.</li>
+                            <li>Data tersimpan di server terenkripsi.</li>
+                            <li>Tidak ada data yang dibagikan ke pihak ketiga (Non-Disclosure).</li>
+                        </ul>
+                    </div>
+
+                    <label class="flex items-start md:items-center gap-3 cursor-pointer bg-white/5 hover:bg-white/10 border border-white/20 p-4 rounded-xl transition mb-6">
+                        <input type="checkbox" id="w-consent" class="w-5 h-5 md:w-6 md:h-6 accent-accent mt-0.5 md:mt-0 cursor-pointer flex-shrink-0">
+                        <span class="text-white text-xs md:text-sm font-semibold select-none">Saya membaca, memahami, dan memberikan persetujuan akses kamera untuk merekam wajah saya.</span>
+                    </label>
+
+                    <div class="mt-auto pt-4 border-t border-white/10 flex flex-col-reverse md:flex-row justify-between gap-3">
+                        <button onclick="goToStep(2)" class="bg-white/10 hover:bg-white/20 text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition w-full md:w-auto">Kembali</button>
+                        <button onclick="goToStep(4)" class="bg-accent hover:bg-yellow-500 text-primary px-6 md:px-8 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto">Setuju & Buka Kamera <i class="fa-solid fa-camera"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: KAMERA VERIFIKASI -->
+                <div id="step-4" class="wizard-step flex flex-col h-full">
+                    <h3 class="text-lg md:text-xl font-bold mb-4 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-4 text-accent mr-2"></i>Verifikasi Visual</h3>
+                    
+                    <!-- Layout grid untuk memisahkan kamera dan preview (Responsif) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+                        
+                        <!-- Viewfinder Kamera (Takes 2 columns on desktop) -->
+                        <div class="md:col-span-2 bg-black rounded-2xl overflow-hidden relative border border-white/20 flex items-center justify-center h-48 md:h-64 shadow-inner">
+                            <!-- playsinline required for iOS Safari -->
+                            <video id="kiosk-camera" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <div id="cam-status" class="text-center z-10 text-gray-500 p-4">
+                                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-2 text-accent"></i>
+                                <p class="text-xs md:text-sm">Inisialisasi Perangkat Lensa...</p>
+                            </div>
+                            
+                            <!-- Scanner overlay UI -->
+                            <div class="absolute inset-10 border-2 border-white/10 rounded-lg pointer-events-none">
+                                <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-accent"></div>
+                                <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-accent"></div>
+                                <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-accent"></div>
+                                <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-accent"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hasil Jepretan -->
+                        <div class="bg-white/5 border border-white/20 rounded-2xl flex flex-col items-center justify-center overflow-hidden relative h-32 md:h-64">
+                            <canvas id="kiosk-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                            <div id="lbl-canvas" class="text-center p-2">
+                                <i class="fa-solid fa-image-portrait text-3xl text-gray-600 mb-2"></i>
+                                <p class="text-xs text-gray-500">Hasil Foto</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center mb-6">
+                        <button onclick="takePicture()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold flex items-center gap-3 transition shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:scale-105 transform">
+                            <i class="fa-solid fa-camera"></i> Ambil Foto Wajah
+                        </button>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10 flex flex-col-reverse md:flex-row justify-between gap-3">
+                        <button onclick="goToStep(3); stopKioskCamera();" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition w-full md:w-auto">Ulangi Form</button>
+                        <button onclick="submitWizard()" class="bg-gradient-to-r from-accent to-fem_accent hover:from-yellow-400 hover:to-accent text-primary px-8 py-3 rounded-xl font-black transition flex items-center justify-center gap-2 shadow-lg w-full md:w-auto text-lg">
+                            KIRIM DATA <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 3: SCHEDULE FORM (RESTORASI FORMULIR RESERVASI)                      -->
+    <!-- ========================================================================= -->
+    <div id="page-schedule" class="page flex flex-col min-h-screen py-6 md:py-10 px-4 md:px-8">
+        
+        <div class="flex justify-between items-center mb-6 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
+            <button onclick="navigate('page-main')" class="text-white hover:text-accent transition text-base md:text-lg bg-black/20 p-2 md:p-3 rounded-full h-10 w-10 md:h-12 md:w-12 flex justify-center items-center glass-panel"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-xl md:text-3xl font-bold tracking-wide">Pengajuan Jadwal</h2>
+            <div class="w-10 md:w-12"></div>
+        </div>
+
+        <!-- Scrollable Form Container -->
+        <div class="glass-panel rounded-2xl md:rounded-3xl max-w-4xl mx-auto w-full mb-8 p-6 md:p-10 bg-white/5 relative overflow-hidden">
+            <!-- Dekorasi Garis Atas -->
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+            
+            <p class="text-xs md:text-sm text-gray-300 mb-8 border-b border-white/10 pb-6">Formulir ini digunakan untuk reservasi waktu pertemuan di masa mendatang. Pengajuan akan ditinjau langsung oleh Admin, dan notifikasi persetujuan akan dikirim via kontak Anda.</p>
+            
+            <form id="form-schedule" onsubmit="submitScheduleForm(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
+                    
+                    <!-- Kiri: Data Pemohon -->
+                    <div class="space-y-4">
+                        <h3 class="text-base md:text-lg font-bold text-emerald-400 mb-2 border-b border-emerald-900 pb-2"><i class="fa-solid fa-id-badge mr-2"></i>1. Profil Pemohon</h3>
+                        <div>
+                            <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Nama Penanggung Jawab *</label>
+                            <input type="text" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition placeholder-gray-500" placeholder="Ketik nama lengkap">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Instansi / Organisasi *</label>
+                            <input type="text" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition placeholder-gray-500" placeholder="Ketik asal instansi">
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1">
+                                <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">No. WhatsApp *</label>
+                                <input type="tel" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition placeholder-gray-500" placeholder="08xxx">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Email Aktif *</label>
+                                <input type="email" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition placeholder-gray-500" placeholder="email@contoh.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Setting Waktu -->
+                    <div class="space-y-4">
+                        <h3 class="text-base md:text-lg font-bold text-emerald-400 mb-2 border-b border-emerald-900 pb-2"><i class="fa-solid fa-clock mr-2"></i>2. Waktu & Lokasi</h3>
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Tgl. Pengajuan *</label>
+                                <input type="date" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition [color-scheme:dark]">
+                            </div>
+                            <div class="w-1/3">
+                                <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Pukul *</label>
+                                <input type="time" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition [color-scheme:dark]">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] md:text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Lokasi Pertemuan *</label>
+                            <select required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-white focus:border-emerald-400 outline-none transition appearance-none cursor-pointer">
+                                <option value="" class="text-black bg-white">-- Tentukan Lokasi --</option>
+                                <option value="ruang_kepsek" class="text-black bg-white">Ruang Ibu Kepala Sekolah</option>
+                                <option value="ruang_rapat" class="text-black bg-white">Ruang Rapat Utama Sekolah</option>
+                                <option value="luar_sekolah" class="text-black bg-white">Di Luar Area Sekolah</option>
+                                <option value="daring" class="text-black bg-white">Daring (Zoom / GMeet)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bawah: Agenda -->
+                <div class="mb-8">
+                    <h3 class="text-base md:text-lg font-bold text-emerald-400 mb-2 border-b border-emerald-900 pb-2"><i class="fa-solid fa-file-lines mr-2"></i>3. Topik & Agenda</h3>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <textarea rows="4" required class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-400 outline-none transition resize-none placeholder-gray-500" placeholder="Jelaskan secara komprehensif apa yang ingin dibahas dalam pertemuan ini..."></textarea>
+                        </div>
+                        <div class="w-full md:w-1/3 border-2 border-dashed border-white/20 hover:border-emerald-400 rounded-xl flex flex-col items-center justify-center bg-black/20 cursor-pointer transition relative group p-6">
+                            <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx" id="file-upload" onchange="updateFileName(this)">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 group-hover:text-emerald-400 mb-3 transition" id="file-icon"></i>
+                            <span class="text-xs text-gray-400 text-center px-2 font-medium" id="file-name">Klik/Tap untuk lampirkan surat (PDF)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-6 border-t border-white/10">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:-translate-y-1 w-full md:w-auto">
+                        Ajukan Jadwal Sekarang <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 4: DASHBOARD KEPALA SEKOLAH (RESPONSIVE & EXPANDED)                  -->
+    <!-- ========================================================================= -->
+    <div id="page-principal" class="page bg-[#F0F4F8] flex" style="color: #333; overflow: hidden;">
+        
+        <!-- Mobile Overlay untuk nutup menu sidebar saat dibuka di HP -->
+        <div class="mobile-overlay" id="mobile-sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="dash-sidebar flex flex-col shadow-xl" id="principal-sidebar">
+            <!-- Sidebar Header -->
+            <div class="p-6 border-b border-white/10 flex items-center justify-between bg-black/20">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-accent to-fem_accent rounded-xl flex items-center justify-center text-primary font-bold text-xl md:text-2xl shadow-lg">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base md:text-lg leading-tight tracking-wide text-white">Dasbor Eksekutif</h2>
+                        <span class="text-[10px] md:text-xs text-accent">Ibu Kepala Sekolah</span>
+                    </div>
+                </div>
+                <!-- Tombol tutup sidebar (Hanya muncul di mobile) -->
+                <button class="md:hidden text-gray-400 hover:text-white" onclick="toggleMobileSidebar()">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
             </div>
             
             <div class="px-6 pt-6 pb-2">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Menu Utama</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Manajemen Utama</p>
             </div>
             
+            <!-- Sidebar Links -->
             <nav class="flex-1 px-4 space-y-1 overflow-y-auto">
-                <button onclick="switchTab('tab-overview')" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium transition" id="nav-overview">
-                    <i class="fa-solid fa-chart-pie w-5 text-center"></i> Ringkasan
+                <button onclick="switchTab('tab-overview'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium transition" id="nav-overview">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i> <span>Ringkasan</span>
                 </button>
-                <button onclick="switchTab('tab-inbox')" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-inbox">
-                    <i class="fa-solid fa-inbox w-5 text-center"></i> Pesan Lobi <span class="ml-auto bg-accent text-primary text-[10px] px-2 py-0.5 rounded-full font-black">BARU</span>
+                <button onclick="switchTab('tab-inbox'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-inbox">
+                    <i class="fa-solid fa-inbox w-5 text-center"></i> <span>Pesan Lobi</span>
+                    <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse" id="notif-badge">3</span>
                 </button>
-                <button onclick="switchTab('tab-schedule')" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-schedule">
-                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Manajemen Jadwal
+                <button onclick="switchTab('tab-schedule'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-schedule">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Daftar Jadwal</span>
                 </button>
                 
                 <div class="pt-6 pb-2 mt-2 border-t border-white/10">
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Analitik & Sistem</p>
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Laporan & Sistem</p>
                 </div>
                 
-                <!-- NEW FEATURE 1: Laporan & Statistik -->
-                <button onclick="switchTab('tab-reports')" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-reports">
-                    <i class="fa-solid fa-chart-line w-5 text-center"></i> Laporan Kunjungan
+                <button onclick="switchTab('tab-reports'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-reports">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i> <span>Analitik Data</span>
                 </button>
                 
-                <!-- NEW FEATURE 2: Pengaturan Status -->
-                <button onclick="switchTab('tab-settings')" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-settings">
-                    <i class="fa-solid fa-sliders w-5 text-center"></i> Pengaturan Status
+                <button onclick="switchTab('tab-settings'); if(window.innerWidth<768) toggleMobileSidebar();" class="dash-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition" id="nav-settings">
+                    <i class="fa-solid fa-sliders w-5 text-center"></i> <span>Atur Kehadiran</span>
                 </button>
             </nav>
             
-            <div class="p-6 border-t border-white/10 bg-black/10">
+            <!-- Sidebar Footer -->
+            <div class="p-4 md:p-6 border-t border-white/10 bg-black/10">
                 <button onclick="logoutPrincipal()" class="w-full flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 py-3 rounded-xl transition font-medium shadow-lg">
-                    <i class="fa-solid fa-power-off"></i> Kunci & Keluar
+                    <i class="fa-solid fa-power-off"></i> <span>Tutup Sesi</span>
                 </button>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="dash-content flex-1 h-screen overflow-y-auto relative" style="margin-left: 280px; width: calc(100% - 280px);">
+        <!-- Area Konten Utama Dasbor -->
+        <main class="dash-content flex-1 h-screen overflow-y-auto relative flex flex-col">
             
-            <!-- Topbar Profil Ibu Kepsek -->
-            <header class="bg-white border-b border-gray-200 h-20 flex items-center justify-between px-8 sticky top-0 z-30 shadow-sm">
-                <h1 class="text-2xl font-bold text-gray-800 tracking-tight" id="dash-title">Ringkasan Sistem</h1>
-                <div class="flex items-center gap-6">
-                    <button class="text-gray-400 hover:text-accent transition relative w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center border border-gray-200">
-                        <i class="fa-regular fa-bell text-lg"></i>
-                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            <!-- Topbar (Sticky) -->
+            <header class="bg-white border-b border-gray-200 h-16 md:h-20 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shadow-sm shrink-0">
+                <!-- Hamburger Menu for Mobile -->
+                <button class="md:hidden text-gray-600 hover:text-primary mr-4" onclick="toggleMobileSidebar()">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+                
+                <h1 class="text-lg md:text-2xl font-bold text-gray-800 tracking-tight truncate flex-1" id="dash-title">Ringkasan Utama</h1>
+                
+                <div class="flex items-center gap-3 md:gap-6 ml-4">
+                    <button class="text-gray-400 hover:text-accent transition relative w-8 h-8 md:w-10 md:h-10 bg-gray-50 rounded-full flex items-center justify-center border border-gray-200 shrink-0">
+                        <i class="fa-regular fa-bell text-sm md:text-lg"></i>
+                        <span class="absolute top-1 right-1 md:top-2 md:right-2 w-2 h-2 md:w-2.5 md:h-2.5 bg-red-500 rounded-full border border-white md:border-2"></span>
                     </button>
-                    <div class="h-10 w-px bg-gray-200"></div>
-                    <div class="flex items-center gap-4 cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition">
-                        <div class="text-right">
+                    
+                    <div class="h-6 md:h-10 w-px bg-gray-200 hidden sm:block"></div>
+                    
+                    <div class="flex items-center gap-2 md:gap-4 cursor-pointer hover:bg-gray-50 p-1 md:p-2 rounded-xl transition">
+                        <div class="text-right hidden sm:block">
                             <p class="text-sm font-bold text-gray-800">Ibu Kepala Sekolah</p>
-                            <p class="text-xs text-emerald-600 font-medium" id="status-indicator"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Di Ruangan (Online)</p>
+                            <p class="text-[10px] md:text-xs text-emerald-600 font-medium" id="status-indicator"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Hadir (Online)</p>
                         </div>
-                        <img src="https://ui-avatars.com/api/?name=Ibu+Kepsek&background=D4AF37&color=0A2540&bold=true" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-accent shadow-sm">
+                        <img src="https://ui-avatars.com/api/?name=Ibu+Kepsek&background=D4AF37&color=0A2540&bold=true" alt="Avatar" class="w-8 h-8 md:w-12 md:h-12 rounded-full border border-accent md:border-2 shadow-sm shrink-0">
                     </div>
                 </div>
             </header>
 
-            <!-- TAB 1: OVERVIEW (RINGKASAN) -->
-            <div id="tab-overview" class="dash-tab block p-8">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Selamat Datang, Ibu.</h2>
-                    <p class="text-gray-500">Berikut adalah aktivitas tamu Anda hari ini.</p>
+            <!-- ======================= -->
+            <!-- KONTEN TAB 1: OVERVIEW  -->
+            <!-- ======================= -->
+            <div id="tab-overview" class="dash-tab block p-4 md:p-8 flex-1">
+                <div class="mb-6 md:mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">Selamat Datang kembali, Ibu.</h2>
+                    <p class="text-xs md:text-sm text-gray-500">Sistem memonitor 12 pergerakan tamu di lobi hari ini.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="stat-card border-l-4 border-blue-500">
-                        <div><p class="text-xs text-gray-500 font-bold uppercase mb-1">Tamu Hadir</p><h3 class="text-3xl font-black text-gray-800">12</h3></div>
-                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+                <!-- Grid Statistik -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="stat-card border-l-4 border-blue-500 p-4 md:p-6">
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Tamu Hadir</p><h3 class="text-2xl md:text-3xl font-black text-gray-800">12</h3></div>
+                        <div class="w-8 h-8 md:w-12 md:h-12 bg-blue-50 text-blue-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl"><i class="fa-solid fa-users"></i></div>
                     </div>
-                    <div class="stat-card border-l-4 border-yellow-500">
-                        <div><p class="text-xs text-gray-500 font-bold uppercase mb-1">Menunggu</p><h3 class="text-3xl font-black text-gray-800">4</h3></div>
-                        <div class="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div class="stat-card border-l-4 border-yellow-500 p-4 md:p-6">
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Tunda/Tunggu</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-wait">3</h3></div>
+                        <div class="w-8 h-8 md:w-12 md:h-12 bg-yellow-50 text-yellow-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl"><i class="fa-solid fa-hourglass-half"></i></div>
                     </div>
-                    <div class="stat-card border-l-4 border-emerald-500">
-                        <div><p class="text-xs text-gray-500 font-bold uppercase mb-1">Jadwal Baru</p><h3 class="text-3xl font-black text-gray-800">7</h3></div>
-                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="stat-card border-l-4 border-emerald-500 p-4 md:p-6">
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Jadwal Setuju</p><h3 class="text-2xl md:text-3xl font-black text-gray-800">5</h3></div>
+                        <div class="w-8 h-8 md:w-12 md:h-12 bg-emerald-50 text-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl"><i class="fa-solid fa-calendar-check"></i></div>
                     </div>
-                    <div class="stat-card border-l-4 border-purple-500">
-                        <div><p class="text-xs text-gray-500 font-bold uppercase mb-1">Paket/Kurir</p><h3 class="text-3xl font-black text-gray-800">3</h3></div>
-                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-box"></i></div>
+                    <div class="stat-card border-l-4 border-purple-500 p-4 md:p-6">
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Kurir/Paket</p><h3 class="text-2xl md:text-3xl font-black text-gray-800">2</h3></div>
+                        <div class="w-8 h-8 md:w-12 md:h-12 bg-purple-50 text-purple-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl"><i class="fa-solid fa-box"></i></div>
                     </div>
                 </div>
                 
                 <!-- Quick Look Table -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h3 class="font-bold text-gray-800 text-lg"><i class="fa-solid fa-bolt text-accent mr-2"></i>Aktivitas Terbaru Lobi</h3>
-                        <button onclick="switchTab('tab-inbox')" class="text-sm text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-4 py-2 rounded-lg transition">Lihat Selengkapnya</button>
+                <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                    <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h3 class="font-bold text-gray-800 text-sm md:text-lg flex items-center"><i class="fa-solid fa-bolt text-accent mr-2"></i>Aktivitas Terbaru</h3>
+                        <button onclick="switchTab('tab-inbox')" class="text-xs md:text-sm text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg transition">Lihat Detail</button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full data-table">
-                            <thead><tr><th>Waktu Datang</th><th>Identitas Tamu</th><th>Tipe Kunjungan</th><th>Status Saat Ini</th></tr></thead>
-                            <tbody id="quick-activity-list"></tbody>
+                        <table class="w-full data-table min-w-[600px]">
+                            <thead><tr><th>Waktu</th><th>Profil Tamu</th><th>Kategori</th><th>Status Lobi</th></tr></thead>
+                            <tbody id="quick-activity-list">
+                                <!-- Data digenerate via JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 2 & 3: INBOX & SCHEDULE (Ringkasan agar tidak terlalu panjang, fungsionalitas sama) -->
-            <div id="tab-inbox" class="dash-tab hidden p-8">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
-                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                        <h3 class="font-bold text-gray-800 text-lg">Pesan & Kunjungan Langsung</h3>
+            <!-- ======================= -->
+            <!-- KONTEN TAB 2: INBOX     -->
+            <!-- ======================= -->
+            <div id="tab-inbox" class="dash-tab hidden p-4 md:p-8 flex-1">
+                <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 flex flex-col h-[70vh] md:h-[calc(100vh-140px)]">
+                    <div class="p-4 md:p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50 shrink-0">
+                        <h3 class="font-bold text-gray-800 text-base md:text-lg">Daftar Antrean & Pesan Walk-In</h3>
+                        <div class="relative w-full sm:w-auto">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                            <input type="text" placeholder="Cari nama tamu..." class="w-full sm:w-64 pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        </div>
                     </div>
-                    <div class="overflow-y-auto p-6"><p class="text-gray-500 italic">Daftar pesan lobi (seperti pada versi sebelumnya).</p></div>
+                    <div class="overflow-auto flex-1 bg-gray-50/20 p-4">
+                        <!-- Tampilan Grid Card untuk pesan inbox (Lebih modern dari tabel untuk pesan) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="inbox-grid">
+                            <!-- Generate JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div id="tab-schedule" class="dash-tab hidden p-8">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
-                    <div class="p-6 border-b border-gray-100 bg-gray-50">
-                        <h3 class="font-bold text-gray-800 text-lg">Manajemen Jadwal Pertemuan</h3>
+            <!-- ======================= -->
+            <!-- KONTEN TAB 3: SCHEDULE  -->
+            <!-- ======================= -->
+            <div id="tab-schedule" class="dash-tab hidden p-4 md:p-8 flex-1">
+                <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 flex flex-col h-[75vh] md:h-[calc(100vh-140px)]">
+                    <div class="p-4 md:p-6 border-b border-gray-100 bg-gray-50/50 shrink-0">
+                        <h3 class="font-bold text-gray-800 text-base md:text-lg">Validasi Reservasi Pertemuan</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-1">Tinjau dan respon pengajuan jadwal dari pihak eksternal.</p>
                     </div>
-                    <div class="overflow-y-auto p-6">
-                        <table class="w-full data-table border border-gray-200 rounded-lg overflow-hidden">
-                            <thead class="bg-gray-100"><tr><th>Pemohon</th><th>Jadwal</th><th>Lokasi</th><th>Status</th><th class="text-right">Aksi Kepsek</th></tr></thead>
-                            <tbody id="schedule-list"></tbody>
+                    <div class="overflow-auto flex-1">
+                        <table class="w-full data-table min-w-[800px]">
+                            <thead class="bg-gray-50 sticky top-0 z-10 shadow-sm">
+                                <tr><th>Pemohon & Instansi</th><th>Target Waktu</th><th>Target Lokasi</th><th>Status Sistem</th><th class="text-right">Keputusan Kepsek</th></tr>
+                            </thead>
+                            <tbody id="schedule-list">
+                                <!-- Generate JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4 (BARU): LAPORAN & STATISTIK -->
-            <div id="tab-reports" class="dash-tab hidden p-8">
-                <div class="flex justify-between items-end mb-6">
+            <!-- ======================= -->
+            <!-- KONTEN TAB 4: LAPORAN   -->
+            <!-- ======================= -->
+            <div id="tab-reports" class="dash-tab hidden p-4 md:p-8 flex-1">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1">Analitik Kunjungan</h2>
-                        <p class="text-gray-500 text-sm">Laporan data tamu bulanan untuk keperluan arsip administrasi.</p>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-1">Analitik Trafik Tamu</h2>
+                        <p class="text-xs md:text-sm text-gray-500">Pemantauan visual untuk evaluasi kinerja operasional.</p>
                     </div>
-                    <button class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium shadow-sm transition flex items-center gap-2">
-                        <i class="fa-solid fa-file-pdf text-red-500"></i> Ekspor PDF
+                    <button class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2 w-full sm:w-auto justify-center">
+                        <i class="fa-solid fa-file-pdf text-red-500"></i> Unduh PDF
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                    <!-- Grafik Batang CSS Sederhana -->
-                    <div class="col-span-2 bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2">Grafik Kunjungan (7 Hari Terakhir)</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
+                    <!-- Grafik Batang CSS (Responsive) -->
+                    <div class="lg:col-span-2 bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2 text-sm md:text-base">Statistik Kunjungan (7 Hari Terakhir)</h3>
                         <div class="chart-container">
-                            <!-- JS will generate bars here -->
+                            <!-- Render via JS -->
                             <div id="bar-chart-wrapper" class="flex w-full h-full gap-2 items-end"></div>
                         </div>
-                        <div class="flex justify-between mt-2 px-2 text-xs text-gray-400 font-bold uppercase" id="chart-labels">
+                        <div class="flex justify-between mt-3 px-1 md:px-2 text-[10px] md:text-xs text-gray-400 font-bold uppercase" id="chart-labels">
                             <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
                         </div>
                     </div>
                     
-                    <!-- Insight -->
-                    <div class="bg-gradient-to-br from-primary to-surface text-white rounded-2xl p-6 shadow-md flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-accent font-bold mb-4 border-b border-white/20 pb-2">Insight Sistem</h3>
-                            <ul class="space-y-4 text-sm">
-                                <li class="flex items-start gap-3"><div class="bg-white/20 p-2 rounded-lg"><i class="fa-solid fa-clock"></i></div><div><p class="text-white/70">Jam Tersibuk</p><p class="font-bold text-lg">09:00 - 11:00</p></div></li>
-                                <li class="flex items-start gap-3"><div class="bg-white/20 p-2 rounded-lg"><i class="fa-solid fa-check-double"></i></div><div><p class="text-white/70">Tingkat Persetujuan</p><p class="font-bold text-lg text-emerald-400">85%</p></div></li>
+                    <!-- Insight Card -->
+                    <div class="bg-gradient-to-br from-primary to-[#163050] text-white rounded-xl md:rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden">
+                        <!-- Ornamen -->
+                        <div class="absolute -bottom-10 -right-10 text-9xl text-white/5 pointer-events-none"><i class="fa-solid fa-chart-pie"></i></div>
+                        
+                        <div class="relative z-10">
+                            <h3 class="text-accent font-bold mb-4 border-b border-white/20 pb-2 text-sm md:text-base">Insight Operasional</h3>
+                            <ul class="space-y-4 md:space-y-5 text-xs md:text-sm">
+                                <li class="flex items-start gap-3">
+                                    <div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-fire text-orange-400 text-lg"></i></div>
+                                    <div><p class="text-white/60 mb-0.5">Waktu Tersibuk</p><p class="font-bold text-base md:text-lg tracking-wide">09:30 - 11:30</p></div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-handshake-angle text-blue-400 text-lg"></i></div>
+                                    <div><p class="text-white/60 mb-0.5">Rasio Persetujuan</p><p class="font-bold text-base md:text-lg text-emerald-400 tracking-wide">88% <i class="fa-solid fa-arrow-trend-up text-xs ml-1"></i></p></div>
+                                </li>
                             </ul>
                         </div>
-                        <div class="mt-6 text-xs text-white/50 text-center bg-black/20 p-3 rounded-xl">Diperbarui secara real-time</div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 5 (BARU): PENGATURAN STATUS KEPSEK -->
-            <div id="tab-settings" class="dash-tab hidden p-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Pengaturan Profil & Status</h2>
+            <!-- ======================= -->
+            <!-- KONTEN TAB 5: SETTINGS  -->
+            <!-- ======================= -->
+            <div id="tab-settings" class="dash-tab hidden p-4 md:p-8 flex-1">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6">Manajemen Profil Eksekutif</h2>
                 
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
-                    <div class="p-6 border-b border-gray-100 bg-gray-50 flex items-center gap-4">
-                        <i class="fa-solid fa-user-gear text-2xl text-accent"></i>
+                <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
+                    <div class="p-4 md:p-6 border-b border-gray-100 bg-gray-50 flex items-center gap-4">
+                        <div class="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center text-accent shrink-0">
+                            <i class="fa-solid fa-location-dot text-lg"></i>
+                        </div>
                         <div>
-                            <h3 class="font-bold text-gray-800">Status Kehadiran Ibu Kepala Sekolah</h3>
-                            <p class="text-sm text-gray-500">Atur status ini agar Staf TU dan mesin Kiosk mengetahui ketersediaan Anda.</p>
+                            <h3 class="font-bold text-gray-800 text-sm md:text-base">Transmisi Status Kehadiran</h3>
+                            <p class="text-[10px] md:text-xs text-gray-500 mt-1">Ubah status di bawah untuk memberi sinyal otomatis ke mesin Kiosk di Lobi.</p>
                         </div>
                     </div>
                     
-                    <div class="p-8 space-y-8">
-                        <!-- Toggle Status -->
-                        <form id="form-settings" onsubmit="saveSettings(event)" class="space-y-6">
+                    <div class="p-4 md:p-8">
+                        <form id="form-settings" onsubmit="saveSettings(event)" class="space-y-6 md:space-y-8">
                             
-                            <!-- Radio Buttons Custom -->
+                            <!-- Custom Radio Selection -->
                             <div class="space-y-3">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Pilih Status Kehadiran Saat Ini:</label>
+                                <label class="block text-xs md:text-sm font-bold text-gray-700 mb-3">Tentukan Ketersediaan Saat Ini:</label>
                                 
-                                <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition" onclick="updateStatusIndicator('Di Ruangan', 'text-emerald-600')">
-                                    <input type="radio" name="kepsek_status" value="ruangan" class="w-5 h-5 text-emerald-600" checked>
-                                    <div><p class="font-bold text-gray-800">Ada di Ruangan</p><p class="text-xs text-gray-500">Siap menerima tamu dan pengajuan jadwal.</p></div>
-                                    <i class="fa-solid fa-circle-check text-emerald-500 text-2xl ml-auto"></i>
+                                <label class="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition group" onclick="updateStatusIndicator('Hadir di Ruangan', 'text-emerald-600')">
+                                    <input type="radio" name="kepsek_status" value="ruangan" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600 accent-emerald-600" checked>
+                                    <div class="flex-1"><p class="font-bold text-gray-800 text-sm md:text-base group-hover:text-emerald-700 transition">Ada di Ruangan</p><p class="text-[10px] md:text-xs text-gray-500 mt-0.5">Sistem Lobi: Terbuka untuk Walk-in & Reservasi.</p></div>
+                                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-100 flex items-center justify-center"><i class="fa-solid fa-check text-emerald-600"></i></div>
                                 </label>
                                 
-                                <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-yellow-50 transition" onclick="updateStatusIndicator('Sedang Rapat', 'text-yellow-600')">
-                                    <input type="radio" name="kepsek_status" value="rapat" class="w-5 h-5 text-yellow-600">
-                                    <div><p class="font-bold text-gray-800">Sedang Rapat / Sibuk</p><p class="text-xs text-gray-500">Tamu lobi akan diminta menunggu. Pengajuan jadwal tetap masuk.</p></div>
-                                    <i class="fa-solid fa-hand text-yellow-500 text-2xl ml-auto"></i>
+                                <label class="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-yellow-50 hover:border-yellow-200 transition group" onclick="updateStatusIndicator('Sedang Rapat', 'text-yellow-600')">
+                                    <input type="radio" name="kepsek_status" value="rapat" class="w-4 h-4 md:w-5 md:h-5 text-yellow-600 accent-yellow-600">
+                                    <div class="flex-1"><p class="font-bold text-gray-800 text-sm md:text-base group-hover:text-yellow-700 transition">Sedang Sibuk / Rapat</p><p class="text-[10px] md:text-xs text-gray-500 mt-0.5">Sistem Lobi: Tamu diinfokan untuk menunggu.</p></div>
+                                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-yellow-100 flex items-center justify-center"><i class="fa-solid fa-hand text-yellow-600"></i></div>
                                 </label>
 
-                                <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-red-50 transition" onclick="updateStatusIndicator('Dinas Luar', 'text-red-600')">
-                                    <input type="radio" name="kepsek_status" value="dinas" class="w-5 h-5 text-red-600">
-                                    <div><p class="font-bold text-gray-800">Dinas Luar (Tugas Keluar)</p><p class="text-xs text-gray-500">Tamu akan dialihkan ke Wakil Kepala Sekolah oleh Admin.</p></div>
-                                    <i class="fa-solid fa-plane-departure text-red-500 text-2xl ml-auto"></i>
+                                <label class="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-red-50 hover:border-red-200 transition group" onclick="updateStatusIndicator('Dinas Luar', 'text-red-600')">
+                                    <input type="radio" name="kepsek_status" value="dinas" class="w-4 h-4 md:w-5 md:h-5 text-red-600 accent-red-600">
+                                    <div class="flex-1"><p class="font-bold text-gray-800 text-sm md:text-base group-hover:text-red-700 transition">Dinas Luar Kota/Sekolah</p><p class="text-[10px] md:text-xs text-gray-500 mt-0.5">Sistem Lobi: Walk-in ditutup, dialihkan ke Wakasek.</p></div>
+                                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-red-100 flex items-center justify-center"><i class="fa-solid fa-plane-departure text-red-600"></i></div>
                                 </label>
-                            </div>
-
-                            <!-- Auto Reply Option -->
-                            <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
-                                <div>
-                                    <p class="font-bold text-gray-800">Aktifkan Pesan Balasan Otomatis</p>
-                                    <p class="text-sm text-gray-500">Jika Anda sedang Dinas Luar, sistem otomatis menolak jadwal baru.</p>
-                                </div>
-                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-                                    <input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
-                                    <label for="toggle-autoreply" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                                </div>
                             </div>
                             
-                            <div class="pt-6">
-                                <button type="submit" class="bg-primary hover:bg-blue-900 text-white px-8 py-3 rounded-xl font-bold transition shadow-md flex items-center gap-2">
-                                    <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan
+                            <div class="pt-6 border-t border-gray-100 flex justify-end">
+                                <button type="submit" class="w-full sm:w-auto bg-primary hover:bg-blue-900 text-white px-8 py-3.5 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2 text-sm md:text-base">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Terapkan Perubahan Sinkronisasi
                                 </button>
                             </div>
                         </form>
@@ -487,250 +879,552 @@
         </main>
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- LOGIKA JAVASCRIPT LENGKAP                                                 -->
-    <!-- ========================================================================= -->
+    <!-- MODAL TIKET UMUM (POP-UP AKHIR) -->
+    <div id="ticket-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-md w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300" id="ticket-content">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-6"><i class="fa-solid fa-check"></i></div>
+            <h2 class="text-xl md:text-2xl font-bold mb-2" id="ticket-title">Sukses</h2>
+            <p class="text-sm md:text-base text-gray-600 mb-8" id="ticket-desc">Data berhasil masuk ke sistem.</p>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl font-bold transition">Selesai & Tutup</button>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+         JAVASCRIPT ENGINE (LOGIC, STATE MANAGEMENT, CAMERA API, MOCK DB)
+         ========================================================================= -->
     <script>
-        /* --- UTILITIES & ROUTING --- */
+        /**
+         * -------------------------------------------------------------------
+         * 1. BACKGROUND SLIDESHOW LOGIC
+         * -------------------------------------------------------------------
+         * Loops through 5 backgrounds every 5000ms.
+         */
+        let currentBgIndex = 1;
+        const totalBgs = 5;
+        
+        function rotateBackground() {
+            // Remove active class from current
+            document.getElementById(`bg-${currentBgIndex}`).classList.remove('active');
+            // Increment logic
+            currentBgIndex = currentBgIndex === totalBgs ? 1 : currentBgIndex + 1;
+            // Add active class to next
+            document.getElementById(`bg-${currentBgIndex}`).classList.add('active');
+        }
+        // Start Interval (5 seconds)
+        setInterval(rotateBackground, 5000);
+
+        /**
+         * -------------------------------------------------------------------
+         * 2. GLOBAL NAVIGATION & TOAST UTILITIES
+         * -------------------------------------------------------------------
+         */
         function navigate(pageId) {
+            // Hide all pages
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            // Show target page
             document.getElementById(pageId).classList.add('active');
             
+            // Adjust Background Overlays based on environment (Kiosk vs Dashboard)
             const bgOverlay = document.getElementById('global-overlay');
             const bgs = document.querySelectorAll('.bg-slide');
             
             if (pageId === 'page-principal') {
+                // If entering Dashboard, hide Kiosk wallpapers to save memory
                 bgOverlay.style.display = 'none';
                 bgs.forEach(b => b.style.display = 'none');
                 document.body.classList.remove('kiosk-mode');
             } else {
+                // Return to Kiosk mode
                 bgOverlay.style.display = 'block';
                 bgs.forEach(b => b.style.display = 'block');
                 document.body.classList.add('kiosk-mode');
+                // Ensure camera is turned off if navigating away from check-in
+                if(pageId !== 'page-checkin') stopKioskCamera();
             }
         }
 
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            let icon = 'fa-info-circle', color = 'bg-blue-600 border-blue-500';
-            if(type === 'error') { icon = 'fa-circle-xmark'; color = 'bg-red-600 border-red-500'; }
-            if(type === 'success') { icon = 'fa-circle-check'; color = 'bg-emerald-600 border-emerald-500'; }
-            if(type === 'warning') { icon = 'fa-triangle-exclamation'; color = 'bg-yellow-500 border-yellow-400 text-gray-900'; }
             
-            toast.className = `${color} border text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-5 opacity-0 transition-all duration-300 z-[999]`;
-            if(type === 'warning') toast.classList.remove('text-white');
+            // Default styles (Info)
+            let icon = 'fa-info-circle', bgColor = 'bg-blue-600', borderColor = 'border-blue-500', txtColor = 'text-white';
             
-            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span class="font-semibold text-sm tracking-wide">${msg}</span>`;
+            if(type === 'error') { icon = 'fa-circle-xmark'; bgColor = 'bg-red-600'; borderColor = 'border-red-500'; }
+            else if(type === 'success') { icon = 'fa-circle-check'; bgColor = 'bg-emerald-600'; borderColor = 'border-emerald-500'; }
+            else if(type === 'warning') { icon = 'fa-triangle-exclamation'; bgColor = 'bg-yellow-400'; borderColor = 'border-yellow-500'; txtColor = 'text-gray-900'; }
+            
+            toast.className = `${bgColor} ${borderColor} ${txtColor} border px-4 md:px-6 py-3 md:py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-400 z-[9999]`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg shrink-0"></i> <span class="font-semibold text-xs md:text-sm tracking-wide">${msg}</span>`;
+            
             container.appendChild(toast);
             
-            setTimeout(() => toast.classList.remove('translate-y-5', 'opacity-0'), 10);
-            setTimeout(() => { toast.classList.add('translate-y-5', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3500);
+            // Trigger animation in
+            setTimeout(() => { toast.classList.remove('translate-y-10', 'opacity-0'); }, 10);
+            
+            // Trigger animation out after 3.5s
+            setTimeout(() => { 
+                toast.classList.add('translate-y-10', 'opacity-0'); 
+                setTimeout(() => toast.remove(), 400); // Wait for transition before DOM removal
+            }, 3500);
         }
 
-        /* --- KIOSK: TATA CARA MODAL --- */
+        /**
+         * -------------------------------------------------------------------
+         * 3. KIOSK MODALS & AUTHENTICATION
+         * -------------------------------------------------------------------
+         */
         function openGuideModal() {
             const modal = document.getElementById('modal-guide');
             const content = document.getElementById('guide-content');
             modal.classList.remove('hidden');
-            setTimeout(() => { content.classList.replace('scale-0', 'scale-100'); }, 10);
+            setTimeout(() => content.classList.replace('scale-0', 'scale-100'), 10);
         }
         function closeGuideModal() {
-            const modal = document.getElementById('modal-guide');
             const content = document.getElementById('guide-content');
             content.classList.replace('scale-100', 'scale-0');
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            setTimeout(() => document.getElementById('modal-guide').classList.add('hidden'), 300);
         }
 
-        /* --- KIOSK: LOGIN KEPALA SEKOLAH --- */
         function openPrincipalLogin() {
             const modal = document.getElementById('modal-auth-kepsek');
             const content = document.getElementById('auth-content');
             modal.classList.remove('hidden');
-            document.getElementById('kepsek-pin').value = ''; 
+            document.getElementById('kepsek-pin').value = ''; // Reset PIN
             setTimeout(() => { 
                 content.classList.replace('scale-0', 'scale-100'); 
-                document.getElementById('kepsek-pin').focus();
+                document.getElementById('kepsek-pin').focus(); 
             }, 10);
         }
         function closePrincipalLogin() {
-            const modal = document.getElementById('modal-auth-kepsek');
             const content = document.getElementById('auth-content');
             content.classList.replace('scale-100', 'scale-0');
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            setTimeout(() => document.getElementById('modal-auth-kepsek').classList.add('hidden'), 300);
         }
         function verifyPrincipalLogin(e) {
             e.preventDefault();
             const pin = document.getElementById('kepsek-pin').value;
-            // Simulasi Password untuk Ibu Kepsek: kepsek123
+            // HARDCODED DEMO PASSWORD: kepsek123
             if (pin === 'kepsek123') {
                 closePrincipalLogin();
-                showToast("Autentikasi Valid. Selamat Datang, Ibu.", "success");
+                showToast("Otorisasi Tervalidasi. Membuka Sistem Eksekutif.", "success");
                 setTimeout(() => { navigate('page-principal'); }, 400);
             } else {
-                showToast("Sandi Salah. Akses Ditolak.", "error");
+                showToast("Akses Ditolak. Sandi Enkripsi Tidak Valid.", "error");
                 document.getElementById('kepsek-pin').value = '';
+                // Shake animation logic could be added here
             }
         }
         function logoutPrincipal() {
-            showToast("Sesi Eksekutif Diakhiri. Kiosk Terkunci.", "warning");
+            if(window.innerWidth < 768) toggleMobileSidebar(); // Close sidebar if mobile
+            showToast("Sesi Dasbor Berakhir. Mode Lobi Diaktifkan.", "warning");
             navigate('page-main');
         }
 
-        /* --- KIOSK: TICKET MODAL DEMO --- */
-        function showTicketModal(title, desc) {
-            document.getElementById('ticket-title').innerText = title;
-            document.getElementById('ticket-desc').innerText = desc;
-            const modal = document.getElementById('ticket-modal');
-            const content = document.getElementById('ticket-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => { content.classList.replace('scale-0', 'scale-100'); }, 10);
-        }
-        function closeTicket() {
-            const modal = document.getElementById('ticket-modal');
-            const content = document.getElementById('ticket-content');
-            content.classList.replace('scale-100', 'scale-0');
-            setTimeout(() => { modal.classList.add('hidden'); navigate('page-main'); }, 300);
-        }
-
-        /* --- DASHBOARD: TAB SWITCHER --- */
-        function switchTab(tabId) {
-            document.querySelectorAll('.dash-tab').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById(tabId).classList.add('block');
-            
-            document.querySelectorAll('.dash-nav-btn').forEach(btn => {
-                btn.classList.remove('bg-white/10', 'text-white');
-                btn.classList.add('hover:bg-white/5', 'text-gray-400');
-            });
-            const activeBtn = document.getElementById(tabId.replace('tab', 'nav'));
-            if(activeBtn){
-                activeBtn.classList.add('bg-white/10', 'text-white');
-                activeBtn.classList.remove('hover:bg-white/5', 'text-gray-400');
+        /**
+         * -------------------------------------------------------------------
+         * 4. SMART CHECK-IN WIZARD LOGIC (STEP-BY-STEP)
+         * -------------------------------------------------------------------
+         */
+        function goToStep(stepNumber) {
+            // Validate before proceeding forward
+            if (stepNumber === 2) {
+                const name = document.getElementById('w-name').value;
+                const phone = document.getElementById('w-phone').value;
+                const agency = document.getElementById('w-agency').value;
+                if(!name || !phone || !agency) {
+                    showToast("Lengkapi semua kolom identitas wajib (*)", "error"); return;
+                }
+            } else if (stepNumber === 3) {
+                const purp = document.getElementById('w-purpose').value;
+                const det = document.getElementById('w-detail').value;
+                if(!purp || !det) {
+                    showToast("Tentukan kategori dan rincian kunjungan (*)", "error"); return;
+                }
+            } else if (stepNumber === 4) {
+                const consent = document.getElementById('w-consent').checked;
+                if(!consent) {
+                    showToast("Mohon setujui kebijakan privasi kamera (UU PDP)", "error"); return;
+                }
+                // Jika lolos validasi, nyalakan kamera
+                initKioskCamera();
             }
-            
-            const titles = { 
-                'tab-overview': 'Ringkasan Sistem Utama', 
-                'tab-inbox': 'Manajemen Pesan Lobi', 
-                'tab-schedule': 'Validasi Jadwal Pertemuan',
-                'tab-reports': 'Analitik & Laporan',
-                'tab-settings': 'Pengaturan Profil Eksekutif'
-            };
-            document.getElementById('dash-title').innerText = titles[tabId];
 
-            // Render grafik saat membuka tab report
-            if(tabId === 'tab-reports') renderBarChart();
+            // Hide all steps
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            // Show target step
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+            
+            // Update Progress Bar Line (0, 33, 66, 100 percentages approx)
+            const percentages = ['0%', '33%', '66%', '100%'];
+            document.getElementById('wizard-progress').style.width = percentages[stepNumber-1];
+            
+            // Update Step Indicators Style
+            for(let i=1; i<=4; i++) {
+                const ind = document.getElementById(`ind-${i}`);
+                const icon = ind.querySelector('.step-icon');
+                const text = ind.querySelector('.step-text');
+                
+                if (i <= stepNumber) {
+                    // Completed or active step styling
+                    ind.classList.add('active');
+                    icon.classList.remove('bg-primary', 'border-white/30', 'text-white');
+                    icon.classList.add('bg-accent', 'text-primary', 'shadow-[0_0_15px_rgba(212,175,55,0.5)]', 'border-transparent');
+                    text.classList.replace('text-white/50', 'text-accent');
+                } else {
+                    // Incomplete step styling
+                    ind.classList.remove('active');
+                    icon.classList.remove('bg-accent', 'text-primary', 'shadow-[0_0_15px_rgba(212,175,55,0.5)]', 'border-transparent');
+                    icon.classList.add('bg-primary', 'border-white/30', 'text-white');
+                    text.classList.replace('text-accent', 'text-white/50');
+                }
+            }
         }
 
-        /* --- DASHBOARD: PENGATURAN STATUS --- */
+        function resetWizardForm() {
+            // Clear Inputs
+            document.querySelectorAll('#page-checkin input[type="text"], #page-checkin input[type="tel"], #page-checkin textarea, #page-checkin select').forEach(el => el.value = '');
+            document.getElementById('w-consent').checked = false;
+            
+            // Reset Canvas
+            document.getElementById('kiosk-canvas').classList.add('hidden');
+            document.getElementById('lbl-canvas').classList.remove('hidden');
+            
+            // Turn off camera
+            stopKioskCamera();
+            
+            // Go back to step 1 safely without triggering validations
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-1').classList.add('active');
+            document.getElementById('wizard-progress').style.width = '0%';
+            
+            // Reset Indicators manually
+            for(let i=2; i<=4; i++) {
+                const ind = document.getElementById(`ind-${i}`);
+                ind.classList.remove('active');
+                const icon = ind.querySelector('.step-icon');
+                icon.classList.remove('bg-accent', 'text-primary', 'shadow-[0_0_15px_rgba(212,175,55,0.5)]', 'border-transparent');
+                icon.classList.add('bg-primary', 'border-white/30', 'text-white');
+                ind.querySelector('.step-text').classList.replace('text-accent', 'text-white/50');
+            }
+        }
+
+        // --- CAMERA API LOGIC ---
+        let kioskStream = null;
+        
+        async function initKioskCamera() {
+            try {
+                const video = document.getElementById('kiosk-camera');
+                const status = document.getElementById('cam-status');
+                
+                // Constraints: prefer front camera on mobile
+                const constraints = { video: { facingMode: "user" }, audio: false };
+                
+                kioskStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = kioskStream;
+                
+                // Hide loading spinner once video plays
+                video.onloadedmetadata = () => {
+                    status.style.display = 'none';
+                };
+            } catch (err) {
+                console.warn("Camera Error: ", err);
+                showToast("Akses kamera ditolak browser atau perangkat tidak memiliki kamera.", "error");
+                document.getElementById('cam-status').innerHTML = '<i class="fa-solid fa-video-slash text-2xl text-red-500 mb-2"></i><br>Kamera Nonaktif';
+            }
+        }
+
+        function stopKioskCamera() {
+            if (kioskStream) {
+                kioskStream.getTracks().forEach(track => track.stop());
+                kioskStream = null;
+            }
+            document.getElementById('cam-status').style.display = 'block'; // Reset status UI
+        }
+
+        function takePicture() {
+            if(!kioskStream) { 
+                showToast("Kamera tidak aktif. Harap izinkan akses kamera di browser Anda.", "error"); 
+                return; 
+            }
+            const video = document.getElementById('kiosk-camera');
+            const canvas = document.getElementById('kiosk-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size matching video source
+            canvas.width = video.videoWidth; 
+            canvas.height = video.videoHeight;
+            // Draw current frame
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Update UI
+            canvas.classList.remove('hidden');
+            document.getElementById('lbl-canvas').classList.add('hidden');
+            showToast("Sidik Wajah Berhasil Perekaman", 'success');
+        }
+
+        function submitWizard() {
+            if(document.getElementById('kiosk-canvas').classList.contains('hidden')) {
+                showToast("Anda wajib menekan tombol Ambil Foto Wajah terlebih dahulu.", "warning"); 
+                return;
+            }
+            stopKioskCamera();
+            // Data insertion logic would go here
+            showTicketModal("Check-In Berhasil!", "Mohon tunggu di lobi. Anda tercatat sebagai Antrean Walk-In ke-3 hari ini.");
+            
+            // Simulasi penambahan data ke Dashboard Inbox
+            simDB.inbox.unshift({
+                name: document.getElementById('w-name').value,
+                org: document.getElementById('w-agency').value,
+                msg: document.getElementById('w-detail').value,
+                time: "Baru Saja"
+            });
+            renderInbox(); // Update dashboard silently
+        }
+
+        /**
+         * -------------------------------------------------------------------
+         * 5. SCHEDULE FORM LOGIC
+         * -------------------------------------------------------------------
+         */
+        function updateFileName(input) {
+            const nameEl = document.getElementById('file-name');
+            const iconEl = document.getElementById('file-icon');
+            if (input.files && input.files[0]) {
+                nameEl.innerText = input.files[0].name;
+                nameEl.classList.replace('text-gray-400', 'text-emerald-400');
+                iconEl.classList.replace('fa-cloud-arrow-up', 'fa-file-circle-check');
+                iconEl.classList.add('text-emerald-400');
+            } else {
+                nameEl.innerText = 'Klik/Tap untuk lampirkan surat (PDF)';
+                nameEl.classList.replace('text-emerald-400', 'text-gray-400');
+                iconEl.classList.replace('fa-file-circle-check', 'fa-cloud-arrow-up');
+                iconEl.classList.remove('text-emerald-400');
+            }
+        }
+
+        function submitScheduleForm(e) {
+            e.preventDefault();
+            // Simple validation handled by HTML5. Show success:
+            showTicketModal("Jadwal Diajukan!", "Permohonan Anda masuk sistem. Admin akan memvalidasi dan mengirim email balasan.");
+            
+            // Reset Form & File Visuals
+            e.target.reset();
+            const input = document.getElementById('file-upload');
+            // Mock trigger empty change
+            Object.defineProperty(input, 'files', {value: []}); 
+            updateFileName(input); 
+        }
+
+        /**
+         * -------------------------------------------------------------------
+         * 6. DASHBOARD: MOBILE SIDEBAR TOGGLE
+         * -------------------------------------------------------------------
+         */
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('principal-sidebar');
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            
+            // Toggle classes for translation and opacity
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        /**
+         * -------------------------------------------------------------------
+         * 7. MOCK DATABASE & DASHBOARD RENDERING
+         * -------------------------------------------------------------------
+         * We construct a robust client-side object to simulate a real backend.
+         */
+        const simDB = {
+            activities: [
+                { time: '10:45', name: 'Budi Santoso', cat: 'Tamu VIP', status: 'PENDING' },
+                { time: '09:30', name: 'Kurir Ekspres (Dokumen)', cat: 'Titip Barang', status: 'APPROVED' },
+                { time: '08:15', name: 'Ibu Ratna (Komite)', cat: 'Walk-In', status: 'APPROVED' }
+            ],
+            schedules: [
+                { id: 101, name: 'Bapak Ilham', org: 'CV. Maju Edukasi', date: '12 Okt', time: '10:00', loc: 'Ruang Kepsek', status: 'PENDING' },
+                { id: 102, name: 'Tim Asesor', org: 'BAN-SM Provinsi', date: '15 Okt', time: '08:00', loc: 'Ruang Rapat', status: 'PENDING' },
+                { id: 103, name: 'Dinas Pendidikan', org: 'Pengawas Daerah', date: '18 Okt', time: '13:00', loc: 'Daring (Zoom)', status: 'APPROVED' }
+            ],
+            inbox: [
+                { name: 'Vendor ATK', org: 'PT Sinar Mas', msg: 'Mengirimkan sampel produk alat tulis untuk tahun ajaran baru sesuai permintaan.', time: '09:10' },
+                { name: 'Wali Murid Kelas 12', org: 'Pribadi', msg: 'Ingin berdiskusi mengenai program pemantapan ujian nasional.', time: '08:45' }
+            ]
+        };
+
+        function getStatusBadgeUI(status) {
+            if(status === 'PENDING') return `<span class="badge badge-pending">Menunggu Aksi</span>`;
+            if(status === 'APPROVED') return `<span class="badge badge-approved"><i class="fa-solid fa-check mr-1"></i> Disetujui</span>`;
+            if(status === 'REJECTED') return `<span class="badge badge-rejected"><i class="fa-solid fa-xmark mr-1"></i> Ditolak</span>`;
+            return '';
+        }
+
+        // Render Overview Activity
+        function renderActivities() {
+            const tbody = document.getElementById('quick-activity-list');
+            tbody.innerHTML = '';
+            simDB.activities.forEach(act => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-gray-500 font-semibold text-xs md:text-sm"><i class="fa-regular fa-clock mr-1 text-gray-400"></i>${act.time}</td>
+                        <td class="font-bold text-gray-800 text-sm">${act.name}</td>
+                        <td><span class="text-[10px] md:text-xs bg-gray-100 border border-gray-200 px-2 py-1 rounded-md text-gray-600 font-bold uppercase tracking-wide">${act.cat}</span></td>
+                        <td>${getStatusBadgeUI(act.status)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Render Inbox Cards (Grid Layout instead of Table for modern feel)
+        function renderInbox() {
+            const grid = document.getElementById('inbox-grid');
+            const badge = document.getElementById('notif-badge');
+            grid.innerHTML = '';
+            
+            // Update badge number
+            if(badge) badge.innerText = simDB.inbox.length;
+            
+            simDB.inbox.forEach((msg, idx) => {
+                grid.innerHTML += `
+                    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition flex flex-col">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm">${msg.name}</h4>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wide"><i class="fa-solid fa-building mr-1"></i>${msg.org}</p>
+                            </div>
+                            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">${msg.time}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4 flex-1 bg-gray-50 p-3 rounded-lg border border-gray-100">"${msg.msg}"</p>
+                        <div class="flex justify-end gap-2 mt-auto border-t border-gray-100 pt-3">
+                            <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition font-bold" onclick="removeInbox(${idx})">Arsipkan</button>
+                            <button class="text-xs bg-accent text-primary px-3 py-1.5 rounded font-bold shadow-sm">Tindak Lanjut</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        function removeInbox(idx) {
+            simDB.inbox.splice(idx, 1);
+            renderInbox();
+            showToast("Pesan dipindahkan ke arsip.", "info");
+        }
+
+        // Render Schedule Table
+        function renderSchedules() {
+            const tbody = document.getElementById('schedule-list');
+            tbody.innerHTML = '';
+            
+            let pendingCount = 0;
+
+            simDB.schedules.forEach(sch => {
+                if(sch.status === 'PENDING') pendingCount++;
+                
+                let actionHTML = '';
+                if(sch.status === 'PENDING') {
+                    actionHTML = `
+                        <div class="flex justify-end gap-1 sm:gap-2">
+                            <button onclick="updateSchedule(${sch.id}, 'APPROVED')" class="text-[10px] md:text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1.5 md:px-3 md:py-2 rounded shadow-sm font-bold transition"><i class="fa-solid fa-check"></i> <span class="hidden sm:inline">Setujui</span></button>
+                            <button onclick="updateSchedule(${sch.id}, 'REJECTED')" class="text-[10px] md:text-xs bg-white hover:bg-red-50 border border-red-200 text-red-600 px-2 py-1.5 md:px-3 md:py-2 rounded shadow-sm font-bold transition"><i class="fa-solid fa-xmark"></i> <span class="hidden sm:inline">Tolak</span></button>
+                        </div>
+                    `;
+                } else {
+                    actionHTML = `<span class="text-[10px] md:text-xs text-gray-400 bg-gray-50 px-2 md:px-3 py-1.5 md:py-2 rounded-lg border border-gray-100">Telah Diproses</span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="font-bold text-gray-800 text-sm">${sch.name}</div>
+                            <div class="text-[10px] md:text-xs text-gray-500 mt-1"><i class="fa-solid fa-building text-gray-400 mr-1"></i>${sch.org}</div>
+                        </td>
+                        <td>
+                            <div class="font-bold text-blue-700 bg-blue-50 inline-block px-1.5 py-0.5 rounded border border-blue-100 text-xs md:text-sm">${sch.date}</div>
+                            <div class="text-[10px] md:text-xs text-gray-500 mt-1 font-semibold"><i class="fa-regular fa-clock mr-1"></i>${sch.time}</div>
+                        </td>
+                        <td class="text-gray-700 text-xs md:text-sm font-semibold min-w-[120px]"><i class="fa-solid fa-location-dot text-accent mr-1"></i> ${sch.loc}</td>
+                        <td>${getStatusBadgeUI(sch.status)}</td>
+                        <td class="text-right">${actionHTML}</td>
+                    </tr>
+                `;
+            });
+            
+            // Update widget stat
+            const waitEl = document.getElementById('db-wait');
+            if(waitEl) waitEl.innerText = pendingCount;
+        }
+
+        function updateSchedule(id, newStatus) {
+            const idx = simDB.schedules.findIndex(s => s.id === id);
+            if(idx > -1) {
+                simDB.schedules[idx].status = newStatus;
+                renderSchedules();
+                if(newStatus === 'APPROVED') showToast("Jadwal disetujui. Notifikasi dikirim ke pemohon.", "success");
+                else showToast("Jadwal ditolak. Membatalkan pengajuan.", "error");
+            }
+        }
+
+        // Initialize Renderings
+        renderActivities();
+        renderInbox();
+        renderSchedules();
+
+        /**
+         * -------------------------------------------------------------------
+         * 8. DASHBOARD: ANALYTICS CHART GENERATOR (CSS-BASED)
+         * -------------------------------------------------------------------
+         */
+        let chartRendered = false;
+        function renderBarChart() {
+            if (chartRendered) return;
+            const wrap = document.getElementById('bar-chart-wrapper');
+            if(!wrap) return;
+            
+            // Data [Sen, Sel, Rab, Kam, Jum, Sab, Min]
+            const rawData = [12, 28, 15, 35, 22, 8, 3]; 
+            const maxVal = Math.max(...rawData);
+            
+            wrap.innerHTML = ''; // Clear
+            
+            rawData.forEach(val => {
+                // Kalkulasi persentase tinggi dengan minimal 5% agar bar terlihat walau kecil
+                let heightPct = (val / maxVal) * 100;
+                if(heightPct < 5) heightPct = 5; 
+                
+                wrap.innerHTML += `
+                <div class="chart-bar-wrap">
+                    <div class="chart-tooltip">${val} Kunjungan</div>
+                    <div class="chart-bar shadow-sm" style="height: 0%;" data-target="${heightPct}"></div>
+                </div>`;
+            });
+
+            // Trigger Animation Layout Thrashing Prevention
+            setTimeout(() => {
+                const bars = document.querySelectorAll('.chart-bar');
+                bars.forEach(bar => {
+                    bar.style.height = `${bar.getAttribute('data-target')}%`;
+                });
+            }, 50);
+            
+            chartRendered = true;
+        }
+
+        /**
+         * -------------------------------------------------------------------
+         * 9. DASHBOARD: SETTINGS LOGIC
+         * -------------------------------------------------------------------
+         */
         function updateStatusIndicator(text, colorClass) {
             const ind = document.getElementById('status-indicator');
-            // Reset color
-            ind.className = `text-xs font-medium mt-0.5 ${colorClass}`;
-            let iconColor = colorClass.replace('text-', 'bg-').replace('-600', '-500'); 
+            ind.className = `text-[10px] md:text-xs font-medium mt-0.5 ${colorClass}`;
             ind.innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1"></i>${text}`;
         }
 
         function saveSettings(e) {
             e.preventDefault();
-            showToast("Pengaturan status berhasil diperbarui di seluruh sistem.", "success");
-        }
-
-        /* --- DASHBOARD: DUMMY DATA & RENDERING --- */
-        const dummyActivities = [
-            { time: '10:45', name: 'Budi Santoso (Diknas)', type: 'Tamu VIP', status: 'PENDING' },
-            { time: '09:30', name: 'Kurir JNE (Paket Dokumen)', type: 'Titip Barang', status: 'APPROVED' },
-            { time: '08:15', name: 'Ibu Ratna (Komite Sekolah)', type: 'Walk-In', status: 'APPROVED' }
-        ];
-
-        const dummySchedules = [
-            { id: 101, name: 'Bapak Ilham', org: 'CV. Maju Jaya Edukasi', date: '2026-10-12', time: '10:00', loc: 'Ruang Kepsek', status: 'PENDING' },
-            { id: 102, name: 'Tim Asesor', org: 'BAN-SM Provinsi', date: '2026-10-15', time: '08:00', loc: 'Ruang Rapat Utama', status: 'PENDING' },
-            { id: 103, name: 'Dinas Pendidikan', org: 'Pengawas Daerah', date: '2026-10-18', time: '13:00', loc: 'Daring (Zoom)', status: 'APPROVED' }
-        ];
-
-        function getStatusBadge(status) {
-            if(status === 'PENDING') return `<span class="badge badge-pending">Menunggu Tindakan</span>`;
-            if(status === 'APPROVED') return `<span class="badge badge-approved">Disetujui</span>`;
-            if(status === 'REJECTED') return `<span class="badge badge-rejected">Ditolak</span>`;
-            return '';
-        }
-
-        // Render Activity Table
-        const actBody = document.getElementById('quick-activity-list');
-        dummyActivities.forEach(act => {
-            actBody.innerHTML += `<tr>
-                <td class="text-gray-500 font-semibold"><i class="fa-regular fa-clock mr-1 text-gray-400"></i>${act.time}</td>
-                <td class="font-bold text-gray-800">${act.name}</td>
-                <td><span class="text-xs bg-gray-100 border border-gray-200 px-3 py-1 rounded-full text-gray-600 font-semibold uppercase tracking-wider">${act.type}</span></td>
-                <td>${getStatusBadge(act.status)}</td>
-            </tr>`;
-        });
-
-        // Render Schedule Table
-        function renderSchedules() {
-            const schBody = document.getElementById('schedule-list');
-            schBody.innerHTML = '';
-            dummySchedules.forEach(sch => {
-                let actions = '';
-                if(sch.status === 'PENDING') {
-                    actions = `
-                        <button onclick="actionSchedule(${sch.id}, 'APPROVED')" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg transition shadow-sm font-bold mr-1"><i class="fa-solid fa-check mr-1"></i> Terima</button>
-                        <button onclick="actionSchedule(${sch.id}, 'REJECTED')" class="text-xs bg-white hover:bg-red-50 text-red-600 border border-red-200 px-3 py-2 rounded-lg transition shadow-sm font-bold"><i class="fa-solid fa-xmark mr-1"></i> Tolak</button>
-                    `;
-                } else {
-                    actions = `<span class="text-xs text-gray-400 italic bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">Sudah diproses sistem</span>`;
-                }
-
-                schBody.innerHTML += `<tr>
-                    <td><div class="font-bold text-gray-800 text-base">${sch.name}</div><div class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-building text-gray-400 mr-1"></i>${sch.org}</div></td>
-                    <td><div class="font-bold text-blue-700 bg-blue-50 inline-block px-2 py-1 rounded border border-blue-100">${sch.date}</div><div class="text-xs text-gray-500 mt-1 font-semibold"><i class="fa-regular fa-clock mr-1"></i>${sch.time} WIB</div></td>
-                    <td class="text-gray-700 text-sm font-semibold"><i class="fa-solid fa-location-dot text-accent mr-1"></i> ${sch.loc}</td>
-                    <td>${getStatusBadge(sch.status)}</td>
-                    <td class="text-right">${actions}</td>
-                </tr>`;
-            });
-        }
-        renderSchedules();
-
-        function actionSchedule(id, actionStr) {
-            const index = dummySchedules.findIndex(s => s.id === id);
-            if(index !== -1) {
-                dummySchedules[index].status = actionStr;
-                renderSchedules();
-                if(actionStr === 'APPROVED') {
-                    showToast("Jadwal disetujui. Sistem mengirim email balasan otomatis.", "success");
-                } else {
-                    showToast("Jadwal ditolak. Pesan penolakan telah dikirim.", "error");
-                }
-            }
-        }
-
-        /* --- DASHBOARD: BAR CHART LOGIC (REPORTS TAB) --- */
-        function renderBarChart() {
-            const wrap = document.getElementById('bar-chart-wrapper');
-            if(wrap.innerHTML !== '') return; // Biar tidak render ganda
-            
-            // Dummy data kunjungan (Senin - Minggu)
-            const data = [12, 19, 15, 25, 22, 5, 2]; 
-            const maxVal = Math.max(...data);
-            
-            data.forEach(val => {
-                const heightPct = (val / maxVal) * 100;
-                wrap.innerHTML += `
-                <div class="chart-bar-wrap w-full flex flex-col justify-end items-center group relative cursor-pointer" style="height: 100%;">
-                    <div class="chart-tooltip">${val} Tamu</div>
-                    <div class="chart-bar shadow-sm" style="height: 0%;"></div>
-                </div>`;
-            });
-
-            // Animasi tumbuh chart
-            setTimeout(() => {
-                const bars = document.querySelectorAll('.chart-bar');
-                bars.forEach((bar, idx) => {
-                    bar.style.height = `${(data[idx] / maxVal) * 100}%`;
-                });
-            }, 100);
+            // Show spinning icon logic could go here
+            showToast("Konfigurasi disimpan. Mesin Kiosk Lobi telah disinkronkan dengan status baru Ibu.", "success");
         }
     </script>
 </body>
