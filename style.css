@@ -4,7 +4,6 @@
 html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; }
 body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
 
-/* Kiosk Mode - Batasan overflow dihapus agar bisa scroll natural */
 .kiosk-mode { background-color: #000; color: white; min-height: 100vh; overflow-x: hidden; overflow-y: auto; }
 
 .bg-slide { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; z-index: -2; }
@@ -13,7 +12,6 @@ body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: 
 
 .glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
 
-/* PERBAIKAN LAYOUT: Page disembunyikan menggunakan display:none */
 .page { display: none !important; width: 100%; min-height: 100vh; }
 .page.active { display: flex !important; animation: pageFadeIn 0.5s ease forwards; }
 @keyframes pageFadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
@@ -33,7 +31,6 @@ body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: 
 .timeline-item::before { content: ''; position: absolute; left: -1.85rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: #D4AF37; border: 3px solid #0A2540; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
 .timeline-item:last-child { padding-bottom: 0; }
 
-/* SCROLLBARS */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
@@ -47,18 +44,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37
 /* ================= DESAIN BARU DASBOR (DRIBBBLE STYLE) ================= */
 .dash-layout { background-color: #E5EBE8; font-family: 'Inter', sans-serif; color: #111827; }
 
-.slim-sidebar { 
-    width: 80px; height: calc(100vh - 2rem); 
-    background-color: #1A1C1E; color: white; 
-    position: fixed; left: 1rem; top: 1rem; z-index: 50; 
-    border-radius: 2rem; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0;
-    transition: transform 0.3s ease; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.dash-content-area { 
-    margin-left: calc(80px + 2rem); width: calc(100% - 80px - 3rem); 
-    min-height: 100vh; padding: 2rem 0; transition: margin-left 0.3s ease; 
-}
+.slim-sidebar { width: 80px; height: calc(100vh - 2rem); background-color: #1A1C1E; color: white; position: fixed; left: 1rem; top: 1rem; z-index: 50; border-radius: 2rem; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0; transition: transform 0.3s ease; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+.dash-content-area { margin-left: calc(80px + 2rem); width: calc(100% - 80px - 3rem); min-height: 100vh; padding: 2rem 0; transition: margin-left 0.3s ease; }
 
 @media (max-width: 1024px) {
     .slim-sidebar { transform: translateX(-120%); left: 0; top: 0; height: 100vh; border-radius: 0; z-index: 999; }
@@ -67,28 +54,15 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37
     .mobile-topbar { display: flex !important; }
 }
 
-.floating-header {
-    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 1.25rem;
-    margin-top: 1rem; padding: 0.75rem 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    position: sticky; top: 1rem; z-index: 30;
-}
-
-.side-icon { 
-    width: 48px; height: 48px; border-radius: 1rem; display: flex; justify-content: center; align-items: center; 
-    color: #6B7280; font-size: 1.25rem; transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.5rem;
-}
+.floating-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 1.25rem; margin-top: 1rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); position: sticky; top: 1rem; z-index: 30; }
+.side-icon { width: 48px; height: 48px; border-radius: 1rem; display: flex; justify-content: center; align-items: center; color: #6B7280; font-size: 1.25rem; transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.5rem; }
 .side-icon:hover { color: white; }
 .side-icon.active { background-color: rgba(255,255,255,0.1); color: white; }
 
 .hide-scroll::-webkit-scrollbar { display: none; }
 .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-.tab-pill { 
-    padding: 0.5rem 1.25rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; 
-    white-space: nowrap; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; 
-}
+.tab-pill { padding: 0.5rem 1.25rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
 .tab-pill.active { background-color: #1A1C1E; color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 .tab-pill:not(.active) { background-color: white; color: #4B5563; border-color: #E5E7EB; }
 .tab-pill:not(.active):hover { border-color: #9CA3AF; }
@@ -118,6 +92,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37
 .inbox-card { padding: 1.25rem; border-radius: 1rem; border: 1px solid #F1F5F9; background: white; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 .inbox-card:hover { border-color: #BFDBFE; transform: translateX(4px); }
 .inbox-card.active { background: #EFF6FF; border-color: #3B82F6; box-shadow: 0 4px 12px rgba(59,130,246,0.1); }
+.inbox-unread-dot { width: 8px; height: 8px; background: #3B82F6; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px rgba(59,130,246,0.6); }
 
 .dash-view { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .dash-view.active { display: block; }
