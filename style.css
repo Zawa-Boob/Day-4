@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ================= BASE STYLES & FIX LAYOUT ================= */
+html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+
+/* Kiosk Mode - Batasan overflow dihapus agar bisa scroll natural */
+.kiosk-mode { background-color: #000; color: white; min-height: 100vh; overflow-x: hidden; overflow-y: auto; }
+
+.bg-slide { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; z-index: -2; }
+.bg-slide.active { opacity: 1; transform: scale(1.02); transition: opacity 1.5s ease-in-out, transform 10s linear; }
+.bg-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.75), rgba(10, 37, 64, 0.98)); z-index: -1; }
+
+.glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
+
+/* PERBAIKAN LAYOUT: Page disembunyikan menggunakan display:none */
+.page { display: none !important; width: 100%; min-height: 100vh; }
+.page.active { display: flex !important; animation: pageFadeIn 0.5s ease forwards; }
+@keyframes pageFadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+
+/* ================= WIZARD ANIMATIONS ================= */
+.wizard-step { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.wizard-step.active { display: block; }
+@keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.step-indicator { transition: all 0.3s ease; }
+.step-indicator.active .step-icon { background-color: #D4AF37; color: #0A2540; border-color: transparent; box-shadow: 0 0 15px rgba(212,175,55,0.5); transform: scale(1.15); }
+.step-indicator.active .step-text { color: #D4AF37; font-weight: bold; }
+
+.timeline { position: relative; padding-left: 2rem; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+.timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: rgba(212, 175, 55, 0.3); }
+.timeline-item { position: relative; padding-bottom: 2rem; }
+.timeline-item::before { content: ''; position: absolute; left: -1.85rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: #D4AF37; border: 3px solid #0A2540; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+.timeline-item:last-child { padding-bottom: 0; }
+
+/* SCROLLBARS */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
+.dash-content-area ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.4); }
+.dash-content-area ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.8); }
+
+input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
+.dash-content-area input:focus, .dash-content-area select:focus, .dash-content-area textarea:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+
+/* ================= DESAIN BARU DASBOR (DRIBBBLE STYLE) ================= */
+.dash-layout { background-color: #E5EBE8; font-family: 'Inter', sans-serif; color: #111827; }
+
+.slim-sidebar { 
+    width: 80px; height: calc(100vh - 2rem); 
+    background-color: #1A1C1E; color: white; 
+    position: fixed; left: 1rem; top: 1rem; z-index: 50; 
+    border-radius: 2rem; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0;
+    transition: transform 0.3s ease; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.dash-content-area { 
+    margin-left: calc(80px + 2rem); width: calc(100% - 80px - 3rem); 
+    min-height: 100vh; padding: 2rem 0; transition: margin-left 0.3s ease; 
+}
+
+@media (max-width: 1024px) {
+    .slim-sidebar { transform: translateX(-120%); left: 0; top: 0; height: 100vh; border-radius: 0; z-index: 999; }
+    .slim-sidebar.mobile-open { transform: translateX(0); }
+    .dash-content-area { margin-left: 0; width: 100%; padding: 1rem; padding-top: 5rem; }
+    .mobile-topbar { display: flex !important; }
+}
+
+.floating-header {
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 1.25rem;
+    margin-top: 1rem; padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    position: sticky; top: 1rem; z-index: 30;
+}
+
+.side-icon { 
+    width: 48px; height: 48px; border-radius: 1rem; display: flex; justify-content: center; align-items: center; 
+    color: #6B7280; font-size: 1.25rem; transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.5rem;
+}
+.side-icon:hover { color: white; }
+.side-icon.active { background-color: rgba(255,255,255,0.1); color: white; }
+
+.hide-scroll::-webkit-scrollbar { display: none; }
+.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+.tab-pill { 
+    padding: 0.5rem 1.25rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; 
+    white-space: nowrap; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; 
+}
+.tab-pill.active { background-color: #1A1C1E; color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.tab-pill:not(.active) { background-color: white; color: #4B5563; border-color: #E5E7EB; }
+.tab-pill:not(.active):hover { border-color: #9CA3AF; }
+
+.dash-card-lime { background: #D4FF59; border-radius: 2rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(212, 255, 89, 0.2); }
+.dash-card-dark { background: #1A1C1E; color: white; border-radius: 2rem; padding: 1.5rem; position: relative; overflow: hidden; }
+
+.modern-table-container { background: white; border-radius: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid #F1F5F9; overflow: hidden; }
+.modern-table { width: 100%; border-collapse: collapse; }
+.modern-table th { background: #F8FAFC; color: #64748B; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid #F1F5F9; }
+.modern-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid #F8FAFC; font-size: 0.875rem; color: #334155; }
+.modern-table tr:hover td { background-color: #F8FAFC; cursor: pointer; }
+
+.modern-badge { padding: 0.35rem 0.85rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; }
+.b-wait { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+.b-ok { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+.b-no { background-color: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+
+.toggle-checkbox:checked { right: 0; border-color: #3B82F6; }
+.toggle-checkbox:checked + .toggle-label { background-color: #3B82F6; }
+.toggle-checkbox:checked + .toggle-label:before { transform: translateX(100%); }
+.toggle-label { width: 3rem; height: 1.5rem; background-color: #E2E8F0; border-radius: 9999px; position: relative; cursor: pointer; transition: background-color 0.3s; }
+.toggle-label:before { content: ''; position: absolute; top: 0.125rem; left: 0.125rem; width: 1.25rem; height: 1.25rem; background-color: white; border-radius: 50%; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+.inbox-grid-layout { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; height: calc(100vh - 180px); }
+@media (max-width: 1024px) { .inbox-grid-layout { grid-template-columns: 1fr; height: auto; } .inbox-detail-view { display: none; } }
+.inbox-card { padding: 1.25rem; border-radius: 1rem; border: 1px solid #F1F5F9; background: white; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.inbox-card:hover { border-color: #BFDBFE; transform: translateX(4px); }
+.inbox-card.active { background: #EFF6FF; border-color: #3B82F6; box-shadow: 0 4px 12px rgba(59,130,246,0.1); }
+
+.dash-view { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.dash-view.active { display: block; }
+
+.skeleton { background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite linear; border-radius: 4px; }
+@keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Notification Dropdown Modern */
+.notif-dropdown { position: absolute; right: 0; top: 120%; width: 340px; background: white; border-radius: 1.5rem; box-shadow: 0 15px 50px -10px rgba(0,0,0,0.15); border: 1px solid #F1F5F9; z-index: 100; transform-origin: top right; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.notif-dropdown.hidden { opacity: 0; transform: scale(0.95) translateY(-10px); pointer-events: none; }
+.notif-item { padding: 1rem; border-bottom: 1px solid #F8FAFC; cursor: pointer; transition: background 0.2s; display: flex; gap: 0.8rem; align-items: flex-start; }
+.notif-item:hover { background: #F8FAFC; }
+
+/* CSS Bar Chart */
+.chart-container { display: flex; align-items: flex-end; height: 250px; gap: 0.5rem; padding-top: 1rem; }
+@media (min-width: 768px) { .chart-container { gap: 1.25rem; } }
+.bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; height: 100%; }
+.bar-track { position: absolute; inset: 0; width: 100%; border: 2px dashed #E5E7EB; border-radius: 999px; z-index: 0; }
+.bar-fill-black { position: absolute; bottom: 0; width: 100%; background: #1A1C1E; border-radius: 999px; z-index: 1; transition: height 1s ease; }
+.bar-fill-lime { position: absolute; bottom: 0; width: 100%; background: #D4FF59; border-radius: 999px; z-index: 2; transition: height 1s ease; }
+.bar-dot { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: white; border-radius: 50%; z-index: 3; }
+.chart-tooltip { position: absolute; top: -40px; background: #1e293b; color: #fff; font-size: 0.75rem; font-weight: 600; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: all 0.2s ease; pointer-events: none; white-space: nowrap; z-index: 50; transform: translateY(10px); }
+.bar-wrap:hover .chart-tooltip { opacity: 1; transform: translateY(0); }
