@@ -88,12 +88,12 @@
         .dash-sidebar { 
             width: 280px; height: 100vh; background-color: #0A2540; color: white; 
             position: fixed; left: 0; top: 0; z-index: 50; border-right: 1px solid rgba(212, 175, 55, 0.2); 
-            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         
         .dash-content-area { 
             margin-left: 280px; width: calc(100% - 280px); height: 100vh; 
-            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
+            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
         }
 
         /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
@@ -104,6 +104,7 @@
             .dash-sidebar { transform: translateX(-100%); width: 280px; z-index: 999; }
             .dash-sidebar.mobile-open { transform: translateX(0) !important; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
             .dash-content-area { margin-left: 0 !important; width: 100% !important; padding: 1rem; padding-top: 5rem; }
+            .sidebar-collapsed .dash-content-area { margin-left: 0 !important; width: 100% !important; }
         }
         
         .mobile-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 900; display: none; opacity: 0; transition: opacity 0.3s ease; }
@@ -119,7 +120,7 @@
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; transition: background-color 0.3s; }
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
-        .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
+        .data-table tr:hover td { background-color: #f8fafc; cursor: pointer; }
         
         /* MENGEMBALIKAN BADGE KUNING */
         .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
@@ -146,7 +147,7 @@
         .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 50; }
         .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
         
-        /* ================= INBOX SPLIT PANE WA WEB STYLE ================= */
+        /* ================= INBOX SPLIT PANE WA WEB STYLE (SANGAT INTERAKTIF) ================= */
         .inbox-wrapper { 
             display: flex; flex-direction: row; 
             width: 100%; height: calc(100vh - 160px); min-height: 500px;
@@ -174,7 +175,7 @@
 
         .inbox-item-name-shrink { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #475569; width: 100%; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi kecil) */
+        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi foto profil saja) */
         @media (min-width: 1025px) {
             .inbox-wrapper.is-reading .inbox-list { width: 90px; padding-top: 1rem; }
             .inbox-wrapper.is-reading .inbox-header-wrap { display: none; }
@@ -188,7 +189,7 @@
         @media (max-width: 1024px) {
             .inbox-wrapper { flex-direction: column; height: 75vh; min-height: 400px; }
             .inbox-list { width: 100%; border-right: none; display: flex; }
-            .inbox-detail { display: none; width: 100%; height: 100%; }
+            .inbox-detail { display: none; width: 100%; height: 100%; } /* Default Sembunyi */
             
             /* Kunci pertukaran layar saat pesan diklik */
             .inbox-wrapper.show-detail .inbox-list { display: none !important; }
@@ -269,10 +270,6 @@
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accent/20 blur-[80px] rounded-full pointer-events-none"></div>
 
             <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-[0_0_30px_rgba(212,175,55,0.6)] border-4 border-accent relative z-10 overflow-hidden">
-                <!-- ========================================================== -->
-                <!-- GANTI LINK DI BAWAH INI DENGAN NAMA FILE FOTO/LOGO ANDA    -->
-                <!-- Contoh: src="logo-sekolah.png"                             -->
-                <!-- ========================================================== -->
                 <img src="MASUKKAN_NAMA_FILE_LOGO_DISINI.png" alt="Logo Sekolah" id="school-logo" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
             </div>
             
@@ -317,7 +314,7 @@
         </div>
 
         <button onclick="openGuideModal()" class="mt-6 md:mt-8 text-gray-400 hover:text-white px-5 py-2 rounded-full text-xs md:text-sm font-semibold transition flex items-center gap-2 border border-transparent hover:border-white/20 hover:bg-white/5">
-            <i class="fa-solid fa-circle-question"></i> Bantuan & Panduan Sistem
+            <i class="fa-solid fa-circle-question"></i> Panduan Penggunaan
         </button>
     </div>
 
@@ -343,9 +340,6 @@
         <div class="glass-panel p-8 md:p-10 rounded-3xl max-w-sm w-full relative border border-accent/60 scale-0 transition-transform duration-400 shadow-[0_0_50px_rgba(212,175,55,0.15)]" id="auth-content">
             <button onclick="closePrincipalLogin()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
-                <!-- ========================================================== -->
-                <!-- GANTI LINK DI BAWAH INI DENGAN NAMA FILE FOTO/LOGO ANDA    -->
-                <!-- ========================================================== -->
                 <img src="MASUKKAN_NAMA_FILE_LOGO_DISINI.png" class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-accent mx-auto mb-4 shadow-lg object-cover bg-white" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
                 <h3 class="text-lg md:text-xl font-bold text-white">Otorisasi Eksekutif</h3>
                 <p class="text-[10px] md:text-xs text-accent/80 mt-1 uppercase tracking-widest">Portal Ibu Kepala Sekolah</p>
@@ -427,7 +421,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
+                <!-- STEP 2: Agenda & File Upload -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -527,6 +521,7 @@
 
     <!-- ========================================================================= -->
     <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4 - DIJAGA 100%)        -->
+    <!-- (Ini dipertahankan murni sesuai instruksi mutlak Anda, tanpa diubah)      -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex-col items-center py-6 px-4 md:px-8 relative">
         <div class="flex justify-between items-center mb-4 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
@@ -573,7 +568,7 @@
         </div>
     </div>
 
-    <!-- MODAL TIKET UMUM (POP-UP SUCCESS) -->
+    <!-- MODAL TIKET UMUM -->
     <div id="ticket-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-sm w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300 flex flex-col items-center" id="ticket-content">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
@@ -622,18 +617,15 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY)                        -->
+    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY + INDEPENDENT SCROLL)   -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page dash-layout" style="color: #333;">
         
         <div class="mobile-overlay" id="mobile-sidebar-overlay" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar Navigation (Classic) -->
+        <!-- Sidebar Navigation -->
         <aside class="dash-sidebar shadow-xl" id="principal-sidebar">
             <div class="p-6 border-b border-white/10 flex items-center gap-4 bg-black/20 shrink-0">
-                <!-- ========================================================== -->
-                <!-- GANTI LINK DI BAWAH INI DENGAN NAMA FILE FOTO/LOGO ANDA    -->
-                <!-- ========================================================== -->
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-accent shrink-0">
                     <img src="MASUKKAN_NAMA_FILE_LOGO_DISINI.png" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
                 </div>
@@ -653,10 +645,8 @@
                     <i class="fa-solid fa-chart-pie w-5 text-center"></i> <span>Ringkasan Utama</span>
                 </button>
                 <button onclick="switchTab('tab-inbox'); autoCollapseSidebar();" class="dash-nav-btn w-full relative" id="nav-inbox">
-                    <i class="fa-solid fa-inbox w-5 text-center"></i> <span>Daftar Pesan</span> <span class="ml-auto bg-accent text-primary text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse" id="notif-badge">3</span>
+                    <i class="fa-solid fa-inbox w-5 text-center"></i> <span>Daftar Pesan Masuk</span> <span class="ml-auto bg-accent text-primary text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse" id="notif-badge">3</span>
                 </button>
-                
-                <!-- QOL BARU: TAB RIWAYAT PESAN (ARSIP) -->
                 <button onclick="switchTab('tab-history'); autoCollapseSidebar();" class="dash-nav-btn w-full relative" id="nav-history">
                     <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> <span>Riwayat Pesan</span>
                 </button>
@@ -690,7 +680,6 @@
                 </div>
                 
                 <div class="flex items-center gap-3 md:gap-6 ml-4">
-                    <!-- TOMBOL LONCENG -->
                     <div class="relative">
                         <button onclick="toggleNotificationPanel()" class="text-gray-400 hover:text-accent transition relative w-8 h-8 md:w-10 md:h-10 bg-gray-50 rounded-full flex items-center justify-center border border-gray-200 shrink-0">
                             <i class="fa-regular fa-bell text-sm md:text-lg"></i>
@@ -721,7 +710,7 @@
                 <div class="mb-6 md:mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                     <div>
                         <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">Selamat Datang kembali, Ibu.</h2>
-                        <p class="text-xs md:text-sm text-gray-500">Berikut adalah daftar pengirim pesan yang mendaftar via Web hari ini.</p>
+                        <p class="text-xs md:text-sm text-gray-500">Berikut adalah daftar pengirim pesan yang masih menunggu di Web hari ini.</p>
                     </div>
                     <div class="text-sm font-bold text-gray-500 bg-white px-4 py-2 md:px-5 md:py-2.5 rounded-lg border border-gray-200 shadow-sm flex items-center gap-2"><i class="fa-regular fa-calendar text-accent"></i> <span id="live-date">Memuat Tanggal...</span></div>
                 </div>
@@ -732,40 +721,40 @@
                         <div class="w-8 h-8 md:w-12 md:h-12 bg-blue-50 text-blue-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-users"></i></div>
                     </div>
                     <div class="stat-card border-l-4 border-yellow-500 p-4 md:p-6 group">
-                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Pesan Belum Dibaca</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-unread-count">0</h3></div>
-                        <div class="w-8 h-8 md:w-12 md:h-12 bg-yellow-50 text-yellow-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-envelope-open-text"></i></div>
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Menunggu Keputusan</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-wait">0</h3></div>
+                        <div class="w-8 h-8 md:w-12 md:h-12 bg-yellow-50 text-yellow-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-hourglass-half"></i></div>
                     </div>
                     <div class="stat-card border-l-4 border-emerald-500 p-4 md:p-6 group">
-                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Disetujui</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-approved">0</h3></div>
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Pesan Disetujui</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-approved">0</h3></div>
                         <div class="w-8 h-8 md:w-12 md:h-12 bg-emerald-50 text-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-check"></i></div>
                     </div>
                     <div class="stat-card border-l-4 border-purple-500 p-4 md:p-6 group">
-                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Ditolak</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-rejected">0</h3></div>
+                        <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Pesan Ditolak</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-rejected">0</h3></div>
                         <div class="w-8 h-8 md:w-12 md:h-12 bg-purple-50 text-purple-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-xmark"></i></div>
                     </div>
                 </div>
                 
                 <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                     <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                        <h3 class="font-bold text-gray-800 text-sm md:text-lg flex items-center"><i class="fa-solid fa-address-book text-accent mr-2"></i>Daftar Registrasi Pengaju</h3>
+                        <h3 class="font-bold text-gray-800 text-sm md:text-lg flex items-center"><i class="fa-solid fa-address-book text-accent mr-2"></i>Daftar Registrasi (Menunggu Persetujuan)</h3>
                         <button onclick="switchTab('tab-inbox')" class="text-xs md:text-sm text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg transition hidden sm:block">Buka Seluruh Pesan</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full data-table min-w-[700px]">
-                            <thead><tr><th>Waktu Submit</th><th>Identitas Pengirim</th><th>Kontak & Instansi</th><th>Status Persetujuan</th></tr></thead>
+                            <thead><tr><th>Waktu Submit</th><th>Identitas Pengirim</th><th>Kontak & Instansi</th><th>Status Sistem</th></tr></thead>
                             <tbody id="guest-list-area"><tr class="animate-pulse"><td colspan="4" class="p-4"><div class="h-8 skeleton w-full"></div></td></tr></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 2: INBOX (SPLIT PANE WA WEB STYLE - BEBAS MACET) -->
+            <!-- TAB 2: INBOX (SPLIT PANE WA WEB STYLE - HANYA PENDING) -->
             <div id="tab-inbox" class="dash-view p-4 md:p-8 flex-1">
                 <div class="inbox-wrapper" id="inbox-wrapper-el">
                     
                     <div class="inbox-list">
                         <div class="inbox-search-header p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20 transition-all">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 md:mb-0">Daftar Pesan Masuk</h3>
+                            <h3 class="font-bold text-gray-800 text-base mb-2 md:mb-0">Pesan Baru (Menunggu)</h3>
                         </div>
                         <div class="inbox-shrink-header hidden bg-gray-50/50 border-b border-gray-100 shrink-0 h-auto md:h-20">
                             <i class="fa-solid fa-envelope-open-text text-gray-400 text-xl"></i>
@@ -789,12 +778,8 @@
             <div id="tab-history" class="dash-view p-4 md:p-8 flex-1">
                 <div class="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-1">Riwayat Pengajuan</h2>
-                        <p class="text-xs md:text-sm text-gray-500">Arsip seluruh pesan dan jadwal yang telah selesai diproses.</p>
-                    </div>
-                    <div class="relative w-full sm:w-auto">
-                        <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400"></i>
-                        <input type="text" placeholder="Cari arsip..." class="w-full sm:w-64 pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-1">Riwayat Pesan Terselesaikan</h2>
+                        <p class="text-xs md:text-sm text-gray-500">Arsip seluruh pesan dan jadwal yang telah Anda setujui atau tolak.</p>
                     </div>
                 </div>
                 
@@ -823,7 +808,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
-                    <!-- Grafik Batang CSS Sederhana -->
                     <div class="lg:col-span-2 bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm">
                         <h3 class="font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2 text-sm md:text-base">Grafik Pengajuan (7 Hari Terakhir)</h3>
                         <div class="chart-container"><div id="bar-chart-wrapper" class="flex w-full h-full gap-2 items-end"></div></div>
@@ -832,14 +816,19 @@
                         </div>
                     </div>
                     
-                    <!-- Insight -->
                     <div class="bg-gradient-to-br from-primary to-[#163050] text-white rounded-xl md:rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -bottom-10 -right-10 text-9xl text-white/5 pointer-events-none"><i class="fa-solid fa-chart-pie"></i></div>
                         <div class="relative z-10">
                             <h3 class="text-accent font-bold mb-4 border-b border-white/20 pb-2 text-sm md:text-base">Insight Sistem</h3>
                             <ul class="space-y-4 md:space-y-5 text-xs md:text-sm">
-                                <li class="flex items-start gap-3"><div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-clock"></i></div><div><p class="text-white/70 mb-0.5">Jam Tersibuk</p><p class="font-bold text-lg">09:00 - 11:00</p></div></li>
-                                <li class="flex items-start gap-3"><div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-check-double text-emerald-400"></i></div><div><p class="text-white/70 mb-0.5">Tingkat Persetujuan</p><p class="font-bold text-lg text-emerald-400">85%</p></div></li>
+                                <li class="flex items-start gap-3">
+                                    <div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-clock"></i></div>
+                                    <div><p class="text-white/70 mb-0.5">Jam Tersibuk</p><p class="font-bold text-lg">09:00 - 11:00</p></div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-check-double text-emerald-400"></i></div>
+                                    <div><p class="text-white/70 mb-0.5">Tingkat Persetujuan</p><p class="font-bold text-lg text-emerald-400">85%</p></div>
+                                </li>
                             </ul>
                         </div>
                         <div class="mt-6 text-[10px] md:text-xs text-white/50 text-center bg-black/20 p-3 rounded-xl relative z-10">Diperbarui secara real-time</div>
@@ -853,12 +842,18 @@
                 
                 <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 overflow-hidden max-w-3xl">
                     <div class="p-4 md:p-6 border-b border-gray-100 bg-gray-50 flex items-center gap-4">
-                        <div class="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center text-accent shrink-0"><i class="fa-solid fa-user-gear text-lg"></i></div>
-                        <div><h3 class="font-bold text-gray-800 text-sm md:text-base">Transmisi Status Kehadiran</h3><p class="text-[10px] md:text-xs text-gray-500 mt-1">Atur status ini agar web mengetahui ketersediaan Anda.</p></div>
+                        <div class="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center text-accent shrink-0">
+                            <i class="fa-solid fa-user-gear text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm md:text-base">Transmisi Status Kehadiran</h3>
+                            <p class="text-[10px] md:text-xs text-gray-500 mt-1">Atur status ini agar web mengetahui ketersediaan Anda.</p>
+                        </div>
                     </div>
                     
                     <div class="p-4 md:p-8 space-y-6 md:space-y-8">
                         <form id="form-settings" onsubmit="saveSettings(event)" class="space-y-6">
+                            
                             <div class="space-y-3">
                                 <label class="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition group" onclick="updateStatusIndicator('Di Ruangan', 'text-emerald-600')">
                                     <input type="radio" name="kepsek_status" value="ruangan" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600 accent-emerald-600" checked>
@@ -880,13 +875,25 @@
                             </div>
 
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
-                                <div><p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">BARU</span></p><p class="text-[10px] md:text-xs text-gray-500">Ubah tampilan dasbor menjadi gelap untuk menjaga kesehatan mata.</p></div>
-                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in"><input type="checkbox" id="toggle-darkmode" onchange="toggleDarkMode(this)" class="toggle-checkbox theme-toggle absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/><label for="toggle-darkmode" class="toggle-label theme-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div>
+                                <div>
+                                    <p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">BARU</span></p>
+                                    <p class="text-[10px] md:text-xs text-gray-500">Ubah tampilan dasbor menjadi gelap untuk menjaga kesehatan mata.</p>
+                                </div>
+                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="toggle-darkmode" onchange="toggleDarkMode(this)" class="toggle-checkbox theme-toggle absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
+                                    <label for="toggle-darkmode" class="toggle-label theme-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
                             </div>
 
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
-                                <div><p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Respon Otomatis Sistem</p><p class="text-[10px] md:text-xs text-gray-500">Otomatis menolak jadwal baru saat status Dinas Luar.</p></div>
-                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/><label for="toggle-autoreply" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div>
+                                <div>
+                                    <p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Respon Otomatis Sistem</p>
+                                    <p class="text-[10px] md:text-xs text-gray-500">Otomatis menolak jadwal baru saat status Dinas Luar.</p>
+                                </div>
+                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
+                                    <label for="toggle-autoreply" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
                             </div>
                             
                             <div class="pt-6">
@@ -993,7 +1000,7 @@
         }
 
         function logoutPrincipal() {
-            document.body.classList.remove('sidebar-collapsed'); 
+            document.body.classList.remove('sidebar-collapsed'); // Reset Sidebar Desktop
             if(window.innerWidth <= 1024) {
                 const sidebar = document.getElementById('principal-sidebar');
                 const overlay = document.getElementById('mobile-sidebar-overlay');
@@ -1010,7 +1017,8 @@
             const tt = document.getElementById('ticket-title'); if(tt) tt.innerText = title; 
             const td = document.getElementById('ticket-desc'); if(td) td.innerText = desc; 
             const m = document.getElementById('ticket-modal'), c = document.getElementById('ticket-content'); 
-            if(m) m.classList.remove('hidden'); setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); 
+            if(m) m.classList.remove('hidden'); 
+            setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); 
         }
         function closeTicket() { const c = document.getElementById('ticket-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=>{ const m = document.getElementById('ticket-modal'); if(m) m.classList.add('hidden'); navigate('page-main'); }, 300); }
 
@@ -1181,7 +1189,7 @@
             let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
             let locInfo = loc || 'Via Website';
 
-            // Mengambil Foto Base64
+            // Mengambil Foto Base64 untuk Database dan Profil Avatar
             let faceImageData = name.charAt(0).toUpperCase(); 
             if(canvas && !canvas.classList.contains('hidden')) {
                 faceImageData = canvas.toDataURL('image/jpeg');
@@ -1209,7 +1217,7 @@
             resetCheckinWizard();
         }
 
-        /* --- FITUR SCHEDULE FORM & CAMERA (TIDAK DIUBAH 100% SESUAI INSTRUKSI MUTLAK) --- */
+        /* --- FITUR SCHEDULE FORM & CAMERA (TIDAK DIUBAH 100% SESUAI INSTRUKSI) --- */
         let schStream = null;
         
         function updateFileName(input) {
@@ -1297,7 +1305,7 @@
             const target = document.getElementById(tabId); 
             if(target) {
                 target.classList.add('active');
-                void target.offsetWidth; // Trigger reflow
+                void target.offsetWidth; 
                 target.classList.add('animate-fadeSlideUp');
             }
             
@@ -1310,7 +1318,7 @@
             if(dt) dt.innerText = titles[tabId] || 'Dasbor Utama';
             
             if(tabId === 'tab-reports') renderBarChart();
-            if(tabId === 'tab-history') renderHistoryList(); // Render table riwayat
+            if(tabId === 'tab-history') renderHistoryList(); 
         }
 
         function toggleMobileSidebar() {
@@ -1320,7 +1328,6 @@
             if(overlay) overlay.classList.toggle('active');
         }
 
-        // Auto Collapse Sidebar (Responsive Desktop)
         function toggleSidebar() {
             if(isMobileScreen()) {
                 toggleMobileSidebar();
@@ -1329,7 +1336,6 @@
             }
         }
 
-        // Memastikan sidebar hilang jika diklik via Desktop
         function autoCollapseSidebar() {
             if(isMobileScreen()) {
                 const sidebar = document.getElementById('principal-sidebar');
@@ -1346,7 +1352,6 @@
             if(panel) panel.classList.toggle('hidden');
         }
 
-        // --- DARK MODE TOGGLE SCRIPT ---
         function toggleDarkMode(checkbox) {
             if(checkbox.checked) {
                 document.body.classList.add('dark-mode');
@@ -1379,7 +1384,8 @@
             const actList = document.getElementById('quick-activity-list');
             const guestList = document.getElementById('guest-list-area');
             
-            let unreadCount = simDB.inbox.filter(m => !m.read).length;
+            // HANYA MENGHITUNG PESAN PENDING UNTUK DI TAMPILAN DEPAN (Kecuali metrik stat)
+            let unreadCount = simDB.inbox.filter(m => !m.read && m.status === 'PENDING').length;
             let pendingReq = simDB.inbox.filter(m => m.status === 'PENDING').length;
             let approvedReq = simDB.inbox.filter(m => m.status === 'APPROVED').length;
             let rejectedReq = simDB.inbox.filter(m => m.status === 'REJECTED').length;
@@ -1390,6 +1396,7 @@
             const pr = document.getElementById('db-rejected'); if(pr) pr.innerText = rejectedReq;
             const ubc = document.getElementById('db-unread-count'); if(ubc) ubc.innerText = unreadCount;
             
+            // Tampilan Ringkasan: Quick Activity Log
             if(actList) {
                 actList.innerHTML = '';
                 simDB.inbox.slice(0, 4).forEach(req => {
@@ -1402,16 +1409,23 @@
                 });
             }
 
+            // FILTER: TAMPILAN DEPAN HANYA MUNCUL ORANG YANG MASIH PENDING
             if(guestList) {
                 guestList.innerHTML = '';
-                simDB.guests.forEach(g => {
-                    guestList.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer" onclick="switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(${g.id})">
-                        <td class="font-medium text-gray-500 text-sm"><i class="fa-regular fa-clock mr-2 text-gray-400"></i>${g.time}</td>
-                        <td class="font-bold text-gray-800 text-sm">${g.name}</td>
-                        <td><div class="text-sm font-medium text-gray-700">${g.agency}</div><div class="text-[10px] text-gray-400 tracking-widest mt-0.5">${g.phone}</div></td>
-                        <td>${getStatusBadgeUI(g.status)}</td>
-                    </tr>`;
-                });
+                const pendingGuests = simDB.guests.filter(g => g.status === 'PENDING');
+                
+                if(pendingGuests.length === 0) {
+                    guestList.innerHTML = '<tr><td colspan="4" class="text-center p-6 text-gray-500 text-sm font-medium">Tidak ada antrean pengajuan baru.</td></tr>';
+                } else {
+                    pendingGuests.forEach(g => {
+                        guestList.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer" onclick="switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(${g.id})">
+                            <td class="font-medium text-gray-500 text-sm"><i class="fa-regular fa-clock mr-2 text-gray-400"></i>${g.time}</td>
+                            <td class="font-bold text-gray-800 text-sm">${g.name}</td>
+                            <td><div class="text-sm font-medium text-gray-700">${g.agency}</div><div class="text-[10px] text-gray-400 tracking-widest mt-0.5">${g.phone}</div></td>
+                            <td>${getStatusBadgeUI(g.status)}</td>
+                        </tr>`;
+                    });
+                }
             }
         }
 
@@ -1428,44 +1442,61 @@
         function renderInboxList() {
             const listArea = document.getElementById('inbox-list-area');
             const badge = document.getElementById('notif-badge');
-            if(!listArea) return; listArea.innerHTML = '';
+            if(!listArea) return; 
+            listArea.innerHTML = '';
             
-            let unreadCount = simDB.inbox.filter(m => !m.read).length;
+            // HANYA MENGAMBIL PESAN YANG STATUSNYA MASIH PENDING!
+            const pendingMessages = simDB.inbox.filter(m => m.status === 'PENDING');
+            let unreadCount = pendingMessages.filter(m => !m.read).length;
+            
             if(badge) {
                 if(unreadCount > 0) { badge.innerText = `${unreadCount} BARU`; badge.style.display = 'inline-block'; } 
                 else { badge.style.display = 'none'; }
             }
             
-            simDB.inbox.forEach((msg) => {
-                let unreadClass = !msg.read ? 'unread' : '';
-                let statusDot = msg.status === 'PENDING' ? '<span class="inline-block w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full ml-1" title="Menunggu Persetujuan"></span>' : '';
-                let avatarHTML = getAvatarHTML(msg.avatar, 'w-10 h-10 md:w-12 md:h-12');
-                
-                listArea.innerHTML += `
-                    <div class="inbox-item ${unreadClass} border-b border-gray-100 p-4 hover:bg-blue-50/30 transition cursor-pointer flex flex-col md:flex-row items-center md:items-start gap-3" onclick="openMessage(${msg.id}, this)">
-                        <div class="relative shrink-0 inbox-avatar-wrap">
-                            ${avatarHTML}
+            // JIKA SEMUA PESAN SUDAH DISELESAIKAN (INBOX ZERO)
+            if(pendingMessages.length === 0) {
+                listArea.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center p-8 mt-10">
+                        <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-check-double text-2xl text-emerald-500"></i>
                         </div>
-                        <div class="inbox-item-content flex-1 overflow-hidden w-full">
-                            <div class="flex justify-between items-start mb-1">
-                                <h4 class="text-sm truncate pr-2 font-bold text-gray-800">${msg.sender} ${statusDot}</h4>
-                                <span class="text-[9px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">${msg.time}</span>
+                        <h4 class="font-bold text-gray-700 text-sm">Semua Pesan Selesai!</h4>
+                        <p class="text-xs text-gray-500 mt-2">Tidak ada pesan baru yang menunggu persetujuan Anda saat ini.</p>
+                    </div>
+                `;
+            } else {
+                pendingMessages.forEach((msg) => {
+                    let unreadClass = !msg.read ? 'unread' : '';
+                    let statusDot = '<span class="inline-block w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full ml-1" title="Menunggu Persetujuan"></span>';
+                    let avatarHTML = getAvatarHTML(msg.avatar, 'w-10 h-10 md:w-12 md:h-12');
+                    
+                    listArea.innerHTML += `
+                        <div class="inbox-item ${unreadClass} border-b border-gray-100 p-4 hover:bg-blue-50/30 transition cursor-pointer flex flex-col md:flex-row items-center md:items-start gap-3" onclick="openMessage(${msg.id}, this)">
+                            <div class="relative shrink-0 inbox-avatar-wrap">
+                                ${avatarHTML}
                             </div>
-                            <p class="text-[11px] text-gray-800 font-bold truncate mb-1">${msg.title}</p>
-                            <p class="text-[10px] text-gray-500 truncate">${msg.body}</p>
-                        </div>
-                        <div class="inbox-item-name-shrink">${msg.sender.split(' ')[0]}</div>
-                    </div>`;
-            });
+                            <div class="inbox-item-content flex-1 overflow-hidden w-full">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="text-sm truncate pr-2 font-bold text-gray-800">${msg.sender} ${statusDot}</h4>
+                                    <span class="text-[9px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">${msg.time}</span>
+                                </div>
+                                <p class="text-[11px] text-gray-800 font-bold truncate mb-1">${msg.title}</p>
+                                <p class="text-[10px] text-gray-500 truncate">${msg.body}</p>
+                            </div>
+                            <div class="inbox-item-name-shrink">${msg.sender.split(' ')[0]}</div>
+                        </div>`;
+                });
+            }
             renderDashboardMetrics();
         }
 
-        // QOL BARU: TAB TABEL RIWAYAT ARSIP PESAN
         function renderHistoryList() {
             const historyArea = document.getElementById('history-list-area');
             if(!historyArea) return;
             historyArea.innerHTML = '';
             
+            // Filter hanya pesan yang BUKAN PENDING (Approved / Rejected)
             const historyData = simDB.inbox.filter(m => m.status !== 'PENDING');
             
             if(historyData.length === 0) {
@@ -1529,7 +1560,7 @@
                 actionButtons = `<span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">Pengajuan Telah ${msg.status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}</span>`;
             }
 
-            // Nama File Dinamis (Hadir di bawah chat)
+            // Nama File Dinamis
             let fileIcon = msg.hasFile ? `<div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl inline-flex items-center gap-3 cursor-pointer hover:bg-red-100 transition dark-mode-file"><i class="fa-solid fa-file-pdf text-red-500 text-xl"></i><div><p class="text-xs font-bold text-gray-700 file-name-text">${msg.fileName || 'Lampiran_Resmi.pdf'}</p><p class="text-[10px] text-gray-500">1.2 MB</p></div></div>` : '';
             let avatarDetailHTML = getAvatarHTML(msg.avatar, 'w-12 h-12 md:w-16 md:h-16');
 
@@ -1573,10 +1604,25 @@
                 req.status = newStatus;
                 if(gst) gst.status = newStatus;
                 
-                openMessage(id, null); // Refresh detail view
-                renderHistoryList(); // Update arsip
+                // MENGHAPUS PESAN DARI LAYAR BACA DAN MENGEMBALIKAN KE DEFAULT KOSONG
+                const detailArea = document.getElementById('inbox-detail-area');
+                if(detailArea) {
+                    detailArea.innerHTML = `
+                        <div class="flex-1 flex flex-col items-center justify-center text-gray-300 bg-gray-50/50 p-6 text-center">
+                            <i class="fa-regular fa-envelope-open text-7xl mb-6 opacity-50"></i>
+                            <p class="text-sm font-medium text-gray-400">Pilih pesan di sebelah kiri untuk membaca detail dan menyetujui pengajuan.</p>
+                        </div>
+                    `;
+                }
+
+                closeMessageMobile(); // Keluar dari view pesan jika di HP / perbesar list jika di PC
                 
-                showToast(newStatus === 'APPROVED' ? "Pengajuan disetujui. Notifikasi otomatis dikirim ke pemohon." : "Pengajuan ditolak. Pesan pembatalan terkirim.", newStatus === 'APPROVED' ? "success" : "error");
+                renderDashboardMetrics();
+                renderInboxList(); 
+                renderHistoryList(); // Update arsip otomatis
+                renderNotifications();
+                
+                showToast(newStatus === 'APPROVED' ? "Pengajuan disetujui. Pesan dipindahkan ke Riwayat." : "Pengajuan ditolak. Pesan dipindahkan ke Riwayat.", newStatus === 'APPROVED' ? "success" : "error");
             }
         }
 
@@ -1588,8 +1634,8 @@
 
             let notifs = [];
             simDB.inbox.forEach(m => {
-                if(!m.read) notifs.push({ text: `Pesan baru dari ${m.sender}`, time: m.time, icon: 'fa-envelope', color: 'text-blue-500', action: "switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(" + m.id + ");" });
-                if(m.status === 'PENDING') notifs.push({ text: `Pengajuan Tertunda dari ${m.sender}`, time: m.time, icon: 'fa-triangle-exclamation', color: 'text-yellow-500', action: "switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(" + m.id + ");" });
+                if(!m.read && m.status === 'PENDING') notifs.push({ text: `Pesan baru dari ${m.sender}`, time: m.time, icon: 'fa-envelope', color: 'text-blue-500', action: "switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(" + m.id + ");" });
+                if(m.status === 'PENDING') notifs.push({ text: `Pengajuan Tertunda: ${m.sender}`, time: m.time, icon: 'fa-triangle-exclamation', color: 'text-yellow-500', action: "switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(" + m.id + ");" });
             });
 
             if(notifs.length === 0) {
