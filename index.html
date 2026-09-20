@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>SiTamu - Enterprise Ultimate Edition</title>
+    <title>SiTamu - Enterprise Edition (Kiosk & Dasbor Kepsek)</title>
     
-    <!-- Tailwind CSS & FontAwesome -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -26,22 +27,26 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         /* ================= BASE STYLES & FIX LAYOUT ================= */
-        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s; }
         
+        /* Kiosk Mode - Bebas Scroll */
         .kiosk-mode { background-color: #000; color: white; min-height: 100vh; overflow-x: hidden; overflow-y: auto; }
         
+        /* ================= DYNAMIC BACKGROUNDS ================= */
         .bg-slide { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; z-index: -2; }
         .bg-slide.active { opacity: 1; transform: scale(1.02); transition: opacity 1.5s ease-in-out, transform 10s linear; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.75), rgba(10, 37, 64, 0.98)); z-index: -1; }
         
         .glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
         
+        /* SPA ROUTING FIX */
         .page { display: none !important; width: 100%; min-height: 100vh; animation: pageFadeIn 0.4s ease forwards; }
         .page.active { display: flex !important; flex-direction: column; }
+        #page-principal.active { display: block !important; }
         @keyframes pageFadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 
-        /* ================= WIZARD ANIMATIONS ================= */
+        /* ================= WIZARD ANIMATIONS & TIMELINE ================= */
         .wizard-step { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .wizard-step.active { display: block; }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -56,68 +61,117 @@
         .timeline-item::before { content: ''; position: absolute; left: -1.85rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: #D4AF37; border: 3px solid #0A2540; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
         .timeline-item:last-child { padding-bottom: 0; }
 
+        /* SCROLLBARS */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
         .dash-content-area::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.4); }
+        .dash-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
 
         input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
         .dash-content-area input:focus, .dash-content-area select:focus, .dash-content-area textarea:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
 
         /* ================= DASHBOARD KEPSEK STYLES ================= */
         .dash-layout { background-color: #F0F4F8; font-family: 'Inter', sans-serif; color: #111827; height: 100vh; overflow: hidden; transition: background-color 0.3s; }
-        .dash-sidebar { width: 280px; height: 100vh; background-color: #0A2540; color: white; position: fixed; left: 0; top: 0; z-index: 50; border-right: 1px solid rgba(212, 175, 55, 0.2); display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 10px 0 25px rgba(0, 0, 0, 0.1); }
-        .dash-content-area { margin-left: 280px; width: calc(100% - 280px); height: 100vh; overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .dash-sidebar { 
+            width: 280px; height: 100vh; background-color: #0A2540; color: white; 
+            position: fixed; left: 0; top: 0; z-index: 50; border-right: 1px solid rgba(212, 175, 55, 0.2); 
+            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s ease; 
+        }
+        
+        .dash-content-area { 
+            margin-left: 280px; width: calc(100% - 280px); height: 100vh; 
+            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.3s ease, width 0.3s ease, background-color 0.3s; 
+        }
 
         .sidebar-collapsed .dash-sidebar { transform: translateX(-100%); }
         .sidebar-collapsed .dash-content-area { margin-left: 0; width: 100%; }
 
         @media (max-width: 1024px) {
             .dash-sidebar { transform: translateX(-100%); width: 280px; z-index: 999; }
-            .dash-sidebar.mobile-open { transform: translateX(0); }
-            .dash-content-area { margin-left: 0; width: 100%; padding-bottom: 2rem; }
+            .dash-sidebar.mobile-open { transform: translateX(0); box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
+            .dash-content-area { margin-left: 0; width: 100%; padding: 1rem; padding-top: 5rem; }
             .sidebar-collapsed .dash-content-area { margin-left: 0; width: 100%; }
         }
         
-        .mobile-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 900; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .mobile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; opacity: 0; transition: opacity 0.3s ease; }
         .mobile-overlay.active { display: block; opacity: 1; }
 
         .dash-nav-btn { display: flex; align-items: center; gap: 1rem; padding: 0.875rem 1.25rem; border-radius: 0.75rem; color: #9ca3af; font-weight: 500; font-size: 0.875rem; transition: all 0.2s ease; margin-bottom: 0.25rem; }
         .dash-nav-btn:hover { background-color: rgba(255,255,255,0.05); color: white; border-left: 4px solid rgba(255,255,255,0.2); }
         .dash-nav-btn.active { background-color: rgba(212, 175, 55, 0.1); color: #D4AF37; font-weight: 700; border-left: 4px solid #D4AF37; }
 
-        .stat-card { background: white; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
-
-        .modern-table-container { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); border: 1px solid #F1F5F9; overflow: hidden; }
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .modern-table th { background: #F8FAFC; color: #64748B; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid #F1F5F9; }
-        .modern-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid #F8FAFC; font-size: 0.875rem; color: #334155; }
-        .modern-table tr:hover td { background-color: #F8FAFC; cursor: pointer; }
+        .stat-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-color: rgba(212,175,55,0.4); }
         
-        .badge { padding: 0.35rem 0.85rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; }
-        .b-wait { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
-        .b-ok { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-        .b-no { background-color: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; transition: background-color 0.3s; }
+        .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
+        .data-table tr:hover td { background-color: #f8fafc; cursor: pointer; }
+        
+        /* KEMBALIKAN WARNA KUNING UNTUK BADGE STATUS (UI KLASIK) */
+        .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.65rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
+        .badge-pending { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+        .badge-approved { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+        .badge-rejected { background-color: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
 
+        /* Toggles */
         .toggle-checkbox:checked { right: 0; border-color: #10B981; }
         .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
         .toggle-checkbox:checked + .toggle-label:before { transform: translateX(100%); }
         .toggle-label { width: 3rem; height: 1.5rem; background-color: #CBD5E1; border-radius: 9999px; position: relative; cursor: pointer; transition: background-color 0.3s; }
         .toggle-label:before { content: ''; position: absolute; top: 0.125rem; left: 0.125rem; width: 1.25rem; height: 1.25rem; background-color: white; border-radius: 50%; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        /* INBOX PANE CSS */
-        .inbox-grid-layout { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; height: calc(100vh - 160px); min-height: 500px; }
-        @media (max-width: 768px) { 
-            .inbox-grid-layout { grid-template-columns: 1fr; height: auto; } 
-            .inbox-detail-view { display: none; } 
-            .show-detail .inbox-list-view { display: none !important; }
-            .show-detail .inbox-detail-view { display: flex !important; }
+        .theme-toggle:checked { right: 0; border-color: #0A2540; }
+        .theme-toggle:checked + .theme-label { background-color: #0A2540; }
+        .theme-toggle:checked + .theme-label:before { transform: translateX(100%); }
+
+        /* CSS Bar Chart */
+        .chart-container { display: flex; align-items: flex-end; height: 200px; gap: 1rem; padding-top: 1rem; }
+        .chart-bar-wrap { flex: 1; display: flex; flex-col; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; height: 100%; }
+        .chart-bar { width: 100%; background: linear-gradient(to top, #0A2540, #1A365D); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
+        .chart-bar-wrap:hover .chart-bar { background: linear-gradient(to top, #D4AF37, #FDE047); }
+        .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 50; }
+        .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
+        
+        /* ================= INBOX SPLIT PANE WA WEB STYLE (SANGAT INTERAKTIF) ================= */
+        .inbox-container-el { display: flex; height: calc(100vh - 160px); background: white; border-radius: 1rem; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); position: relative; min-height: 500px; transition: background-color 0.3s, border-color 0.3s; }
+        
+        /* Panel Kiri (List Pesan) - Animasi Menyusut saat di-klik Desktop */
+        .inbox-list-pane { width: 350px; border-right: 1px solid #e2e8f0; background: #fcfcfc; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, border-color 0.3s; }
+        .inbox-detail-pane { flex: 1; background: #ffffff; display: flex; flex-direction: column; position: relative; min-width: 0; transition: background-color 0.3s; }
+        
+        .inbox-card { padding: 1.25rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: all 0.2s; position: relative; display: flex; gap: 0.75rem; align-items: flex-start; }
+        .inbox-card:hover { background: #f8fafc; }
+        .inbox-card.active { background: #eff6ff; border-left: 4px solid #3b82f6; }
+        .inbox-card.unread h4 { font-weight: 800; color: #1e3a8a; }
+
+        /* Kondisi "Is Reading" di Desktop (Menyusutkan Kiri menjadi foto saja) */
+        .inbox-container-el.is-reading .inbox-list-pane { width: 90px; }
+        .inbox-container-el.is-reading .inbox-search-header { display: none; }
+        .inbox-container-el.is-reading .inbox-shrink-header { display: flex !important; justify-content: center; padding: 1.25rem 0; border-bottom: 1px solid #e2e8f0; }
+        .inbox-container-el.is-reading .inbox-card { flex-direction: column; align-items: center; padding: 0.75rem 0.25rem; justify-content: center; text-align: center; }
+        .inbox-container-el.is-reading .inbox-card-content { display: none !important; }
+        .inbox-container-el.is-reading .inbox-card-name { display: block !important; }
+        .inbox-container-el.is-reading .inbox-avatar-wrap { margin: 0 auto; }
+
+        /* Mobile View (WA Web behavior) */
+        @media (max-width: 1024px) {
+            .inbox-list-pane { width: 100%; border-right: none; }
+            .inbox-detail-pane { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: white; }
+            .inbox-container-el.show-detail .inbox-list-pane { display: none !important; }
+            .inbox-container-el.show-detail .inbox-detail-pane { display: flex !important; }
+            
+            /* Matikan efek shrink di mobile */
+            .inbox-container-el.is-reading .inbox-list-pane { width: 100%; }
+            .inbox-container-el.is-reading .inbox-card-content { display: block !important; }
+            .inbox-container-el.is-reading .inbox-card-name { display: none !important; }
+            .inbox-container-el.is-reading .inbox-card { flex-direction: row; align-items: flex-start; padding: 1.25rem; text-align: left; }
+            .inbox-container-el.is-reading .inbox-search-header { display: flex; }
+            .inbox-container-el.is-reading .inbox-shrink-header { display: none !important; }
         }
-        .inbox-card { padding: 1.25rem; border-radius: 1rem; border: 1px solid #F1F5F9; background: white; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .inbox-card:hover { border-color: #BFDBFE; transform: translateX(4px); }
-        .inbox-card.active { background: #EFF6FF; border-color: #3B82F6; box-shadow: 0 4px 12px rgba(59,130,246,0.1); }
 
         .dash-view { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .dash-view.active { display: block; }
@@ -125,57 +179,78 @@
         .skeleton { background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite linear; border-radius: 4px; }
         @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* Notification Dropdown */
+        /* Notification Dropdown Modern */
         .notif-dropdown { position: absolute; right: 0; top: 120%; width: 340px; background: white; border-radius: 1.5rem; box-shadow: 0 15px 50px -10px rgba(0,0,0,0.15); border: 1px solid #F1F5F9; z-index: 100; transform-origin: top right; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .notif-dropdown.hidden { opacity: 0; transform: scale(0.95) translateY(-10px); pointer-events: none; }
         .notif-item { padding: 1rem; border-bottom: 1px solid #F8FAFC; cursor: pointer; transition: background 0.2s; display: flex; gap: 0.8rem; align-items: flex-start; }
         .notif-item:hover { background: #F8FAFC; }
 
-        /* CSS Bar Chart */
-        .chart-container { display: flex; align-items: flex-end; height: 250px; gap: 0.5rem; padding-top: 1rem; }
-        @media (min-width: 768px) { .chart-container { gap: 1.25rem; } }
-        .bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; height: 100%; }
-        .bar-track { position: absolute; inset: 0; width: 100%; border: 2px dashed #E5E7EB; border-radius: 999px; z-index: 0; }
-        .bar-fill-black { position: absolute; bottom: 0; width: 100%; background: #1A1C1E; border-radius: 999px; z-index: 1; transition: height 1s ease; }
-        .bar-fill-lime { position: absolute; bottom: 0; width: 100%; background: #D4FF59; border-radius: 999px; z-index: 2; transition: height 1s ease; }
-        .chart-tooltip { position: absolute; top: -40px; background: #1e293b; color: #fff; font-size: 0.75rem; font-weight: 600; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: all 0.2s ease; pointer-events: none; white-space: nowrap; z-index: 50; transform: translateY(10px); }
-        .bar-wrap:hover .chart-tooltip { opacity: 1; transform: translateY(0); }
+        /* ==========================================================================
+           9. DASHBOARD DARK MODE SYSTEM (QOL)
+           ========================================================================== */
+        body.dark-mode .dash-layout, body.dark-mode .dash-content-area { background-color: #0F172A !important; color: #F8FAFC !important; }
+        body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modern-table-container, body.dark-mode .inbox-container-el, body.dark-mode .inbox-detail-pane, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
+        body.dark-mode .bg-gray-50, body.dark-mode .inbox-list-pane, body.dark-mode .bg-gray-100 { background-color: #0F172A !important; border-color: #334155 !important; }
+        
+        body.dark-mode .text-gray-800, body.dark-mode .text-gray-900 { color: #F1F5F9 !important; }
+        body.dark-mode .text-gray-700 { color: #CBD5E1 !important; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94A3B8 !important; }
+        
+        body.dark-mode .border-gray-100, body.dark-mode .border-gray-200 { border-color: #334155 !important; }
+        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .inbox-card:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
+        
+        body.dark-mode .inbox-card { border-color: #334155 !important; background-color: #1E293B !important; }
+        body.dark-mode .inbox-card.active { background-color: #0c1a30 !important; border-color: #3b82f6 !important; }
+        
+        body.dark-mode .data-table th { background-color: #0F172A !important; color: #94A3B8 !important; border-color: #334155 !important; }
+        body.dark-mode .data-table td { border-color: #334155 !important; color: #E2E8F0 !important; }
+        body.dark-mode .data-table tr:hover td { background-color: #334155 !important; }
+        
+        body.dark-mode input, body.dark-mode textarea { background-color: #0F172A !important; color: #F8FAFC !important; border-color: #475569 !important; }
+        
+        body.dark-mode .bg-red-50 { background-color: #450a0a !important; border-color: #7f1d1d !important; }
+        body.dark-mode .file-name-text { color: #fecaca !important; }
+        body.dark-mode .dark-mode-file:hover { background-color: #7f1d1d !important; }
+        
+        /* Pewarnaan Badge Kuning di Dark Mode */
+        body.dark-mode .badge-pending { background-color: #451a03 !important; color: #fde68a !important; border-color: #78350f !important; }
+        body.dark-mode .badge-approved { background-color: #064e3b !important; color: #a7f3d0 !important; border-color: #065f46 !important; }
+        body.dark-mode .badge-rejected { background-color: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
     </style>
 </head>
 <body class="kiosk-mode select-none relative">
 
-    <!-- DYNAMIC BACKGROUNDS -->
+    <!-- DYNAMIC BACKGROUNDS (Lobi Website) -->
     <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
     <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
     <div id="bg-3" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069');"></div>
     <div class="bg-overlay" id="global-overlay"></div>
+    
     <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 flex flex-col gap-3 w-[90%] max-w-md pointer-events-none" style="z-index: 9999;"></div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 1: LOBI UTAMA (PORTAL SATU PINTU BERBASIS KOLOM)                     -->
+    <!-- PAGE 1: LOBI UTAMA (PORTAL SATU PINTU)                                    -->
     <!-- ========================================================================= -->
     <div id="page-main" class="page active justify-center items-center py-10 px-4 md:px-8 relative">
-        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none">
+        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none" aria-label="Portal Eksekutif">
             <i class="fa-solid fa-lock text-xl"></i>
         </button>
 
-        <div class="text-center glass-panel p-6 md:p-12 rounded-3xl w-full max-w-3xl border-t border-white/30 relative overflow-hidden mt-8 md:mt-0 shadow-2xl">
+        <div class="text-center glass-panel p-6 md:p-12 rounded-3xl w-full max-w-4xl border-t border-white/30 relative overflow-hidden mt-8 md:mt-0 shadow-2xl">
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accent/20 blur-[80px] rounded-full pointer-events-none"></div>
 
-            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(212,175,55,0.4)] border-4 border-accent relative z-10 overflow-hidden">
-                <!-- GANTI "logo-sekolah.png" DENGAN NAMA FILE FOTO LOGO SEKOLAH ANDA (Contoh: logo.jpg) -->
-                <!-- Kode 'onerror' akan menampilkan logo cadangan jika file logo tidak ditemukan -->
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-[0_0_30px_rgba(212,175,55,0.6)] border-4 border-accent relative z-10 overflow-hidden">
+                <!-- LOGO SEKOLAH -->
                 <img src="logo-sekolah.png" alt="Logo Sekolah" id="school-logo" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
             </div>
             
-            <h1 class="text-3xl md:text-5xl font-extrabold mb-2 tracking-tight text-white drop-shadow-md">Portal Kepala Sekolah</h1>
-            <p class="text-sm md:text-lg text-gray-300 mb-8 font-light px-2">Sistem Pengajuan Pertemuan & Komunikasi Digital</p>
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-2 md:mb-4 tracking-tight text-white drop-shadow-md">Portal Kepala Sekolah</h1>
+            <p class="text-sm md:text-lg text-gray-300 mb-8 md:mb-10 font-light px-2">Sistem Pengajuan Pertemuan & Komunikasi Digital</p>
 
-            <!-- SATU KOLOM MENU (TUMPUK VERTIKAL) -->
             <div class="flex flex-col gap-4 text-left relative z-10 w-full max-w-xl mx-auto">
                 
-                <!-- 1. Buat Daftar Temu / Kirim Pesan -->
-                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group relative overflow-hidden flex items-center shadow-lg w-full gap-4 md:gap-5">
+                <!-- 1. Buat Daftar Temu / Kirim Pesan (UNIFIED) -->
+                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 flex items-center shadow-lg group w-full gap-4 md:gap-5">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/30 transition duration-500"></div>
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                         <i class="fa-solid fa-envelope-open-text text-xl md:text-2xl text-blue-400"></i>
@@ -188,25 +263,25 @@
                 </button>
 
                 <!-- 2. Cek Status Pengajuan -->
-                <button onclick="openTicketStatusModal();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group relative overflow-hidden flex items-center shadow-lg w-full gap-4 md:gap-5">
+                <button onclick="openTicketStatusModal();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 flex items-center shadow-lg group w-full gap-4 md:gap-5">
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-purple-500/20 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-300 border border-purple-400/30 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
                         <i class="fa-solid fa-magnifying-glass-location text-xl md:text-2xl text-purple-400"></i>
                     </div>
                     <div class="flex-1 text-left">
                         <h3 class="text-base md:text-xl font-bold mb-1 text-white">Cek Status Pengajuan</h3>
-                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Pantau status tiket menggunakan kode resi.</p>
+                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Pantau status persetujuan dengan kode resi.</p>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
                 </button>
 
                 <!-- 3. Pusat Informasi -->
-                <button onclick="navigate('page-info'); renderPublicInfo();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group relative overflow-hidden flex items-center shadow-lg w-full gap-4 md:gap-5">
+                <button onclick="navigate('page-info'); renderPublicInfo();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 flex items-center shadow-lg group w-full gap-4 md:gap-5">
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-orange-500/20 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-300 border border-orange-400/30 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                         <i class="fa-solid fa-circle-info text-xl md:text-2xl text-orange-400"></i>
                     </div>
                     <div class="flex-1 text-left">
-                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Pusat Informasi Sekolah</h3>
-                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Arsip visi, misi, dan pengumuman resmi.</p>
+                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Pusat Informasi</h3>
+                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Arsip visi, misi, dan kontak resmi.</p>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
                 </button>
@@ -228,8 +303,8 @@
             </div>
             <div class="timeline px-2">
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Di tahap akhir, sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda di menu Cek Status.</p></div>
             </div>
             <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4 text-sm">Saya Mengerti</button>
         </div>
@@ -263,7 +338,6 @@
     <div id="page-info" class="page justify-center items-center py-6 px-4 md:px-8 relative">
         <div class="glass-panel rounded-2xl md:rounded-3xl max-w-5xl mx-auto w-full flex-1 md:h-[80vh] flex flex-col md:flex-row gap-6 p-6 bg-white/5 relative overflow-hidden mt-4">
             <button onclick="navigate('page-main')" class="absolute top-6 right-6 text-white/50 hover:text-white bg-white/10 w-10 h-10 rounded-full flex items-center justify-center transition z-50"><i class="fa-solid fa-xmark"></i></button>
-            
             <div class="flex-1 bg-black/30 rounded-2xl p-6 border border-white/10 overflow-y-auto">
                 <div class="flex items-center gap-4 mb-6 border-b border-white/10 pb-4">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center"><i class="fa-solid fa-school text-primary text-xl"></i></div>
@@ -290,7 +364,8 @@
     <!-- PAGE 3: WIZARD FORM (BUAT DAFTAR TEMU / KIRIM PESAN)                      -->
     <!-- ========================================================================= -->
     <div id="page-checkin" class="page justify-center items-center py-6 px-4 md:px-8 relative">
-        <div class="glass-panel rounded-2xl md:rounded-3xl max-w-5xl mx-auto w-full flex-1 md:h-[90vh] flex flex-col p-4 md:p-8 bg-white/5 relative shadow-2xl mt-4">
+        <div class="glass-panel rounded-2xl md:rounded-3xl max-w-5xl mx-auto w-full flex-1 flex flex-col p-4 md:p-8 bg-white/5 relative shadow-2xl mt-4">
+            
             <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-white/10 pb-4 shrink-0">
                 <h2 class="text-xl md:text-2xl font-bold tracking-wide text-white"><i class="fa-solid fa-envelope-open-text text-accent mr-3"></i>Form Pengajuan Digital</h2>
                 <button onclick="navigate('page-main'); resetCheckinWizard();" class="text-white hover:text-red-400 transition text-sm bg-black/40 px-4 py-2 rounded-lg font-bold"><i class="fa-solid fa-xmark mr-2"></i>Batal</button>
@@ -300,15 +375,15 @@
                 <div class="absolute top-1/2 left-8 md:left-16 right-8 md:right-16 h-1 bg-white/10 -z-10 rounded-full"></div>
                 <div id="wizard-progress" class="absolute top-1/2 left-8 md:left-16 h-1 bg-accent -z-10 rounded-full transition-all duration-500" style="width: 0%"></div>
                 
-                <div class="step-indicator active flex flex-col items-center" id="ind-1"><div class="step-icon w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-glow-accent"><i class="fa-solid fa-id-card text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-accent font-bold">Identitas</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-2"><div class="step-icon w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-calendar-check text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Agenda</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-3"><div class="step-icon w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-shield-halved text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Aturan</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-4"><div class="step-icon w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-camera-retro text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Verifikasi</span></div>
+                <div class="step-indicator active flex flex-col items-center" id="ind-1"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-glow-accent"><i class="fa-solid fa-id-card text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-accent font-bold">Identitas</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-2"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-calendar-check text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Agenda</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-3"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-shield-halved text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Aturan</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-4"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-camera-retro text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Verifikasi</span></div>
             </div>
 
             <div class="flex-1 relative overflow-y-auto overflow-x-hidden p-1 flex flex-col">
                 
-                <!-- STEP 1: Profil Pengirim -->
+                <!-- STEP 1: Profil -->
                 <div id="step-1" class="wizard-step active flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-6 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-1 text-accent mr-2"></i>Informasi Profil Anda</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-6">
@@ -318,11 +393,12 @@
                         <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Email *</label><input type="email" id="w-email" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="email@contoh.com"></div>
                     </div>
                     <div class="mt-auto pt-6 flex justify-end">
+                        <!-- PERBAIKAN BUG STEP 2: Fungsi goToCheckinStep() sekarang mengambil ID yang benar dari form -->
                         <button type="button" onclick="goToCheckinStep(2)" class="bg-accent hover:bg-yellow-500 text-primary px-8 py-3.5 rounded-xl text-sm md:text-base font-bold transition flex items-center justify-center gap-2 w-full md:w-auto shadow-lg hover:-translate-y-1">Lanjut <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
+                <!-- STEP 2: Agenda & File Upload -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -355,11 +431,11 @@
                         <div class="flex flex-col gap-4 md:gap-5">
                             <div class="flex-1 flex flex-col">
                                 <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Isi Pesan / Agenda Lengkap *</label>
-                                <textarea id="w-detail" class="w-full h-full min-h-[100px] bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:border-accent resize-none transition" placeholder="Tuliskan secara lengkap pesan, agenda rapat, atau rincian dokumen..."></textarea>
+                                <textarea id="w-detail" class="w-full flex-1 min-h-[140px] bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:border-accent resize-none transition" placeholder="Tuliskan secara lengkap pesan, agenda rapat, atau detail dokumen..."></textarea>
                             </div>
                             <div>
                                 <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Lampiran File Resmi (Opsional)</label>
-                                <div class="border border-dashed border-white/30 hover:border-accent rounded-xl flex items-center justify-center bg-black/20 cursor-pointer transition relative p-3 min-h-[60px]">
+                                <div class="border-2 border-dashed border-white/30 hover:border-accent rounded-xl flex items-center justify-center bg-black/20 cursor-pointer transition relative p-3 min-h-[60px]">
                                     <input type="file" id="w-file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx" onchange="updateCheckinFileName(this)">
                                     <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 mr-3" id="c-file-icon"></i>
                                     <span class="text-xs text-gray-400 font-medium text-center" id="c-file-name">Klik/Tap unggah PDF/Word</span>
@@ -378,7 +454,7 @@
                 <div id="step-3" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-3 md:mb-4 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-3 text-accent mr-2"></i>Keamanan Pengirim (UU PDP)</h3>
                     <div class="bg-black/20 border border-accent/20 p-4 md:p-6 rounded-xl text-[11px] md:text-sm text-gray-300 mb-5 space-y-2"><p class="font-bold text-white mb-1">Syarat Verifikasi Pengajuan</p><p>Untuk mencegah pengajuan spam, sistem web kami mewajibkan Anda untuk merekam foto wajah pengirim/pemohon. Data wajah dikirim langsung ke Dasbor Kepsek secara privat.</p></div>
-                    <label class="flex items-start gap-3 cursor-pointer bg-white/5 border border-white/10 p-3 md:p-4 rounded-xl mb-6 hover:bg-white/10 transition">
+                    <label class="flex items-center gap-3 cursor-pointer bg-white/5 border border-white/10 p-3 md:p-4 rounded-xl mb-6 hover:bg-white/10 transition">
                         <input type="checkbox" id="w-consent" class="w-4 h-4 md:w-5 md:h-5 accent-accent shrink-0 cursor-pointer">
                         <span class="text-white text-[11px] md:text-sm font-medium">Saya mengerti dan menyetujui penggunaan kamera web.</span>
                     </label>
@@ -416,7 +492,7 @@
 
     <!-- ========================================================================= -->
     <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4 - DIJAGA 100%)        -->
-    <!-- (Ini dipertahankan murni sesuai instruksi)                                -->
+    <!-- (Ini dipertahankan murni sesuai instruksi mutlak Anda, tanpa diubah)      -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex-col items-center py-6 px-4 md:px-8 relative">
         <div class="flex justify-between items-center mb-4 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
@@ -463,7 +539,7 @@
         </div>
     </div>
 
-    <!-- MODAL TIKET UMUM -->
+    <!-- MODAL TIKET UMUM (POP-UP SUCCESS + COPY RESI BERGUNA) -->
     <div id="ticket-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-sm w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300 flex flex-col items-center" id="ticket-content">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
@@ -512,13 +588,13 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY + DARK MODE)            -->
+    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY + AUTO COLLAPSE KIRI)   -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page dash-layout" style="color: #333;">
         
         <div class="mobile-overlay" id="mobile-sidebar-overlay" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar Navigation (Classic) -->
         <aside class="dash-sidebar shadow-xl" id="principal-sidebar">
             <div class="p-6 border-b border-white/10 flex items-center gap-4 bg-black/20 shrink-0">
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-accent shrink-0">
@@ -565,7 +641,7 @@
         <!-- Main Content Area -->
         <main class="dash-content-area flex flex-col">
             
-            <header class="bg-white border-b border-gray-200 h-16 md:h-20 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shadow-sm shrink-0">
+            <header class="bg-white border-b border-gray-200 h-16 md:h-20 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shadow-sm shrink-0 transition-colors duration-300">
                 <div class="flex items-center gap-4">
                     <button class="text-gray-600 hover:text-primary mr-2 transition-transform hover:scale-110" onclick="toggleSidebar()"><i class="fa-solid fa-bars text-2xl"></i></button>
                     <h1 class="text-lg md:text-2xl font-bold text-gray-800 tracking-tight truncate flex-1" id="dash-title">Ringkasan Sistem</h1>
@@ -641,13 +717,16 @@
                 </div>
             </div>
 
-            <!-- TAB 2: INBOX (SPLIT PANE WHATSAPP STYLE) -->
+            <!-- TAB 2: INBOX (SPLIT PANE WHATSAPP STYLE - LEBIH MENYUSUT) -->
             <div id="tab-inbox" class="dash-view p-4 md:p-8 flex-1">
                 <div class="inbox-container flex-col md:flex-row" id="inbox-container-el">
                     
                     <div class="inbox-list-pane">
-                        <div class="p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20">
+                        <div class="inbox-search-header p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20">
                             <h3 class="font-bold text-gray-800 text-base mb-2 md:mb-0">Daftar Pesan Masuk</h3>
+                        </div>
+                        <div class="inbox-shrink-header hidden bg-gray-50/50 border-b border-gray-100 shrink-0">
+                            <i class="fa-solid fa-envelope-open-text text-gray-400 text-xl"></i>
                         </div>
                         <div class="flex-1 overflow-y-auto" id="inbox-list-area">
                             <!-- Diisi via JS -->
@@ -690,8 +769,14 @@
                         <div class="relative z-10">
                             <h3 class="text-accent font-bold mb-4 border-b border-white/20 pb-2 text-sm md:text-base">Insight Sistem</h3>
                             <ul class="space-y-4 md:space-y-5 text-xs md:text-sm">
-                                <li class="flex items-start gap-3"><div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-clock"></i></div><div><p class="text-white/70 mb-0.5">Jam Tersibuk</p><p class="font-bold text-lg">09:00 - 11:00</p></div></li>
-                                <li class="flex items-start gap-3"><div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-check-double text-emerald-400"></i></div><div><p class="text-white/70 mb-0.5">Tingkat Persetujuan</p><p class="font-bold text-lg text-emerald-400">85%</p></div></li>
+                                <li class="flex items-start gap-3">
+                                    <div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-clock"></i></div>
+                                    <div><p class="text-white/70 mb-0.5">Jam Tersibuk</p><p class="font-bold text-lg">09:00 - 11:00</p></div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="bg-white/10 p-2 md:p-2.5 rounded-lg border border-white/10"><i class="fa-solid fa-check-double text-emerald-400"></i></div>
+                                    <div><p class="text-white/70 mb-0.5">Tingkat Persetujuan</p><p class="font-bold text-lg text-emerald-400">85%</p></div>
+                                </li>
                             </ul>
                         </div>
                         <div class="mt-6 text-[10px] md:text-xs text-white/50 text-center bg-black/20 p-3 rounded-xl relative z-10">Diperbarui secara real-time</div>
@@ -699,7 +784,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: PENGATURAN STATUS KEPSEK -->
+            <!-- TAB 4: PENGATURAN STATUS KEPSEK & DARK MODE -->
             <div id="tab-settings" class="dash-view p-4 md:p-8 flex-1">
                 <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6">Pengaturan Profil & Status</h2>
                 
@@ -752,7 +837,7 @@
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div>
                                     <p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Respon Otomatis Sistem</p>
-                                    <p class="text-[10px] md:text-xs text-gray-500">Jika Anda sedang Dinas Luar, sistem otomatis menolak jadwal baru.</p>
+                                    <p class="text-[10px] md:text-xs text-gray-500">Otomatis menolak jadwal baru saat status Dinas Luar.</p>
                                 </div>
                                 <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
                                     <input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
@@ -774,7 +859,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- JAVASCRIPT MASTER LOGIC (ROUTING, CAMERA API, MOCK DB, ANIMATION)         -->
+    <!-- JAVASCRIPT MASTER LOGIC                                                   -->
     <!-- ========================================================================= -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -782,7 +867,6 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const liveDate = document.getElementById('live-date');
             if (liveDate) liveDate.innerText = dateObj.toLocaleDateString('id-ID', options);
-            
             try { generateMockData(); } catch(e) { console.error("Database initialization error", e); }
         });
 
@@ -813,7 +897,6 @@
                 if(bgOverlay) bgOverlay.style.display = 'block'; 
                 bgs.forEach(b => b.style.display = 'block'); 
                 document.body.classList.add('kiosk-mode');
-                
                 if(pageId !== 'page-checkin') stopCheckinCamera();
                 if(pageId !== 'page-schedule') stopScheduleCamera();
             }
@@ -879,8 +962,7 @@
             const tt = document.getElementById('ticket-title'); if(tt) tt.innerText = title; 
             const td = document.getElementById('ticket-desc'); if(td) td.innerText = desc; 
             const m = document.getElementById('ticket-modal'), c = document.getElementById('ticket-content'); 
-            if(m) m.classList.remove('hidden'); 
-            setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); 
+            if(m) m.classList.remove('hidden'); setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); 
         }
         function closeTicket() { const c = document.getElementById('ticket-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=>{ const m = document.getElementById('ticket-modal'); if(m) m.classList.add('hidden'); navigate('page-main'); }, 300); }
 
@@ -891,7 +973,6 @@
             e.preventDefault(); const inputEl = document.getElementById('ticket-input');
             if(!inputEl) return;
             const input = inputEl.value.toUpperCase();
-            
             if(input.length < 5) { showToast("Format tiket tidak valid.", "error"); return; }
             showToast("Menyelaraskan data server...", "info");
             
@@ -914,17 +995,13 @@
             const codeEl = document.getElementById('ticket-code');
             if(!codeEl) return;
             const code = codeEl.innerText;
-            
             navigator.clipboard.writeText(code).then(() => {
                 const tooltip = document.getElementById('copy-tooltip');
                 if(tooltip) { tooltip.innerText = "Tersalin!"; tooltip.classList.replace('bg-gray-800', 'bg-green-600'); }
                 showToast("Kode Resi disalin ke clipboard", "success");
-                setTimeout(() => {
-                    if(tooltip) { tooltip.innerText = "Klik untuk salin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); }
-                }, 2000);
+                setTimeout(() => { if(tooltip) { tooltip.innerText = "Klik untuk menyalin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); } }, 2000);
             }).catch(err => {
-                const textArea = document.createElement("textarea");
-                textArea.value = code; document.body.appendChild(textArea); textArea.select();
+                const textArea = document.createElement("textarea"); textArea.value = code; document.body.appendChild(textArea); textArea.select();
                 try { document.execCommand('copy'); showToast("Kode Resi disalin", "success"); } catch (ex) { showToast("Gagal menyalin", "error"); }
                 document.body.removeChild(textArea);
             });
@@ -1058,7 +1135,7 @@
             let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
             let locInfo = loc || 'Via Website';
 
-            // Mengambil Foto Base64 untuk Database dan Profil Avatar!
+            // Mengambil Foto Base64 untuk Database dan Profil Avatar
             let faceImageData = name.charAt(0).toUpperCase(); 
             if(canvas && !canvas.classList.contains('hidden')) {
                 faceImageData = canvas.toDataURL('image/jpeg');
@@ -1172,7 +1249,7 @@
             const target = document.getElementById(tabId); 
             if(target) {
                 target.classList.add('active');
-                void target.offsetWidth; // Trigger reflow
+                void target.offsetWidth; 
                 target.classList.add('animate-fadeSlideUp');
             }
             
@@ -1308,13 +1385,16 @@
             
             simDB.inbox.forEach((msg) => {
                 let unreadClass = !msg.read ? 'unread' : '';
-                let statusDot = msg.status === 'PENDING' ? '<span class="inbox-unread-dot bg-yellow-400 shadow-none ml-1"></span>' : '';
-                let avatarHTML = getAvatarHTML(msg.avatar, 'w-10 h-10');
+                
+                // Menambahkan titik kuning jika pesan masih PENDING
+                let statusDot = msg.status === 'PENDING' ? '<span class="inline-block w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full ml-1" title="Menunggu Persetujuan"></span>' : '';
+                
+                let avatarHTML = getAvatarHTML(msg.avatar, 'w-10 h-10 md:w-12 md:h-12');
                 
                 listArea.innerHTML += `
                     <div class="inbox-item ${unreadClass} flex gap-3 border-b border-gray-100 p-4 hover:bg-blue-50/30 transition cursor-pointer" onclick="openMessage(${msg.id}, this)">
-                        <div class="mt-1">${avatarHTML}</div>
-                        <div class="flex-1 overflow-hidden">
+                        <div class="mt-1 flex justify-center inbox-avatar-wrap">${avatarHTML}</div>
+                        <div class="inbox-card-content flex-1 overflow-hidden">
                             <div class="flex justify-between items-start mb-1">
                                 <h4 class="text-sm truncate pr-2 font-bold text-gray-800">${msg.sender} ${statusDot}</h4>
                                 <span class="text-[9px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">${msg.time}</span>
@@ -1322,35 +1402,45 @@
                             <p class="text-[11px] text-gray-800 font-bold truncate mb-1">${msg.title}</p>
                             <p class="text-[10px] text-gray-500 truncate">${msg.body}</p>
                         </div>
+                        <div class="inbox-card-name hidden text-[9px] font-bold text-gray-700 truncate w-full text-center mt-1">${msg.sender.split(' ')[0]}</div>
                     </div>`;
             });
             renderDashboardMetrics();
         }
 
         function closeMessageMobile() {
-            const container = document.getElementById('inbox-container');
-            if(container) container.classList.remove('show-detail');
-            document.querySelectorAll('.inbox-item').forEach(el => el.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-500'));
+            const container = document.getElementById('inbox-container-el');
+            if(container) {
+                container.classList.remove('show-detail');
+                container.classList.remove('is-reading');
+            }
+            document.querySelectorAll('.inbox-item').forEach(el => el.classList.remove('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'));
         }
 
         function openMessage(id, element) {
-            if(element) {
-                document.querySelectorAll('.inbox-item').forEach(el => el.classList.remove('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'));
-                element.classList.add('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'); element.classList.remove('unread');
+            const container = document.getElementById('inbox-container-el');
+            
+            // Logika UI: Layar Desktop mengecil, Layar HP menyembunyikan List
+            if(window.innerWidth >= 1024) {
+                if(container) container.classList.add('is-reading');
+            } else {
+                if(container) container.classList.add('show-detail');
             }
+
+            document.querySelectorAll('.inbox-item').forEach(el => el.classList.remove('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'));
+            
+            let targetEl = element || document.querySelector(`.inbox-item[onclick*="${id}"]`);
+            if(targetEl) {
+                targetEl.classList.add('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'); 
+                targetEl.classList.remove('unread');
+            }
+
             const msg = simDB.inbox.find(m => m.id === id); 
             if(!msg) return;
             msg.read = true;
             
-            // Sync status to guest array
             const guest = simDB.guests.find(g => g.id === id);
             if(guest) guest.read = true;
-
-            // Mobile View Toggle WhatsApp Style
-            if(window.innerWidth < 1024) {
-                const ic = document.getElementById('inbox-container');
-                if(ic) ic.classList.add('show-detail');
-            }
 
             let actionButtons = '';
             if(msg.status === 'PENDING') {
@@ -1362,7 +1452,7 @@
                 actionButtons = `<span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">Pengajuan Telah ${msg.status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}</span>`;
             }
 
-            // Nama File Dinamis (Ditaruh di Bawah Teks Pesan)
+            // Nama File Dinamis
             let fileIcon = msg.hasFile ? `<div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl inline-flex items-center gap-3 cursor-pointer hover:bg-red-100 transition dark-mode-file"><i class="fa-solid fa-file-pdf text-red-500 text-xl"></i><div><p class="text-xs font-bold text-gray-700 file-name-text">${msg.fileName || 'Lampiran_Resmi.pdf'}</p><p class="text-[10px] text-gray-500">1.2 MB</p></div></div>` : '';
             let avatarDetailHTML = getAvatarHTML(msg.avatar, 'w-12 h-12 md:w-16 md:h-16');
 
@@ -1371,7 +1461,7 @@
                 detailArea.innerHTML = `
                     <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-start bg-white shrink-0 z-10 shadow-sm">
                         <div class="flex gap-3 md:gap-4 items-center">
-                            <button class="lg:hidden text-gray-500 hover:text-gray-800" onclick="closeMessageMobile()"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                            <button class="text-gray-500 hover:text-gray-800" onclick="closeMessageMobile()"><i class="fa-solid fa-arrow-left text-xl"></i></button>
                             ${avatarDetailHTML}
                             <div>
                                 <h2 class="text-base md:text-lg font-bold text-gray-800 mb-1 leading-tight">${msg.title}</h2>
