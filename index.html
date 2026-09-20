@@ -15,10 +15,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0A2540',
-                        accent: '#D4AF37', /* Gold elegan */
-                        surface: '#1A365D',
-                        fem_accent: '#B8860B' /* Dark Goldenrod untuk dasbor */
+                        primary: '#0A2540', accent: '#D4AF37', surface: '#1A365D', fem_accent: '#B8860B',
+                        dash_bg: '#E5EBE8', dash_sidebar: '#1A1C1E', dash_lime: '#D4FF59', dash_card_dark: '#1A1C1E'
                     }
                 }
             }
@@ -29,33 +27,33 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         /* ================= BASE STYLES & FIX LAYOUT ================= */
-        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s; }
         
-        /* Kiosk Mode - Batasan overflow dihapus agar Desktop/Mobile bisa scroll dengan natural */
-        .kiosk-mode { background-color: #000; color: white; min-height: 100vh; }
+        /* Kiosk Mode */
+        .kiosk-mode { background-color: #000; color: white; min-height: 100vh; overflow-x: hidden; overflow-y: auto; }
         
         /* ================= DYNAMIC BACKGROUNDS ================= */
         .bg-slide { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; z-index: -2; }
         .bg-slide.active { opacity: 1; transform: scale(1.02); transition: opacity 1.5s ease-in-out, transform 10s linear; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(10, 37, 64, 0.75), rgba(10, 37, 64, 0.98)); z-index: -1; }
         
-        /* ================= GLASSMORPHISM & SPA ROUTING FIX ================= */
         .glass-panel { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
         
-        /* PERBAIKAN FATAL: Gunakan display: none agar halaman tidak saling menumpuk */
+        /* SPA ROUTING FIX */
         .page { display: none !important; width: 100%; min-height: 100vh; animation: pageFadeIn 0.4s ease forwards; }
         .page.active { display: flex !important; flex-direction: column; }
+        #page-principal.active { display: block !important; }
 
         @keyframes pageFadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 
-        /* ================= WIZARD ANIMATIONS & TIMELINE ================= */
-        .wizard-step { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* ================= WIZARD ANIMATIONS ================= */
+        .wizard-step { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .wizard-step.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         
         .step-indicator { transition: all 0.3s ease; }
-        .step-indicator.active .step-icon { background-color: #D4AF37; color: #0A2540; border-color: transparent; box-shadow: 0 0 15px rgba(212,175,55,0.5); transform: scale(1.1); }
+        .step-indicator.active .step-icon { background-color: #D4AF37; color: #0A2540; border-color: transparent; box-shadow: 0 0 15px rgba(212,175,55,0.5); transform: scale(1.15); }
         .step-indicator.active .step-text { color: #D4AF37; font-weight: bold; }
 
         .timeline { position: relative; padding-left: 2rem; margin-top: 1.5rem; margin-bottom: 1.5rem; }
@@ -64,24 +62,51 @@
         .timeline-item::before { content: ''; position: absolute; left: -1.85rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: #D4AF37; border: 3px solid #0A2540; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
         .timeline-item:last-child { padding-bottom: 0; }
 
-        /* ================= SCROLLBAR ================= */
+        /* SCROLLBARS */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
+        .dash-content-area::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.4); }
+        .dash-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+
+        /* Trik Agar Kalender/Jam Bisa Diklik Dimana Saja */
+        input[type="date"], input[type="time"] { position: relative; cursor: pointer; }
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+        }
+
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
+        .dash-content-area input:focus, .dash-content-area select:focus, .dash-content-area textarea:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
 
         /* ================= DASHBOARD KEPSEK STYLES ================= */
-        .dash-sidebar { width: 280px; height: 100vh; background-color: #0A2540; color: white; position: fixed; left: 0; top: 0; z-index: 50; border-right: 1px solid rgba(212, 175, 55, 0.2); transition: transform 0.3s ease; }
-        .dash-content { margin-left: 280px; padding: 2rem; min-height: 100vh; background-color: #F0F4F8; color: #333; transition: margin-left 0.3s ease; }
+        .dash-layout { background-color: #F0F4F8; font-family: 'Inter', sans-serif; color: #111827; height: 100vh; overflow: hidden; transition: background-color 0.3s; }
         
-        @media (max-width: 768px) {
-            .dash-sidebar { transform: translateX(-100%); }
-            .dash-sidebar.mobile-open { transform: translateX(0); box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
-            .dash-content { margin-left: 0; padding: 1rem; }
-            .mobile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; opacity: 0; transition: opacity 0.3s ease; }
-            .mobile-overlay.active { display: block; opacity: 1; }
+        .dash-sidebar { 
+            width: 280px; height: 100vh; background-color: #0A2540; color: white; 
+            position: fixed; left: 0; top: 0; z-index: 100; border-right: 1px solid rgba(212, 175, 55, 0.2); 
+            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         
+        .dash-content-area { 
+            margin-left: 280px; width: calc(100% - 280px); height: 100vh; 
+            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
+        }
+
+        /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
+        body.sidebar-collapsed .dash-sidebar { transform: translateX(-100%) !important; }
+        body.sidebar-collapsed .dash-content-area { margin-left: 0 !important; width: 100% !important; }
+
+        @media (max-width: 1024px) {
+            .dash-sidebar { transform: translateX(-100%); width: 280px; z-index: 999; }
+            .dash-sidebar.mobile-open { transform: translateX(0) !important; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
+            .dash-content-area { margin-left: 0 !important; width: 100% !important; padding: 1rem; padding-top: 5rem; }
+        }
+        
+        .mobile-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 900; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .mobile-overlay.active { display: block; opacity: 1; }
+
         .dash-nav-btn { display: flex; align-items: center; gap: 1rem; padding: 0.875rem 1.25rem; border-radius: 0.75rem; color: #9ca3af; font-weight: 500; font-size: 0.875rem; transition: all 0.2s ease; margin-bottom: 0.25rem; }
         .dash-nav-btn:hover { background-color: rgba(255,255,255,0.05); color: white; border-left: 4px solid rgba(255,255,255,0.2); }
         .dash-nav-btn.active { background-color: rgba(212, 175, 55, 0.1); color: #D4AF37; font-weight: 700; border-left: 4px solid #D4AF37;}
@@ -90,11 +115,11 @@
         .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-color: rgba(212,175,55,0.4); }
         
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; }
-        .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; }
-        .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
+        .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; transition: background-color 0.3s; }
+        .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
+        .data-table tr:hover td { background-color: #f8fafc; cursor: pointer; }
         
-        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 0.375rem; transition: all 0.3s; }
+        .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
         .badge-pending { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
         .badge-approved { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
         .badge-rejected { background-color: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
@@ -112,19 +137,13 @@
 
         /* CSS Bar Chart */
         .chart-container { display: flex; align-items: flex-end; height: 200px; gap: 1rem; padding-top: 1rem; }
-        .chart-bar-wrap { flex: 1; display: flex; flex-col; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; }
+        .chart-bar-wrap { flex: 1; display: flex; flex-col; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; height: 100%; }
         .chart-bar { width: 100%; background: linear-gradient(to top, #0A2540, #1A365D); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
         .chart-bar-wrap:hover .chart-bar { background: linear-gradient(to top, #D4AF37, #FDE047); }
-        .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 50; }
         .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
         
-        /* Focus Outline for Inputs */
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
-        .dash-content input:focus, .dash-content select:focus, .dash-content textarea:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
-        
-        /* ==========================================================================
-           INBOX SPLIT PANE FIX (ANTI MACET & AUTO SHRINK ALAS WA WEB) 
-           ========================================================================== */
+        /* ================= INBOX SPLIT PANE WA WEB STYLE (SANGAT INTERAKTIF) ================= */
         .inbox-wrapper { 
             display: flex; flex-direction: row; 
             width: 100%; height: calc(100vh - 160px); min-height: 500px;
@@ -134,13 +153,13 @@
         }
 
         .inbox-list { 
-            width: 350px; flex-shrink: 0; /* Menahan agar lebar tidak gepeng */
+            width: 350px; flex-shrink: 0; 
             border-right: 1px solid #e2e8f0; background: #fcfcfc; 
             display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .inbox-detail { 
-            flex: 1; min-width: 0; /* Penting agar isi tidak mendorong kotak keluar layar */
+            flex: 1; min-width: 0; 
             background: #ffffff; display: flex; flex-direction: column; position: relative; 
             transition: background-color 0.3s; 
         }
@@ -152,9 +171,9 @@
 
         .inbox-item-name-shrink { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #475569; width: 100%; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi kecil) */
-        @media (min-width: 769px) {
-            .inbox-wrapper.is-reading .inbox-list { width: 100px; padding-top: 1rem; }
+        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi foto profil saja) */
+        @media (min-width: 1025px) {
+            .inbox-wrapper.is-reading .inbox-list { width: 90px; padding-top: 1rem; }
             .inbox-wrapper.is-reading .inbox-header-wrap { display: none; }
             .inbox-wrapper.is-reading .inbox-item-content { display: none !important; }
             .inbox-wrapper.is-reading .inbox-item { flex-direction: column; align-items: center; justify-content: center; padding: 1rem 0.5rem; }
@@ -163,7 +182,7 @@
         }
 
         /* MOBILE STATE */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .inbox-list { width: 100%; border-right: none; }
             .inbox-detail { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: white; }
             .inbox-wrapper.show-detail .inbox-list { display: none !important; }
@@ -184,7 +203,7 @@
         .notif-item:hover { background: #F8FAFC; }
 
         /* ==========================================================================
-           DARK MODE OVERRIDES
+           DARK MODE OVERRIDES (Kualitas Hidup)
            ========================================================================== */
         body.dark-mode .dash-content { background-color: #0F172A !important; color: #F8FAFC !important; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modern-table-container, body.dark-mode .inbox-wrapper, body.dark-mode .inbox-detail, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
@@ -220,7 +239,9 @@
 </head>
 <body class="kiosk-mode select-none relative">
 
-    <!-- DYNAMIC BACKGROUNDS (Lobi Website) -->
+    <!-- ========================================================================= -->
+    <!-- DYNAMIC BACKGROUNDS (Lobi Website)                                        -->
+    <!-- ========================================================================= -->
     <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
     <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
     <div id="bg-3" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069');"></div>
@@ -232,8 +253,7 @@
     <!-- PAGE 1: LOBI UTAMA (PORTAL SATU PINTU)                                    -->
     <!-- ========================================================================= -->
     <div id="page-main" class="page active justify-center items-center py-10 px-4 md:px-8 relative">
-        
-        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none">
+        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none" aria-label="Portal Eksekutif">
             <i class="fa-solid fa-lock text-xl"></i>
         </button>
 
@@ -248,18 +268,19 @@
             <p class="text-sm md:text-lg text-gray-300 mb-8 md:mb-10 font-light px-2">Sistem Pengajuan Pertemuan & Komunikasi Digital</p>
 
             <div class="flex flex-col gap-4 text-left relative z-10 w-full max-w-xl mx-auto">
-                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 flex items-center shadow-lg w-full gap-4 md:gap-5 group">
+                <button onclick="navigate('page-checkin');" class="bg-white/5 hover:bg-white/10 border border-white/10 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 flex items-center shadow-lg w-full gap-4 md:gap-5 group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/30 transition duration-500"></div>
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                         <i class="fa-solid fa-envelope-open-text text-xl md:text-2xl text-blue-400"></i>
                     </div>
                     <div class="flex-1 text-left">
-                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Pesan</h3>
-                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Ajukan pertemuan atau kirim pesan resmi.</p>
+                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Kirim Pesan</h3>
+                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Ajukan rencana pertemuan atau kirim pesan resmi.</p>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
                 </button>
 
-                <button onclick="openTicketStatusModal();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group flex items-center shadow-lg w-full gap-4 md:gap-5">
+                <button onclick="openTicketStatusModal();" class="bg-white/5 hover:bg-white/10 border border-white/10 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group flex items-center shadow-lg w-full gap-4 md:gap-5">
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-purple-500/20 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-300 border border-purple-400/30 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
                         <i class="fa-solid fa-magnifying-glass-location text-xl md:text-2xl text-purple-400"></i>
                     </div>
@@ -270,7 +291,7 @@
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
                 </button>
 
-                <button onclick="navigate('page-info'); renderPublicInfo();" class="bg-white/5 hover:bg-white/15 border border-white/20 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group flex items-center shadow-lg w-full gap-4 md:gap-5">
+                <button onclick="navigate('page-info'); renderPublicInfo();" class="bg-white/5 hover:bg-white/10 border border-white/10 p-4 md:p-5 rounded-2xl transition duration-300 transform hover:-translate-y-1 group flex items-center shadow-lg w-full gap-4 md:gap-5">
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-orange-500/20 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-300 border border-orange-400/30 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                         <i class="fa-solid fa-circle-info text-xl md:text-2xl text-orange-400"></i>
                     </div>
@@ -284,7 +305,7 @@
         </div>
 
         <button onclick="openGuideModal()" class="mt-6 md:mt-8 text-gray-400 hover:text-white px-5 py-2 rounded-full text-xs md:text-sm font-semibold transition flex items-center gap-2 border border-transparent hover:border-white/20 hover:bg-white/5">
-            <i class="fa-solid fa-circle-question"></i> Bantuan & Panduan Sistem
+            <i class="fa-solid fa-circle-question"></i> Panduan Penggunaan
         </button>
     </div>
 
@@ -297,8 +318,8 @@
                 <h3 class="text-xl md:text-2xl font-bold text-white tracking-wide">Tata Cara Penggunaan</h3>
             </div>
             <div class="timeline px-2">
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi ke Ibu Kepsek.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Di tahap akhir, sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda di menu Cek Status.</p></div>
             </div>
             <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4 text-sm">Saya Mengerti</button>
@@ -369,10 +390,10 @@
                 <div class="absolute top-1/2 left-8 md:left-16 right-8 md:right-16 h-1 bg-white/10 -z-10 rounded-full"></div>
                 <div id="wizard-progress" class="absolute top-1/2 left-8 md:left-16 h-1 bg-accent -z-10 rounded-full transition-all duration-500" style="width: 0%"></div>
                 
-                <div class="step-indicator active flex flex-col items-center" id="ind-1"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-[0_0_15px_rgba(212,175,55,0.5)]"><i class="fa-solid fa-id-card text-sm md:text-base"></i></div><span class="step-text text-[9px] md:text-xs text-accent font-bold text-center">Identitas</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-2"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-calendar-check text-sm md:text-base"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Agenda</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-3"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-shield-halved text-sm md:text-base"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Aturan</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-4"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-camera-retro text-sm md:text-base"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Verifikasi</span></div>
+                <div class="step-indicator active flex flex-col items-center" id="ind-1"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-glow-accent"><i class="fa-solid fa-id-card text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-accent font-bold">Identitas</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-2"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-calendar-check text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Agenda</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-3"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-shield-halved text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Aturan</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-4"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border border-white/20 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-camera-retro text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50">Verifikasi</span></div>
             </div>
 
             <div class="flex-1 relative overflow-y-auto overflow-x-hidden p-1 flex flex-col">
@@ -381,17 +402,17 @@
                 <div id="step-1" class="wizard-step active flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-6 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-1 text-accent mr-2"></i>Informasi Profil Anda</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-6">
-                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Nama Lengkap *</label><input type="text" id="w-name" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="Ketik nama Anda..."></div>
-                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Instansi / Asal *</label><input type="text" id="w-agency" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="Ketik Pribadi jika tidak mewakili instansi"></div>
-                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">No. WhatsApp *</label><input type="tel" id="w-phone" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="08xxxxxx"></div>
-                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Alamat Email *</label><input type="email" id="w-email" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="email@contoh.com"></div>
+                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Nama Lengkap *</label><input type="text" id="w-name" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="Ketik nama Anda"></div>
+                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Instansi / Asal *</label><input type="text" id="w-agency" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="Ketik instansi atau perorangan"></div>
+                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">No. WhatsApp *</label><input type="tel" id="w-phone" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="08xxxxxxxxx"></div>
+                        <div><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Email *</label><input type="email" id="w-email" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm md:text-base text-white focus:border-accent transition placeholder-gray-500" placeholder="email@contoh.com"></div>
                     </div>
                     <div class="mt-auto pt-6 flex justify-end">
                         <button type="button" onclick="goToCheckinStep(2)" class="bg-accent hover:bg-yellow-500 text-primary px-8 py-3.5 rounded-xl text-sm md:text-base font-bold transition flex items-center justify-center gap-2 w-full md:w-auto shadow-lg hover:-translate-y-1">Lanjut <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
+                <!-- STEP 2: Agenda & File Upload -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -409,7 +430,7 @@
                             <div>
                                 <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Lokasi Pertemuan (Opsional)</label>
                                 <select id="w-location" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm text-white focus:border-accent appearance-none cursor-pointer transition">
-                                    <option value="Tidak Perlu Lokasi" class="text-black bg-white">Tidak Perlu Lokasi / Hanya Pesan</option>
+                                    <option value="Tidak Perlu Lokasi (Hanya Pesan)" class="text-black bg-white">Hanya Mengirim Pesan</option>
                                     <option value="Ruang Kepala Sekolah" class="text-black bg-white">Ruang Kepala Sekolah</option>
                                     <option value="Ruang Rapat Utama" class="text-black bg-white">Ruang Rapat Utama</option>
                                     <option value="Daring (Zoom/GMeet)" class="text-black bg-white">Daring (Zoom / GMeet)</option>
@@ -428,10 +449,10 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Lampiran File Resmi (Opsional)</label>
-                                <div class="border border-dashed border-white/30 hover:border-accent rounded-xl flex items-center justify-center bg-black/20 cursor-pointer transition relative p-3">
+                                <div class="border-2 border-dashed border-white/30 hover:border-accent rounded-xl flex items-center justify-center bg-black/20 cursor-pointer transition relative p-3 min-h-[60px]">
                                     <input type="file" id="w-file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx" onchange="updateCheckinFileName(this)">
-                                    <i class="fa-solid fa-cloud-arrow-up text-xl text-gray-400 mr-3" id="c-file-icon"></i>
-                                    <span class="text-xs text-gray-400 font-medium" id="c-file-name">Klik untuk mengunggah file (PDF/Word)</span>
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 mr-3" id="c-file-icon"></i>
+                                    <span class="text-xs text-gray-400 font-medium text-center" id="c-file-name">Klik/Tap unggah PDF/Word</span>
                                 </div>
                             </div>
                         </div>
@@ -457,7 +478,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 4: Kamera Wajah -->
+                <!-- STEP 4: Kamera Wajah Responsif (Perbaikan Proporsi) -->
                 <div id="step-4" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-3 md:mb-4 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-4 text-accent mr-2"></i>Verifikasi Wajah Pengirim</h3>
                     
@@ -467,8 +488,8 @@
                             <div id="checkin-cam-status" class="text-center z-10 text-gray-500 p-4"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-2 text-accent"></i></div>
                         </div>
                         <div class="bg-white/5 border border-white/20 rounded-xl flex flex-col items-center justify-center overflow-hidden relative aspect-video w-full">
-                            <canvas id="checkin-canvas" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl"></canvas>
-                            <div id="checkin-lbl" class="text-center p-2"><i class="fa-solid fa-user-check text-3xl text-gray-600 mb-2"></i><p class="text-[10px] md:text-sm text-gray-500">Pratinjau Foto</p></div>
+                            <canvas id="checkin-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                            <div id="checkin-lbl" class="text-center p-2"><i class="fa-solid fa-user-check text-3xl text-gray-600 mb-2"></i><p class="text-[10px] md:text-sm text-gray-500">Pratinjau Wajah</p></div>
                         </div>
                     </div>
 
@@ -485,6 +506,7 @@
 
     <!-- ========================================================================= -->
     <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4 - DIJAGA 100%)        -->
+    <!-- (Ini dipertahankan murni sesuai instruksi, utuh dan original)             -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex-col items-center py-6 px-4 md:px-8 relative">
         <div class="flex justify-between items-center mb-4 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
@@ -531,7 +553,7 @@
         </div>
     </div>
 
-    <!-- MODAL TIKET UMUM (POP-UP SUCCESS + COPY RESI) -->
+    <!-- MODAL TIKET UMUM (POP-UP SUCCESS + COPY RESI BERGUNA) -->
     <div id="ticket-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-sm w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300 flex flex-col items-center" id="ticket-content">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
@@ -551,7 +573,7 @@
         </div>
     </div>
 
-    <!-- MODAL CEK STATUS -->
+    <!-- MODAL CEK STATUS TIKET -->
     <div id="modal-status" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-md w-full relative border border-white/20 scale-0 transition-transform duration-300 shadow-2xl" id="status-content">
             <button onclick="closeTicketStatusModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
@@ -580,7 +602,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY + INDEPENDENT SCROLL)   -->
+    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY + AUTO COLLAPSE KIRI)   -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page dash-layout" style="color: #333;">
         
@@ -711,18 +733,21 @@
 
             <!-- TAB 2: INBOX (SPLIT PANE WHATSAPP STYLE - LEBIH MENYUSUT) -->
             <div id="tab-inbox" class="dash-view p-4 md:p-8 flex-1">
-                <div class="inbox-wrapper" id="inbox-wrapper-el">
+                <div class="inbox-container flex-col md:flex-row" id="inbox-container-el">
                     
-                    <div class="inbox-list">
-                        <div class="inbox-header-wrap p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20 transition-all">
+                    <div class="inbox-list-pane">
+                        <div class="inbox-search-header p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20 transition-all">
                             <h3 class="font-bold text-gray-800 text-base mb-2 md:mb-0">Daftar Pesan Masuk</h3>
+                        </div>
+                        <div class="inbox-shrink-header hidden bg-gray-50/50 border-b border-gray-100 shrink-0">
+                            <i class="fa-solid fa-envelope-open-text text-gray-400 text-xl"></i>
                         </div>
                         <div class="flex-1 overflow-y-auto" id="inbox-list-area">
                             <!-- Diisi via JS -->
                         </div>
                     </div>
 
-                    <div class="inbox-detail" id="inbox-detail-area">
+                    <div class="inbox-detail-pane" id="inbox-detail-area">
                         <div class="flex-1 flex flex-col items-center justify-center text-gray-300 bg-gray-50/50 p-6 text-center">
                             <i class="fa-regular fa-envelope-open text-7xl mb-6 opacity-50"></i>
                             <p class="text-sm font-medium text-gray-400">Pilih pesan di sebelah kiri untuk membaca detail dan menyetujui pengajuan.</p>
@@ -745,7 +770,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
-                    <!-- Chart -->
+                    <!-- Grafik Batang CSS Sederhana -->
                     <div class="lg:col-span-2 bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm">
                         <h3 class="font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2 text-sm md:text-base">Grafik Pengajuan (7 Hari Terakhir)</h3>
                         <div class="chart-container"><div id="bar-chart-wrapper" class="flex w-full h-full gap-2 items-end"></div></div>
@@ -828,7 +853,7 @@
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div>
                                     <p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Respon Otomatis Sistem</p>
-                                    <p class="text-[10px] md:text-xs text-gray-500">Jika Anda sedang Dinas Luar, sistem otomatis menolak jadwal baru.</p>
+                                    <p class="text-[10px] md:text-xs text-gray-500">Otomatis menolak jadwal baru saat status Dinas Luar.</p>
                                 </div>
                                 <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
                                     <input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
@@ -941,9 +966,11 @@
 
         function logoutPrincipal() {
             document.body.classList.remove('sidebar-collapsed'); // Reset Sidebar Desktop
-            if(window.innerWidth < 768) {
-                document.getElementById('principal-sidebar').classList.remove('mobile-open');
-                document.getElementById('mobile-sidebar-overlay').classList.remove('active');
+            if(window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('principal-sidebar');
+                const overlay = document.getElementById('mobile-sidebar-overlay');
+                if(sidebar) sidebar.classList.remove('mobile-open');
+                if(overlay) overlay.classList.remove('active');
             }
             showToast("Sesi Eksekutif Diakhiri. Portal Web diaktifkan kembali.", "warning");
             navigate('page-main');
@@ -962,11 +989,9 @@
 
         function openTicketStatusModal() { const m = document.getElementById('modal-status'), c = document.getElementById('status-content'); if(m) m.classList.remove('hidden'); const tIn = document.getElementById('ticket-input'); if(tIn) tIn.value = ''; const resEl = document.getElementById('ticket-result'); if(resEl) resEl.classList.add('hidden'); setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); }
         function closeTicketStatusModal() { const c = document.getElementById('status-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=> { const m = document.getElementById('modal-status'); if(m) m.classList.add('hidden'); }, 300); }
-        
         function checkTicketStatus(e) {
             e.preventDefault(); const inputEl = document.getElementById('ticket-input');
-            if(!inputEl) return;
-            const input = inputEl.value.toUpperCase();
+            if(!inputEl) return; const input = inputEl.value.toUpperCase();
             
             if(input.length < 5) { showToast("Format tiket tidak valid.", "error"); return; }
             showToast("Menyelaraskan data server...", "info");
@@ -988,16 +1013,12 @@
         // COPY RESI BUTTON LOGIC
         function copyResi() {
             const codeEl = document.getElementById('ticket-code');
-            if(!codeEl) return;
-            const code = codeEl.innerText;
-            
+            if(!codeEl) return; const code = codeEl.innerText;
             navigator.clipboard.writeText(code).then(() => {
                 const tooltip = document.getElementById('copy-tooltip');
                 if(tooltip) { tooltip.innerText = "Tersalin!"; tooltip.classList.replace('bg-gray-800', 'bg-green-600'); }
                 showToast("Kode Resi disalin ke clipboard", "success");
-                setTimeout(() => {
-                    if(tooltip) { tooltip.innerText = "Klik untuk salin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); }
-                }, 2000);
+                setTimeout(() => { if(tooltip) { tooltip.innerText = "Klik untuk menyalin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); } }, 2000);
             }).catch(err => {
                 const textArea = document.createElement("textarea"); textArea.value = code; document.body.appendChild(textArea); textArea.select();
                 try { document.execCommand('copy'); showToast("Kode Resi disalin", "success"); } catch (ex) { showToast("Gagal menyalin", "error"); }
@@ -1107,14 +1128,15 @@
             const canvas = document.getElementById('checkin-canvas');
             if(canvas && canvas.classList.contains('hidden')) { showToast("Wajib merekam wajah pengirim demi keamanan sistem.", "error"); return; }
             
-            // SINKRONISASI DATA KE DASHBOARD
-            const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency');
+            // SINKRONISASI DATA KE DASHBOARD (INBOX & OVERVIEW)
+            const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency'), pEl = document.getElementById('w-phone');
             const tEl = document.getElementById('w-target'), dEl = document.getElementById('w-detail'), lEl = document.getElementById('w-location');
             const dtEl = document.getElementById('w-date'), tmEl = document.getElementById('w-time');
             const fileIn = document.getElementById('w-file');
             
             const name = nEl ? nEl.value : '';
             const agency = aEl ? aEl.value : '';
+            const phone = pEl ? pEl.value : '';
             const targetRaw = tEl ? tEl.value : '';
             const detail = dEl ? dEl.value : '';
             const loc = lEl ? lEl.value : '';
@@ -1132,7 +1154,7 @@
             let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
             let locInfo = loc || 'Via Website';
 
-            // Mengambil Foto Base64 untuk Database dan Profil Avatar
+            // Mengambil Foto Base64 untuk Database dan Profil Avatar!
             let faceImageData = name.charAt(0).toUpperCase(); 
             if(canvas && !canvas.classList.contains('hidden')) {
                 faceImageData = canvas.toDataURL('image/jpeg');
@@ -1140,7 +1162,7 @@
 
             const newId = Date.now();
             simDB.guests.unshift({
-                id: newId, time: timeStr, name: name, phone: document.getElementById('w-phone') ? document.getElementById('w-phone').value : '', agency: agency, target: targetStr, status: 'PENDING', read: false
+                id: newId, time: timeStr, name: name, phone: phone, agency: agency, target: targetStr, status: 'PENDING', read: false
             });
 
             simDB.inbox.unshift({ 
@@ -1160,7 +1182,7 @@
             resetCheckinWizard();
         }
 
-        /* --- FITUR SCHEDULE FORM & CAMERA (TIDAK DIUBAH 100%) --- */
+        /* --- FITUR SCHEDULE FORM & CAMERA (TIDAK DIUBAH 100% SESUAI INSTRUKSI MUTLAK) --- */
         let schStream = null;
         
         function updateFileName(input) {
@@ -1241,6 +1263,9 @@
             ];
         }
 
+        // Pengecekan Media Query via Javascript yang akurat
+        const isMobileScreen = () => window.matchMedia('(max-width: 1024px)').matches;
+
         function switchTab(tabId) {
             document.querySelectorAll('.dash-view').forEach(el => { el.classList.remove('active'); el.classList.remove('animate-fadeSlideUp'); });
             const target = document.getElementById(tabId); 
@@ -1261,28 +1286,27 @@
             if(tabId === 'tab-reports') renderBarChart();
         }
 
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('principal-sidebar');
-            const overlay = document.getElementById('mobile-sidebar-overlay');
-            if(sidebar) sidebar.classList.toggle('mobile-open'); 
-            if(overlay) overlay.classList.toggle('active');
-        }
-
-        // Auto Collapse Sidebar Desktop (Gaya WA Web)
+        // Tombol Hamburger Header (Mobile & Desktop)
         function toggleSidebar() {
-            if(window.innerWidth < 1024) {
-                toggleMobileSidebar();
+            if(isMobileScreen()) {
+                const sidebar = document.getElementById('principal-sidebar');
+                const overlay = document.getElementById('mobile-sidebar-overlay');
+                if(sidebar) sidebar.classList.toggle('mobile-open'); 
+                if(overlay) overlay.classList.toggle('active');
             } else {
                 document.body.classList.toggle('sidebar-collapsed');
             }
         }
 
-        // Collapse ketika tombol menu sidebar di klik
+        // Collapse ketika tombol menu sidebar diklik (Menyembunyikan sidebar ke kiri)
         function autoCollapseSidebar() {
-            if(window.innerWidth >= 1024) {
-                document.body.classList.add('sidebar-collapsed');
+            if(isMobileScreen()) {
+                const sidebar = document.getElementById('principal-sidebar');
+                const overlay = document.getElementById('mobile-sidebar-overlay');
+                if(sidebar) sidebar.classList.remove('mobile-open'); 
+                if(overlay) overlay.classList.remove('active');
             } else {
-                toggleMobileSidebar();
+                document.body.classList.add('sidebar-collapsed');
             }
         }
 
@@ -1390,7 +1414,7 @@
                 
                 listArea.innerHTML += `
                     <div class="inbox-item ${unreadClass} border-b border-gray-100 p-4 hover:bg-blue-50/30 transition cursor-pointer flex flex-col md:flex-row items-center md:items-start gap-3" onclick="openMessage(${msg.id}, this)">
-                        <div class="relative shrink-0">
+                        <div class="relative shrink-0 inbox-avatar-wrap">
                             ${avatarHTML}
                         </div>
                         <div class="inbox-item-content flex-1 overflow-hidden w-full">
@@ -1419,8 +1443,8 @@
         function openMessage(id, element) {
             const container = document.getElementById('inbox-container-el');
             
-            // Logika UI WhatsApp Web Shrink
-            if(window.innerWidth >= 1024) {
+            // Logika UI: Layar Desktop Mengecil, Layar HP Menyembunyikan List
+            if(!isMobileScreen()) {
                 if(container) container.classList.add('is-reading');
             } else {
                 if(container) container.classList.add('show-detail');
@@ -1494,7 +1518,7 @@
             if(req) {
                 req.status = newStatus;
                 if(gst) gst.status = newStatus;
-                openMessage(id, null); 
+                openMessage(id, null); // Refresh detail view
                 showToast(newStatus === 'APPROVED' ? "Pengajuan disetujui. Notifikasi otomatis dikirim ke pemohon." : "Pengajuan ditolak. Pesan pembatalan terkirim.", newStatus === 'APPROVED' ? "success" : "error");
             }
         }
@@ -1507,8 +1531,8 @@
 
             let notifs = [];
             simDB.inbox.forEach(m => {
-                if(!m.read) notifs.push({ text: `Pesan baru dari ${m.sender}`, time: m.time, icon: 'fa-envelope', color: 'text-blue-500', action: "switchTab('tab-inbox'); openMessage(" + m.id + ");" });
-                if(m.status === 'PENDING') notifs.push({ text: `Pengajuan Tertunda: ${m.sender}`, time: m.time, icon: 'fa-triangle-exclamation', color: 'text-yellow-500', action: "switchTab('tab-inbox'); openMessage(" + m.id + ");" });
+                if(!m.read) notifs.push({ text: `Pesan baru dari ${m.sender}`, time: m.time, icon: 'fa-envelope', color: 'text-blue-500', action: "switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(" + m.id + ");" });
+                if(m.status === 'PENDING') notifs.push({ text: `Pengajuan Tertunda dari ${m.sender}`, time: m.time, icon: 'fa-triangle-exclamation', color: 'text-yellow-500', action: "switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(" + m.id + ");" });
             });
 
             if(notifs.length === 0) {
