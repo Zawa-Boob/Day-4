@@ -119,7 +119,7 @@
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; transition: background-color 0.3s; }
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
-        .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
+        .data-table tr:hover td { background-color: #f8fafc; cursor: pointer; }
         
         /* MENGEMBALIKAN BADGE KUNING */
         .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
@@ -146,7 +146,7 @@
         .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 50; }
         .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
         
-        /* ================= INBOX SPLIT PANE WA WEB STYLE (SANGAT INTERAKTIF) ================= */
+        /* ================= INBOX SPLIT PANE WA WEB STYLE (PERBAIKAN BUG MOBILE) ================= */
         .inbox-wrapper { 
             display: flex; flex-direction: row; 
             width: 100%; height: calc(100vh - 160px); min-height: 500px;
@@ -174,24 +174,29 @@
 
         .inbox-item-name-shrink { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #475569; width: 100%; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi foto profil saja) */
+        /* DESKTOP IS-READING STATE (Menyusutkan daftar nama jadi foto profil saja) */
         @media (min-width: 1025px) {
             .inbox-wrapper.is-reading .inbox-list { width: 90px; padding-top: 1rem; }
-            .inbox-wrapper.is-reading .inbox-header-wrap { display: none; }
+            .inbox-wrapper.is-reading .inbox-search-header { display: none; }
+            .inbox-wrapper.is-reading .inbox-shrink-header { display: flex !important; justify-content: center; padding: 1.25rem 0; border-bottom: 1px solid #e2e8f0; }
             .inbox-wrapper.is-reading .inbox-item-content { display: none !important; }
             .inbox-wrapper.is-reading .inbox-item { flex-direction: column; align-items: center; justify-content: center; padding: 1rem 0.5rem; }
             .inbox-wrapper.is-reading .inbox-item-name-shrink { display: block; }
             .inbox-wrapper.is-reading .inbox-avatar-wrap { margin: 0 auto; }
         }
 
-        /* MOBILE STATE FIX (SWAP FULL WIDTH - BUG FIX HTML/JS ID MATCH) */
+        /* MOBILE STATE FIX (SWAP FULL WIDTH - BEBAS BUG) */
         @media (max-width: 1024px) {
-            .inbox-list { width: 100%; border-right: none; }
-            .inbox-detail { display: none; width: 100%; } /* Sembunyikan detail default di HP */
+            .inbox-wrapper { flex-direction: column; height: 75vh; min-height: 400px; }
+            .inbox-list { width: 100%; border-right: none; display: flex; }
+            .inbox-detail { display: none; width: 100%; height: 100%; } /* Default Sembunyi */
             
-            /* Class 'show-detail' akan dikendalikan JS jika ukuran layar < 1024 */
+            /* Kunci pertukaran layar saat pesan diklik */
             .inbox-wrapper.show-detail .inbox-list { display: none !important; }
-            .inbox-wrapper.show-detail .inbox-detail { display: flex !important; width: 100%; }
+            .inbox-wrapper.show-detail .inbox-detail { display: flex !important; }
+            
+            /* Matikan shrink effect (Desktop only) agar tidak bocor ke Mobile */
+            .inbox-wrapper.is-reading .inbox-list { width: 100%; }
         }
 
         /* BUG FIX: Memastikan TABS terpisah dan tidak bertumpuk */
@@ -240,6 +245,7 @@
         body.dark-mode .badge-pending { background-color: #451a03 !important; color: #fde68a !important; border-color: #78350f !important; }
         body.dark-mode .badge-approved { background-color: #064e3b !important; color: #a7f3d0 !important; border-color: #065f46 !important; }
         body.dark-mode .badge-rejected { background-color: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
+        body.dark-mode .inbox-shrink-header { background-color: #0F172A !important; border-color: #334155 !important; }
     </style>
 </head>
 <body class="kiosk-mode select-none relative">
@@ -277,7 +283,7 @@
                         <i class="fa-solid fa-envelope-open-text text-xl md:text-2xl text-blue-400"></i>
                     </div>
                     <div class="flex-1 text-left">
-                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Pesan</h3>
+                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Kirim Pesan</h3>
                         <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Ajukan rencana pertemuan atau kirim pesan resmi.</p>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
@@ -308,7 +314,7 @@
         </div>
 
         <button onclick="openGuideModal()" class="mt-6 md:mt-8 text-gray-400 hover:text-white px-5 py-2 rounded-full text-xs md:text-sm font-semibold transition flex items-center gap-2 border border-transparent hover:border-white/20 hover:bg-white/5">
-            <i class="fa-solid fa-circle-question"></i> Panduan Penggunaan
+            <i class="fa-solid fa-circle-question"></i> Bantuan & Panduan Sistem
         </button>
     </div>
 
@@ -322,7 +328,7 @@
             </div>
             <div class="timeline px-2">
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi ke Ibu Kepsek.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Di tahap akhir, sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda di menu Cek Status.</p></div>
             </div>
             <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4 text-sm">Saya Mengerti</button>
@@ -334,7 +340,6 @@
         <div class="glass-panel p-8 md:p-10 rounded-3xl max-w-sm w-full relative border border-accent/60 scale-0 transition-transform duration-400 shadow-[0_0_50px_rgba(212,175,55,0.15)]" id="auth-content">
             <button onclick="closePrincipalLogin()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
-                <!-- LOGO SEKOLAH DI LOGIN -->
                 <img src="logo-sekolah.png" class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-accent mx-auto mb-4 shadow-lg object-cover bg-white" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
                 <h3 class="text-lg md:text-xl font-bold text-white">Otorisasi Eksekutif</h3>
                 <p class="text-[10px] md:text-xs text-accent/80 mt-1 uppercase tracking-widest">Portal Ibu Kepala Sekolah</p>
@@ -416,7 +421,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
+                <!-- STEP 2: Agenda & File Upload -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -440,7 +445,6 @@
                                     <option value="Daring (Zoom/GMeet)" class="text-black bg-white">Daring (Zoom / GMeet)</option>
                                 </select>
                             </div>
-                            <!-- BUG FIX TANGGAL & JAM: Kini bisa ditekan dimana saja berkat CSS trik pada tag input -->
                             <div class="flex gap-4">
                                 <div class="flex-1 relative">
                                     <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Tanggal</label>
@@ -564,7 +568,7 @@
         </div>
     </div>
 
-    <!-- MODAL TIKET UMUM -->
+    <!-- MODAL TIKET UMUM (POP-UP SUCCESS + COPY RESI BERGUNA) -->
     <div id="ticket-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-sm w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300 flex flex-col items-center" id="ticket-content">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
@@ -580,11 +584,11 @@
             </div>
             
             <p class="text-xs md:text-sm text-gray-500 mb-6" id="ticket-desc">Data berhasil masuk ke sistem Dasbor.</p>
-            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Menu</button>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Lobi</button>
         </div>
     </div>
 
-    <!-- MODAL CEK STATUS -->
+    <!-- MODAL CEK STATUS TIKET -->
     <div id="modal-status" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-md w-full relative border border-white/20 scale-0 transition-transform duration-300 shadow-2xl" id="status-content">
             <button onclick="closeTicketStatusModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
@@ -731,7 +735,7 @@
                 <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                     <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                         <h3 class="font-bold text-gray-800 text-sm md:text-lg flex items-center"><i class="fa-solid fa-address-book text-accent mr-2"></i>Daftar Registrasi Pengaju</h3>
-                        <button onclick="switchTab('tab-inbox')" class="text-xs md:text-sm text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg transition hidden sm:block">Lihat Rincian Pesan Mereka</button>
+                        <button onclick="switchTab('tab-inbox')" class="text-xs md:text-sm text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg transition hidden sm:block">Buka Seluruh Pesan</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full data-table min-w-[700px]">
@@ -742,19 +746,17 @@
                 </div>
             </div>
 
-            <!-- TAB 2: INBOX (SPLIT PANE WA WEB STYLE - BEBAS MACET) -->
+            <!-- TAB 2: INBOX (SPLIT PANE WA WEB STYLE) -->
             <div id="tab-inbox" class="dash-view p-4 md:p-8 flex-1">
                 <div class="inbox-wrapper" id="inbox-wrapper-el">
                     
-                    <div class="inbox-list">
-                        <div class="inbox-header-wrap p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20 transition-all">
+                    <div class="inbox-list" id="inbox-list-container">
+                        <div class="inbox-search-header p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20 transition-all">
                             <h3 class="font-bold text-gray-800 text-base mb-2 md:mb-0">Daftar Pesan Masuk</h3>
                         </div>
-                        <!-- Header untuk mode Shrink (mengecil) -->
                         <div class="inbox-shrink-header hidden bg-gray-50/50 border-b border-gray-100 shrink-0 h-auto md:h-20">
                             <i class="fa-solid fa-envelope-open-text text-gray-400 text-xl"></i>
                         </div>
-                        
                         <div class="flex-1 overflow-y-auto" id="inbox-list-area">
                             <!-- Diisi via JS -->
                         </div>
@@ -849,7 +851,6 @@
                                 </label>
                             </div>
 
-                            <!-- TOGGLE QOL BARU: MODE GELAP (DARK MODE) -->
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div>
                                     <p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">BARU</span></p>
@@ -976,13 +977,12 @@
         }
 
         function logoutPrincipal() {
-            document.body.classList.remove('sidebar-collapsed'); 
-            if(window.innerWidth <= 1024) {
-                const sidebar = document.getElementById('principal-sidebar');
-                const overlay = document.getElementById('mobile-sidebar-overlay');
-                if(sidebar) sidebar.classList.remove('mobile-open');
-                if(overlay) overlay.classList.remove('active');
-            }
+            document.body.classList.remove('sidebar-collapsed'); // Reset Sidebar Desktop
+            const sidebar = document.getElementById('principal-sidebar');
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            if(sidebar) sidebar.classList.remove('mobile-open');
+            if(overlay) overlay.classList.remove('active');
+            
             showToast("Sesi Eksekutif Diakhiri. Portal Web diaktifkan kembali.", "warning");
             navigate('page-main');
         }
@@ -1024,16 +1024,12 @@
         // COPY RESI BUTTON LOGIC
         function copyResi() {
             const codeEl = document.getElementById('ticket-code');
-            if(!codeEl) return;
-            const code = codeEl.innerText;
-            
+            if(!codeEl) return; const code = codeEl.innerText;
             navigator.clipboard.writeText(code).then(() => {
                 const tooltip = document.getElementById('copy-tooltip');
                 if(tooltip) { tooltip.innerText = "Tersalin!"; tooltip.classList.replace('bg-gray-800', 'bg-green-600'); }
                 showToast("Kode Resi disalin ke clipboard", "success");
-                setTimeout(() => {
-                    if(tooltip) { tooltip.innerText = "Klik untuk salin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); }
-                }, 2000);
+                setTimeout(() => { if(tooltip) { tooltip.innerText = "Klik untuk menyalin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); } }, 2000);
             }).catch(err => {
                 const textArea = document.createElement("textarea"); textArea.value = code; document.body.appendChild(textArea); textArea.select();
                 try { document.execCommand('copy'); showToast("Kode Resi disalin", "success"); } catch (ex) { showToast("Gagal menyalin", "error"); }
@@ -1143,7 +1139,7 @@
             const canvas = document.getElementById('checkin-canvas');
             if(canvas && canvas.classList.contains('hidden')) { showToast("Wajib merekam wajah pengirim demi keamanan sistem.", "error"); return; }
             
-            // SINKRONISASI DATA KE DASHBOARD (INBOX & OVERVIEW)
+            // SINKRONISASI DATA KE DASHBOARD
             const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency'), pEl = document.getElementById('w-phone');
             const tEl = document.getElementById('w-target'), dEl = document.getElementById('w-detail'), lEl = document.getElementById('w-location');
             const dtEl = document.getElementById('w-date'), tmEl = document.getElementById('w-time');
@@ -1169,7 +1165,7 @@
             let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
             let locInfo = loc || 'Via Website';
 
-            // Mengambil Foto Base64 untuk Database dan Profil Avatar!
+            // Mengambil Foto Base64 untuk Database dan Profil Avatar
             let faceImageData = name.charAt(0).toUpperCase(); 
             if(canvas && !canvas.classList.contains('hidden')) {
                 faceImageData = canvas.toDataURL('image/jpeg');
@@ -1278,6 +1274,7 @@
             ];
         }
 
+        // FUNGSI DETEKSI LAYAR MOBILE
         const isMobileScreen = () => window.matchMedia('(max-width: 1024px)').matches;
 
         function switchTab(tabId) {
@@ -1285,7 +1282,7 @@
             const target = document.getElementById(tabId); 
             if(target) {
                 target.classList.add('active');
-                void target.offsetWidth; // Trigger reflow
+                void target.offsetWidth; 
                 target.classList.add('animate-fadeSlideUp');
             }
             
@@ -1307,7 +1304,7 @@
             if(overlay) overlay.classList.toggle('active');
         }
 
-        // Auto Collapse Sidebar (Responsive Desktop)
+        // Auto Collapse Sidebar (Responsif)
         function toggleSidebar() {
             if(isMobileScreen()) {
                 toggleMobileSidebar();
@@ -1316,7 +1313,6 @@
             }
         }
 
-        // Memastikan sidebar hilang jika diklik via Desktop
         function autoCollapseSidebar() {
             if(isMobileScreen()) {
                 const sidebar = document.getElementById('principal-sidebar');
@@ -1380,7 +1376,7 @@
                 actList.innerHTML = '';
                 simDB.inbox.slice(0, 4).forEach(req => {
                     actList.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer" onclick="switchTab('tab-inbox'); autoCollapseSidebar(); openMessage(${req.id})">
-                        <td class="font-medium text-gray-500 text-sm"><i class="fa-regular fa-clock mr-2 text-gray-400"></i>${req.time}</td>
+                        <td class="font-medium text-gray-500 text-sm"><i class="fa-regular fa-clock mr-2 text-slate-400"></i>${req.time}</td>
                         <td class="font-bold text-gray-800 text-sm">${req.sender} <span class="block text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">${req.agency}</span></td>
                         <td><span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">${req.title}</span></td>
                         <td>${getStatusBadgeUI(req.status)}</td>
@@ -1424,8 +1420,6 @@
             
             simDB.inbox.forEach((msg) => {
                 let unreadClass = !msg.read ? 'unread' : '';
-                
-                // Menambahkan titik kuning jika pesan masih PENDING
                 let statusDot = msg.status === 'PENDING' ? '<span class="inline-block w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full ml-1" title="Menunggu Persetujuan"></span>' : '';
                 let avatarHTML = getAvatarHTML(msg.avatar, 'w-10 h-10 md:w-12 md:h-12');
                 
@@ -1448,9 +1442,9 @@
             renderDashboardMetrics();
         }
 
-        // Fungsi khusus Mobile untuk menekan tombol kembali di Chat
+        // Fungsi khusus menutup detail pesan di Layar HP
         function closeMessageMobile() {
-            const container = document.getElementById('inbox-container-el');
+            const container = document.getElementById('inbox-wrapper-el');
             if(container) {
                 container.classList.remove('show-detail');
                 container.classList.remove('is-reading');
@@ -1458,11 +1452,11 @@
             document.querySelectorAll('.inbox-item').forEach(el => el.classList.remove('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'));
         }
 
-        // Tampilan Buka Pesan ala WA Web
+        // Logika Buka Pesan dengan Shrink effect di PC dan Swap di HP
         function openMessage(id, element) {
-            const container = document.getElementById('inbox-container-el');
+            const container = document.getElementById('inbox-wrapper-el');
             
-            // Logika UI: Layar Desktop Mengecilkan List, Layar HP Sembunyikan List Full
+            // Aturan Layar: Desktop (Mengecil) vs Mobile (Pindah Halaman)
             if(!isMobileScreen()) {
                 if(container) container.classList.add('is-reading');
             } else {
@@ -1481,7 +1475,6 @@
             if(!msg) return;
             msg.read = true;
             
-            // Sinkronkan notif daftar tamu di tab 1
             const guest = simDB.guests.find(g => g.id === id);
             if(guest) guest.read = true;
 
@@ -1495,7 +1488,6 @@
                 actionButtons = `<span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">Pengajuan Telah ${msg.status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}</span>`;
             }
 
-            // Nama File Dinamis (Hadir di bawah chat)
             let fileIcon = msg.hasFile ? `<div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl inline-flex items-center gap-3 cursor-pointer hover:bg-red-100 transition dark-mode-file"><i class="fa-solid fa-file-pdf text-red-500 text-xl"></i><div><p class="text-xs font-bold text-gray-700 file-name-text">${msg.fileName || 'Lampiran_Resmi.pdf'}</p><p class="text-[10px] text-gray-500">1.2 MB</p></div></div>` : '';
             let avatarDetailHTML = getAvatarHTML(msg.avatar, 'w-12 h-12 md:w-16 md:h-16');
 
@@ -1504,7 +1496,7 @@
                 detailArea.innerHTML = `
                     <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-start bg-white shrink-0 z-10 shadow-sm">
                         <div class="flex gap-3 md:gap-4 items-center">
-                            <button class="text-gray-500 hover:text-gray-800 mr-2" onclick="closeMessageMobile()" title="Tutup Pesan"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                            <button class="text-gray-500 hover:text-gray-800 mr-2" onclick="closeMessageMobile()" title="Tutup / Perluas Layar"><i class="fa-solid fa-arrow-left text-xl"></i></button>
                             ${avatarDetailHTML}
                             <div>
                                 <h2 class="text-base md:text-lg font-bold text-gray-800 mb-1 leading-tight">${msg.title}</h2>
@@ -1538,7 +1530,7 @@
             if(req) {
                 req.status = newStatus;
                 if(gst) gst.status = newStatus;
-                openMessage(id, null); 
+                openMessage(id, null); // Segarkan halaman pesan
                 showToast(newStatus === 'APPROVED' ? "Pengajuan disetujui. Notifikasi otomatis dikirim ke pemohon." : "Pengajuan ditolak. Pesan pembatalan terkirim.", newStatus === 'APPROVED' ? "success" : "error");
             }
         }
