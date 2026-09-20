@@ -70,7 +70,7 @@
         .dash-content-area::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.4); }
         .dash-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
 
-        /* ================= TANGGAL & JAM BISA DIKLIK FULL ================= */
+        /* Trik Agar Kalender/Jam Bisa Diklik Dimana Saja Secara Penuh */
         input[type="date"], input[type="time"] { position: relative; cursor: pointer; }
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator {
@@ -96,7 +96,7 @@
             overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
         }
 
-        /* AUTO COLLAPSE LOGIC */
+        /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
         body.sidebar-collapsed .dash-sidebar { transform: translateX(-100%) !important; }
         body.sidebar-collapsed .dash-content-area { margin-left: 0 !important; width: 100% !important; }
 
@@ -119,7 +119,7 @@
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; transition: background-color 0.3s; }
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
-        .data-table tr:hover td { background-color: #f8fafc; cursor: pointer; }
+        .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
         
         /* MENGEMBALIKAN BADGE KUNING */
         .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
@@ -184,13 +184,14 @@
             .inbox-wrapper.is-reading .inbox-avatar-wrap { margin: 0 auto; }
         }
 
-        /* MOBILE STATE FIX (SWAP FULL WIDTH) */
+        /* MOBILE STATE FIX (SWAP FULL WIDTH - BUG FIX HTML/JS ID MATCH) */
         @media (max-width: 1024px) {
             .inbox-list { width: 100%; border-right: none; }
-            .inbox-detail { display: none; width: 100%; } /* Sembunyikan detail default */
+            .inbox-detail { display: none; width: 100%; } /* Sembunyikan detail default di HP */
             
-            .inbox-wrapper.show-detail .inbox-list { display: none !important; } /* Sembunyikan list saat detail terbuka */
-            .inbox-wrapper.show-detail .inbox-detail { display: flex !important; width: 100%; } /* Tampilkan detail full */
+            /* Class 'show-detail' akan dikendalikan JS jika ukuran layar < 1024 */
+            .inbox-wrapper.show-detail .inbox-list { display: none !important; }
+            .inbox-wrapper.show-detail .inbox-detail { display: flex !important; width: 100%; }
         }
 
         /* BUG FIX: Memastikan TABS terpisah dan tidak bertumpuk */
@@ -243,7 +244,7 @@
 </head>
 <body class="kiosk-mode select-none relative">
 
-    <!-- DYNAMIC BACKGROUNDS -->
+    <!-- DYNAMIC BACKGROUNDS (Lobi Website) -->
     <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
     <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
     <div id="bg-3" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069');"></div>
@@ -255,7 +256,7 @@
     <!-- PAGE 1: LOBI UTAMA (PORTAL SATU PINTU)                                    -->
     <!-- ========================================================================= -->
     <div id="page-main" class="page active justify-center items-center py-10 px-4 md:px-8 relative">
-        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none">
+        <button onclick="openPrincipalLogin()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/20 hover:text-white/60 transition p-4 rounded-full z-50 focus:outline-none" aria-label="Portal Eksekutif">
             <i class="fa-solid fa-lock text-xl"></i>
         </button>
 
@@ -276,7 +277,7 @@
                         <i class="fa-solid fa-envelope-open-text text-xl md:text-2xl text-blue-400"></i>
                     </div>
                     <div class="flex-1 text-left">
-                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Kirim Pesan</h3>
+                        <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Pesan</h3>
                         <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Ajukan rencana pertemuan atau kirim pesan resmi.</p>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
@@ -321,7 +322,7 @@
             </div>
             <div class="timeline px-2">
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi ke Ibu Kepsek.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Di tahap akhir, sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda di menu Cek Status.</p></div>
             </div>
             <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4 text-sm">Saya Mengerti</button>
@@ -333,6 +334,7 @@
         <div class="glass-panel p-8 md:p-10 rounded-3xl max-w-sm w-full relative border border-accent/60 scale-0 transition-transform duration-400 shadow-[0_0_50px_rgba(212,175,55,0.15)]" id="auth-content">
             <button onclick="closePrincipalLogin()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
+                <!-- LOGO SEKOLAH DI LOGIN -->
                 <img src="logo-sekolah.png" class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-accent mx-auto mb-4 shadow-lg object-cover bg-white" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
                 <h3 class="text-lg md:text-xl font-bold text-white">Otorisasi Eksekutif</h3>
                 <p class="text-[10px] md:text-xs text-accent/80 mt-1 uppercase tracking-widest">Portal Ibu Kepala Sekolah</p>
@@ -393,9 +395,9 @@
                 <div id="wizard-progress" class="absolute top-1/2 left-8 md:left-16 h-1 bg-accent -z-10 rounded-full transition-all duration-500" style="width: 0%"></div>
                 
                 <div class="step-indicator active flex flex-col items-center" id="ind-1"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center font-bold mb-2 shadow-glow-accent"><i class="fa-solid fa-id-card text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-accent font-bold text-center">Identitas</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-2"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-calendar-check text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Agenda</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-3"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-shield-halved text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Aturan</span></div>
-                <div class="step-indicator flex flex-col items-center" id="ind-4"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2"><i class="fa-solid fa-camera-retro text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Verifikasi</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-2"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition-all"><i class="fa-solid fa-calendar-check text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Agenda</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-3"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition-all"><i class="fa-solid fa-shield-halved text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Aturan</span></div>
+                <div class="step-indicator flex flex-col items-center" id="ind-4"><div class="step-icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary border-2 border-white/30 text-white flex items-center justify-center font-bold mb-2 transition-all"><i class="fa-solid fa-camera-retro text-xs md:text-sm"></i></div><span class="step-text text-[9px] md:text-xs text-white/50 text-center">Verifikasi</span></div>
             </div>
 
             <div class="flex-1 relative overflow-y-auto overflow-x-hidden p-1 flex flex-col">
@@ -414,7 +416,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda -->
+                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -438,9 +440,16 @@
                                     <option value="Daring (Zoom/GMeet)" class="text-black bg-white">Daring (Zoom / GMeet)</option>
                                 </select>
                             </div>
+                            <!-- BUG FIX TANGGAL & JAM: Kini bisa ditekan dimana saja berkat CSS trik pada tag input -->
                             <div class="flex gap-4">
-                                <div class="flex-1"><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Tanggal</label><input type="date" id="w-date" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm text-white focus:border-accent transition [color-scheme:dark]"></div>
-                                <div class="flex-1"><label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Jam</label><input type="time" id="w-time" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm text-white focus:border-accent transition [color-scheme:dark]"></div>
+                                <div class="flex-1 relative">
+                                    <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Tanggal</label>
+                                    <input type="date" id="w-date" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm text-white focus:border-accent transition [color-scheme:dark]">
+                                </div>
+                                <div class="flex-1 relative">
+                                    <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Jam</label>
+                                    <input type="time" id="w-time" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-2.5 md:py-3 text-sm text-white focus:border-accent transition [color-scheme:dark]">
+                                </div>
                             </div>
                         </div>
 
@@ -480,7 +489,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 4: Kamera Wajah -->
+                <!-- STEP 4: Kamera Wajah Responsif -->
                 <div id="step-4" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-3 md:mb-4 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-4 text-accent mr-2"></i>Verifikasi Wajah Pengirim</h3>
                     
@@ -508,7 +517,7 @@
 
     <!-- ========================================================================= -->
     <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4 - DIJAGA 100%)        -->
-    <!-- (Ini dipertahankan murni sesuai instruksi mutlak Anda, tanpa diubah)      -->
+    <!-- (Ini dipertahankan murni sesuai instruksi, utuh dan original)             -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex-col items-center py-6 px-4 md:px-8 relative">
         <div class="flex justify-between items-center mb-4 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
@@ -571,7 +580,7 @@
             </div>
             
             <p class="text-xs md:text-sm text-gray-500 mb-6" id="ticket-desc">Data berhasil masuk ke sistem Dasbor.</p>
-            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Lobi</button>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Menu</button>
         </div>
     </div>
 
@@ -741,6 +750,11 @@
                         <div class="inbox-header-wrap p-4 md:p-6 border-b border-gray-100 flex flex-col justify-center bg-gray-50/50 shrink-0 h-auto md:h-20 transition-all">
                             <h3 class="font-bold text-gray-800 text-base mb-2 md:mb-0">Daftar Pesan Masuk</h3>
                         </div>
+                        <!-- Header untuk mode Shrink (mengecil) -->
+                        <div class="inbox-shrink-header hidden bg-gray-50/50 border-b border-gray-100 shrink-0 h-auto md:h-20">
+                            <i class="fa-solid fa-envelope-open-text text-gray-400 text-xl"></i>
+                        </div>
+                        
                         <div class="flex-1 overflow-y-auto" id="inbox-list-area">
                             <!-- Diisi via JS -->
                         </div>
@@ -962,7 +976,7 @@
         }
 
         function logoutPrincipal() {
-            document.body.classList.remove('sidebar-collapsed'); // Reset Sidebar Desktop
+            document.body.classList.remove('sidebar-collapsed'); 
             if(window.innerWidth <= 1024) {
                 const sidebar = document.getElementById('principal-sidebar');
                 const overlay = document.getElementById('mobile-sidebar-overlay');
@@ -1010,12 +1024,16 @@
         // COPY RESI BUTTON LOGIC
         function copyResi() {
             const codeEl = document.getElementById('ticket-code');
-            if(!codeEl) return; const code = codeEl.innerText;
+            if(!codeEl) return;
+            const code = codeEl.innerText;
+            
             navigator.clipboard.writeText(code).then(() => {
                 const tooltip = document.getElementById('copy-tooltip');
                 if(tooltip) { tooltip.innerText = "Tersalin!"; tooltip.classList.replace('bg-gray-800', 'bg-green-600'); }
                 showToast("Kode Resi disalin ke clipboard", "success");
-                setTimeout(() => { if(tooltip) { tooltip.innerText = "Klik untuk menyalin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); } }, 2000);
+                setTimeout(() => {
+                    if(tooltip) { tooltip.innerText = "Klik untuk salin"; tooltip.classList.replace('bg-green-600', 'bg-gray-800'); }
+                }, 2000);
             }).catch(err => {
                 const textArea = document.createElement("textarea"); textArea.value = code; document.body.appendChild(textArea); textArea.select();
                 try { document.execCommand('copy'); showToast("Kode Resi disalin", "success"); } catch (ex) { showToast("Gagal menyalin", "error"); }
@@ -1125,7 +1143,7 @@
             const canvas = document.getElementById('checkin-canvas');
             if(canvas && canvas.classList.contains('hidden')) { showToast("Wajib merekam wajah pengirim demi keamanan sistem.", "error"); return; }
             
-            // SINKRONISASI DATA KE DASHBOARD
+            // SINKRONISASI DATA KE DASHBOARD (INBOX & OVERVIEW)
             const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency'), pEl = document.getElementById('w-phone');
             const tEl = document.getElementById('w-target'), dEl = document.getElementById('w-detail'), lEl = document.getElementById('w-location');
             const dtEl = document.getElementById('w-date'), tmEl = document.getElementById('w-time');
@@ -1151,7 +1169,7 @@
             let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
             let locInfo = loc || 'Via Website';
 
-            // Mengambil Foto Base64
+            // Mengambil Foto Base64 untuk Database dan Profil Avatar!
             let faceImageData = name.charAt(0).toUpperCase(); 
             if(canvas && !canvas.classList.contains('hidden')) {
                 faceImageData = canvas.toDataURL('image/jpeg');
@@ -1267,7 +1285,7 @@
             const target = document.getElementById(tabId); 
             if(target) {
                 target.classList.add('active');
-                void target.offsetWidth; 
+                void target.offsetWidth; // Trigger reflow
                 target.classList.add('animate-fadeSlideUp');
             }
             
@@ -1289,7 +1307,7 @@
             if(overlay) overlay.classList.toggle('active');
         }
 
-        // Auto Collapse Sidebar (Responsive)
+        // Auto Collapse Sidebar (Responsive Desktop)
         function toggleSidebar() {
             if(isMobileScreen()) {
                 toggleMobileSidebar();
@@ -1298,6 +1316,7 @@
             }
         }
 
+        // Memastikan sidebar hilang jika diklik via Desktop
         function autoCollapseSidebar() {
             if(isMobileScreen()) {
                 const sidebar = document.getElementById('principal-sidebar');
@@ -1408,11 +1427,10 @@
                 
                 // Menambahkan titik kuning jika pesan masih PENDING
                 let statusDot = msg.status === 'PENDING' ? '<span class="inline-block w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full ml-1" title="Menunggu Persetujuan"></span>' : '';
-                
                 let avatarHTML = getAvatarHTML(msg.avatar, 'w-10 h-10 md:w-12 md:h-12');
                 
                 listArea.innerHTML += `
-                    <div class="inbox-item ${unreadClass}" onclick="openMessage(${msg.id}, this)">
+                    <div class="inbox-item ${unreadClass} border-b border-gray-100 p-4 hover:bg-blue-50/30 transition cursor-pointer flex flex-col md:flex-row items-center md:items-start gap-3" onclick="openMessage(${msg.id}, this)">
                         <div class="relative shrink-0 inbox-avatar-wrap">
                             ${avatarHTML}
                         </div>
@@ -1430,6 +1448,7 @@
             renderDashboardMetrics();
         }
 
+        // Fungsi khusus Mobile untuk menekan tombol kembali di Chat
         function closeMessageMobile() {
             const container = document.getElementById('inbox-container-el');
             if(container) {
@@ -1439,10 +1458,11 @@
             document.querySelectorAll('.inbox-item').forEach(el => el.classList.remove('active', 'bg-blue-50', 'border-l-4', 'border-blue-500'));
         }
 
+        // Tampilan Buka Pesan ala WA Web
         function openMessage(id, element) {
             const container = document.getElementById('inbox-container-el');
             
-            // Logika UI: Layar Desktop Mengecil, Layar HP Menyembunyikan List
+            // Logika UI: Layar Desktop Mengecilkan List, Layar HP Sembunyikan List Full
             if(!isMobileScreen()) {
                 if(container) container.classList.add('is-reading');
             } else {
@@ -1461,6 +1481,7 @@
             if(!msg) return;
             msg.read = true;
             
+            // Sinkronkan notif daftar tamu di tab 1
             const guest = simDB.guests.find(g => g.id === id);
             if(guest) guest.read = true;
 
@@ -1483,7 +1504,7 @@
                 detailArea.innerHTML = `
                     <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-start bg-white shrink-0 z-10 shadow-sm">
                         <div class="flex gap-3 md:gap-4 items-center">
-                            <button class="text-gray-500 hover:text-gray-800 mr-2" onclick="closeMessageMobile()" title="Tutup / Perluas Layar"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                            <button class="text-gray-500 hover:text-gray-800 mr-2" onclick="closeMessageMobile()" title="Tutup Pesan"><i class="fa-solid fa-arrow-left text-xl"></i></button>
                             ${avatarDetailHTML}
                             <div>
                                 <h2 class="text-base md:text-lg font-bold text-gray-800 mb-1 leading-tight">${msg.title}</h2>
@@ -1517,7 +1538,7 @@
             if(req) {
                 req.status = newStatus;
                 if(gst) gst.status = newStatus;
-                openMessage(id, null); // Refresh detail view
+                openMessage(id, null); 
                 showToast(newStatus === 'APPROVED' ? "Pengajuan disetujui. Notifikasi otomatis dikirim ke pemohon." : "Pengajuan ditolak. Pesan pembatalan terkirim.", newStatus === 'APPROVED' ? "success" : "error");
             }
         }
