@@ -93,7 +93,7 @@
         
         .dash-content-area { 
             margin-left: 280px; width: calc(100% - 280px); height: 100vh; 
-            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
+            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
         }
 
         /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
@@ -122,7 +122,6 @@
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
         .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
         
-        /* MENGEMBALIKAN BADGE KUNING */
         .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
         .badge-pending { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
         .badge-approved { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
@@ -147,7 +146,7 @@
         .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 50; }
         .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
         
-        /* ================= INBOX SPLIT PANE WA WEB STYLE (SANGAT INTERAKTIF) ================= */
+        /* ================= INBOX SPLIT PANE WA WEB STYLE ================= */
         .inbox-wrapper { 
             display: flex; flex-direction: row; 
             width: 100%; height: calc(100vh - 160px); min-height: 500px;
@@ -175,7 +174,7 @@
 
         .inbox-item-name-shrink { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #475569; width: 100%; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi kecil) */
+        /* DESKTOP IS-READING STATE */
         @media (min-width: 1025px) {
             .inbox-wrapper.is-reading .inbox-list { width: 90px; padding-top: 1rem; }
             .inbox-wrapper.is-reading .inbox-header-wrap { display: none; }
@@ -185,21 +184,18 @@
             .inbox-wrapper.is-reading .inbox-avatar-wrap { margin: 0 auto; }
         }
 
-        /* MOBILE STATE FIX (SWAP FULL WIDTH - BEBAS BUG) */
+        /* MOBILE STATE FIX (SWAP FULL WIDTH) */
         @media (max-width: 1024px) {
             .inbox-wrapper { flex-direction: column; height: 75vh; min-height: 400px; }
             .inbox-list { width: 100%; border-right: none; display: flex; }
-            .inbox-detail { display: none; width: 100%; height: 100%; } /* Default Sembunyi */
+            .inbox-detail { display: none; width: 100%; height: 100%; } 
             
-            /* Kunci pertukaran layar saat pesan diklik */
             .inbox-wrapper.show-detail .inbox-list { display: none !important; }
             .inbox-wrapper.show-detail .inbox-detail { display: flex !important; width: 100%; }
             
-            /* Matikan shrink effect (Desktop only) agar tidak bocor ke Mobile */
             .inbox-wrapper.is-reading .inbox-list { width: 100%; }
         }
 
-        /* BUG FIX: Memastikan TABS terpisah dan tidak bertumpuk */
         .dash-view { display: none !important; width: 100%; }
         .dash-view.active { display: flex !important; flex-direction: column; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
@@ -213,7 +209,7 @@
         .notif-item:hover { background: #F8FAFC; }
 
         /* ==========================================================================
-           DARK MODE OVERRIDES (Kualitas Hidup)
+           DARK MODE OVERRIDES
            ========================================================================== */
         body.dark-mode .dash-layout, body.dark-mode .dash-content-area { background-color: #0F172A !important; color: #F8FAFC !important; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modern-table-container, body.dark-mode .inbox-wrapper, body.dark-mode .inbox-detail, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
@@ -224,7 +220,7 @@
         body.dark-mode .text-gray-600, body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94A3B8 !important; }
         
         body.dark-mode .border-gray-100, body.dark-mode .border-gray-200 { border-color: #334155 !important; }
-        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
+        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .inbox-card:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
         
         body.dark-mode .inbox-item { border-color: #334155 !important; background-color: #1E293B !important; color: #F8FAFC !important;}
         body.dark-mode .inbox-item-name-shrink { color: #CBD5E1 !important; }
@@ -328,7 +324,7 @@
             </div>
             <div class="timeline px-2">
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi ke Ibu Kepsek.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Di tahap akhir, sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda di menu Cek Status.</p></div>
             </div>
             <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4 text-sm">Saya Mengerti</button>
@@ -421,7 +417,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
+                <!-- STEP 2: Agenda -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -520,7 +516,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4)                      -->
+    <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4 - DIJAGA 100%)        -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex-col items-center py-6 px-4 md:px-8 relative">
         <div class="flex justify-between items-center mb-4 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
@@ -543,7 +539,7 @@
                     </div>
                     <div class="space-y-3">
                         <h3 class="text-sm md:text-base font-bold text-emerald-400 border-b border-emerald-900/50 pb-1"><i class="fa-solid fa-clock mr-1"></i>2. Waktu & Lokasi</h3>
-                        <div class="flex gap-3"><div class="flex-1"><label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tanggal *</label><input type="date" required class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:border-emerald-400 transition [color-scheme:dark]"></div><div class="w-1/3"><label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Jam *</label><input type="time" required class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:border-emerald-400 transition [color-scheme:dark]"></div></div>
+                        <div class="flex gap-3"><div class="flex-1 relative"><label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tanggal *</label><input type="date" required class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:border-emerald-400 transition [color-scheme:dark]"></div><div class="w-1/3 relative"><label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Jam *</label><input type="time" required class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:border-emerald-400 transition [color-scheme:dark]"></div></div>
                         <div><label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Lokasi *</label><select required class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:border-emerald-400 transition appearance-none cursor-pointer"><option value="" class="text-black bg-white">-- Tentukan Lokasi --</option><option value="ruang_kepsek" class="text-black bg-white">Ruang Ibu Kepala Sekolah</option><option value="ruang_rapat" class="text-black bg-white">Ruang Rapat Utama</option><option value="daring" class="text-black bg-white">Daring (Zoom / GMeet)</option></select></div>
                     </div>
                 </div>
@@ -567,7 +563,7 @@
         </div>
     </div>
 
-    <!-- MODAL TIKET UMUM (POP-UP SUCCESS) -->
+    <!-- MODAL TIKET UMUM -->
     <div id="ticket-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-sm w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300 flex flex-col items-center" id="ticket-content">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
@@ -587,7 +583,7 @@
         </div>
     </div>
 
-    <!-- MODAL CEK STATUS -->
+    <!-- MODAL CEK STATUS TIKET (DENGAN LOGIKA IF-ELSE) -->
     <div id="modal-status" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-md w-full relative border border-white/20 scale-0 transition-transform duration-300 shadow-2xl" id="status-content">
             <button onclick="closeTicketStatusModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
@@ -606,17 +602,17 @@
                 <div class="bg-black/30 rounded-xl p-4 border border-white/5">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-xs text-gray-400">Status Persetujuan:</span>
-                        <span class="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30" id="res-badge">DISETUJUI</span>
+                        <span class="text-[10px] font-bold bg-gray-500/20 text-gray-400 px-2 py-1 rounded border border-gray-500/30" id="res-badge">MENCARI...</span>
                     </div>
                     <p class="text-sm font-bold text-white" id="res-name">Tamu</p>
-                    <p class="text-[10px] text-gray-500 italic mt-2"><i class="fa-solid fa-info-circle text-blue-400 mr-1"></i> Data valid dari database.</p>
+                    <p class="text-[10px] text-gray-500 italic mt-2" id="res-desc"><i class="fa-solid fa-info-circle text-blue-400 mr-1"></i> Data dari database.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY)                        -->
+    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH                                      -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page dash-layout" style="color: #333;">
         
@@ -747,7 +743,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: INBOX (SPLIT PANE WA WEB STYLE - HANYA PENDING) -->
+            <!-- TAB 2: INBOX (SPLIT PANE) -->
             <div id="tab-inbox" class="dash-view p-4 md:p-8 flex-1">
                 <div class="inbox-wrapper" id="inbox-wrapper-el">
                     
@@ -875,23 +871,12 @@
 
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div>
-                                    <p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">BARU</span></p>
+                                    <p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap</p>
                                     <p class="text-[10px] md:text-xs text-gray-500">Ubah tampilan dasbor menjadi gelap untuk menjaga kesehatan mata.</p>
                                 </div>
                                 <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
                                     <input type="checkbox" id="toggle-darkmode" onchange="toggleDarkMode(this)" class="toggle-checkbox theme-toggle absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
                                     <label for="toggle-darkmode" class="toggle-label theme-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                                </div>
-                            </div>
-
-                            <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
-                                <div>
-                                    <p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Respon Otomatis Sistem</p>
-                                    <p class="text-[10px] md:text-xs text-gray-500">Otomatis menolak jadwal baru saat status Dinas Luar.</p>
-                                </div>
-                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-                                    <input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
-                                    <label for="toggle-autoreply" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                                 </div>
                             </div>
                             
@@ -909,7 +894,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- JAVASCRIPT MASTER LOGIC (ROUTING, CAMERA API, MOCK DB, ANIMATION)         -->
+    <!-- JAVASCRIPT MASTER LOGIC (DB & LOGIKA IF-ELSE TIKET)                       -->
     <!-- ========================================================================= -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -921,7 +906,6 @@
             try { generateMockData(); } catch(e) { console.error("Database initialization error", e); }
         });
 
-        /* --- BACKGROUND LOOP SYSTEM --- */
         let currentBgIndex = 1;
         setInterval(() => {
             const current = document.getElementById(`bg-${currentBgIndex}`);
@@ -931,7 +915,6 @@
             if(next) next.classList.add('active');
         }, 5000);
 
-        /* --- GLOBAL ROUTING & TOAST --- */
         function navigate(pageId) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(pageId);
@@ -981,7 +964,6 @@
             setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 400); }, 3500);
         }
 
-        /* --- KIOSK MODALS CONTROLLERS --- */
         function openGuideModal() { const m = document.getElementById('modal-guide'), c = document.getElementById('guide-content'); if(m) m.classList.remove('hidden'); setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); }
         function closeGuideModal() { const c = document.getElementById('guide-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=> { const m = document.getElementById('modal-guide'); if(m) m.classList.add('hidden'); }, 300); }
         function closePrincipalLogin() { const c = document.getElementById('auth-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=> { const m = document.getElementById('modal-auth-kepsek'); if(m) m.classList.add('hidden'); }, 300); }
@@ -999,7 +981,7 @@
         }
 
         function logoutPrincipal() {
-            document.body.classList.remove('sidebar-collapsed'); // Reset Sidebar Desktop
+            document.body.classList.remove('sidebar-collapsed'); 
             if(window.innerWidth <= 1024) {
                 const sidebar = document.getElementById('principal-sidebar');
                 const overlay = document.getElementById('mobile-sidebar-overlay');
@@ -1010,8 +992,11 @@
             navigate('page-main');
         }
 
-        function showTicketModal(title, desc) { 
-            const code = 'RSV-' + Math.floor(1000 + Math.random() * 9000);
+        // =======================================================
+        // MODAL TIKET & PENYELARASAN DATABASE (LOGIKA IF-ELSE BARU)
+        // =======================================================
+        function showTicketModal(title, desc, providedCode) { 
+            const code = providedCode || ('RSV-' + Math.floor(1000 + Math.random() * 9000));
             const ce = document.getElementById('ticket-code'); if(ce) ce.innerText = code; 
             const tt = document.getElementById('ticket-title'); if(tt) tt.innerText = title; 
             const td = document.getElementById('ticket-desc'); if(td) td.innerText = desc; 
@@ -1023,28 +1008,61 @@
 
         function openTicketStatusModal() { const m = document.getElementById('modal-status'), c = document.getElementById('status-content'); if(m) m.classList.remove('hidden'); const tIn = document.getElementById('ticket-input'); if(tIn) tIn.value = ''; const resEl = document.getElementById('ticket-result'); if(resEl) resEl.classList.add('hidden'); setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); }
         function closeTicketStatusModal() { const c = document.getElementById('status-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=> { const m = document.getElementById('modal-status'); if(m) m.classList.add('hidden'); }, 300); }
+        
         function checkTicketStatus(e) {
-            e.preventDefault(); const inputEl = document.getElementById('ticket-input');
-            if(!inputEl) return; const input = inputEl.value.toUpperCase();
+            e.preventDefault(); 
+            const inputEl = document.getElementById('ticket-input');
+            if(!inputEl) return; 
+            const input = inputEl.value.toUpperCase();
             
             if(input.length < 5) { showToast("Format tiket tidak valid.", "error"); return; }
-            showToast("Menyelaraskan data server...", "info");
+            showToast("Mencari data di server...", "info");
             
             setTimeout(() => {
                 const resCon = document.getElementById('ticket-result');
-                if(resCon) resCon.classList.remove('hidden');
                 const badge = document.getElementById('res-badge');
-                if(badge) {
-                    if(input.length % 2 === 0) {
-                        badge.innerText = "DISETUJUI KEPSEK"; badge.className = "text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30";
+                const nameEl = document.getElementById('res-name');
+                const descEl = document.getElementById('res-desc');
+                
+                if(resCon) resCon.classList.remove('hidden');
+                
+                // MENCARI TIKET DI DATABASE SIMULASI
+                const foundMsg = simDB.inbox.find(m => m.ticket === input);
+                
+                if(foundMsg) {
+                    if(nameEl) nameEl.innerText = foundMsg.sender + " (" + foundMsg.agency + ")";
+                    if(descEl) descEl.innerHTML = `<i class="fa-solid fa-info-circle text-blue-400 mr-1"></i> Pengajuan masuk pada ${foundMsg.time}`;
+                    
+                    // LOGIKA IF-ELSE STATUS
+                    if (foundMsg.status === 'APPROVED') {
+                        if(badge) {
+                            badge.innerText = "SUDAH DISETUJUI"; 
+                            badge.className = "text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30";
+                        }
+                    } else if (foundMsg.status === 'REJECTED') {
+                        if(badge) {
+                            badge.innerText = "DITOLAK"; 
+                            badge.className = "text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30";
+                        }
                     } else {
-                        badge.innerText = "MENUNGGU (PENDING)"; badge.className = "text-[10px] font-bold bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30";
+                        // Kondisi PENDING
+                        if(badge) {
+                            badge.innerText = "BELUM (MENUNGGU)"; 
+                            badge.className = "text-[10px] font-bold bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30";
+                        }
+                    }
+                } else {
+                    // Jika kode tidak ditemukan
+                    if(nameEl) nameEl.innerText = "Data Tidak Ditemukan";
+                    if(descEl) descEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 mr-1"></i> Pastikan kode resi benar.`;
+                    if(badge) {
+                        badge.innerText = "KODE INVALID"; 
+                        badge.className = "text-[10px] font-bold bg-gray-500/20 text-gray-400 px-2 py-1 rounded border border-gray-500/30";
                     }
                 }
             }, 1000);
         }
 
-        // COPY RESI BUTTON LOGIC
         function copyResi() {
             const codeEl = document.getElementById('ticket-code');
             if(!codeEl) return; const code = codeEl.innerText;
@@ -1072,8 +1090,6 @@
             }
         }
 
-        /* --- FITUR WIZARD KIRIM PESAN GABUNGAN --- */
-        let checkinStream = null;
         function updateCheckinFileName(input) {
             const nameEl = document.getElementById('c-file-name'), iconEl = document.getElementById('c-file-icon');
             if(!nameEl || !iconEl) return;
@@ -1090,19 +1106,20 @@
             const wName = document.getElementById('w-name'), wPhone = document.getElementById('w-phone');
             const wAgency = document.getElementById('w-agency'), wEmail = document.getElementById('w-email');
             
-            // Validasi Step 1
             if (stepNumber === 2 && (!wName || !wName.value || !wPhone || !wPhone.value || !wAgency || !wAgency.value || !wEmail || !wEmail.value)) { 
                 showToast("Lengkapi semua kolom profil pengirim (*)", "error"); return; 
             }
-            // Validasi Step 2
-            const wTarget = document.getElementById('w-target'), wDetail = document.getElementById('w-detail');
-            if (stepNumber === 3 && (!wTarget || !wTarget.value || !wDetail || !wDetail.value)) { 
-                showToast("Pilih kategori dan tulis rincian pesan/agenda (*)", "error"); return; 
+            if (stepNumber === 3) {
+                const wTarget = document.getElementById('w-target'), wDetail = document.getElementById('w-detail');
+                if (!wTarget || !wTarget.value || !wDetail || !wDetail.value) { 
+                    showToast("Pilih kategori dan tulis rincian pesan/agenda (*)", "error"); return; 
+                }
             }
-            // Validasi Step 3
-            const wConsent = document.getElementById('w-consent');
-            if (stepNumber === 4 && (!wConsent || !wConsent.checked)) { 
-                showToast("Persetujuan privasi keamanan diwajibkan.", "error"); return; 
+            if (stepNumber === 4) {
+                const wConsent = document.getElementById('w-consent');
+                if (!wConsent || !wConsent.checked) { 
+                    showToast("Persetujuan privasi keamanan diwajibkan.", "error"); return; 
+                }
             }
             
             document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
@@ -1162,7 +1179,6 @@
             const canvas = document.getElementById('checkin-canvas');
             if(canvas && canvas.classList.contains('hidden')) { showToast("Wajib merekam wajah pengirim demi keamanan sistem.", "error"); return; }
             
-            // SINKRONISASI DATA KE DASHBOARD
             const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency'), pEl = document.getElementById('w-phone'), eEl = document.getElementById('w-email');
             const tEl = document.getElementById('w-target'), dEl = document.getElementById('w-detail'), lEl = document.getElementById('w-location');
             const dtEl = document.getElementById('w-date'), tmEl = document.getElementById('w-time');
@@ -1189,19 +1205,20 @@
             let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
             let locInfo = loc || 'Via Website';
 
-            // Mengambil Foto Base64
             let faceImageData = name.charAt(0).toUpperCase(); 
             if(canvas && !canvas.classList.contains('hidden')) {
                 faceImageData = canvas.toDataURL('image/jpeg');
             }
 
             const newId = Date.now();
+            const ticketCode = 'RSV-' + Math.floor(1000 + Math.random() * 9000); // Generate Resi unik
+
             simDB.guests.unshift({
-                id: newId, time: timeStr, name: name, phone: phone, agency: agency, target: targetStr, status: 'PENDING', read: false
+                id: newId, ticket: ticketCode, time: timeStr, name: name, phone: phone, agency: agency, target: targetStr, status: 'PENDING', read: false
             });
 
             simDB.inbox.unshift({ 
-                id: newId, sender: name, agency: agency, phone: phone, email: email, time: timeStr, reqDate: reqInfo, location: locInfo,
+                id: newId, ticket: ticketCode, sender: name, agency: agency, phone: phone, email: email, time: timeStr, reqDate: reqInfo, location: locInfo,
                 title: targetStr, body: detail, hasFile: fileInput, fileName: fileNameStr, status: 'PENDING', read: false, 
                 avatar: faceImageData 
             });
@@ -1213,11 +1230,11 @@
             } catch(e) { console.error("Render Sync Error", e); }
 
             stopCheckinCamera(); 
-            showTicketModal("Pengajuan Terkirim!", "Data, foto wajah, dan pesan Anda telah diteruskan secara rahasia ke Dasbor Ibu Kepala Sekolah. Simpan kode resi Anda."); 
+            showTicketModal("Pengajuan Terkirim!", "Data, foto wajah, dan pesan Anda telah diteruskan secara rahasia ke Dasbor Ibu Kepala Sekolah. Simpan kode resi Anda.", ticketCode); 
             resetCheckinWizard();
         }
 
-        /* --- FITUR SCHEDULE FORM & CAMERA (TIDAK DIUBAH 100% SESUAI INSTRUKSI MUTLAK) --- */
+        /* --- FITUR SCHEDULE FORM & CAMERA --- */
         let schStream = null;
         
         function updateFileName(input) {
@@ -1274,27 +1291,28 @@
                 return;
             }
             stopScheduleCamera();
-            showTicketModal("Jadwal Diajukan!", "Permohonan lengkap beserta foto telah dikirim ke Aplikasi Kepsek. Simpan kode resi Anda untuk mengecek status persetujuan.");
+            const ticketCode = 'RSV-' + Math.floor(1000 + Math.random() * 9000);
+            showTicketModal("Jadwal Diajukan!", "Permohonan lengkap beserta foto telah dikirim ke Aplikasi Kepsek. Simpan kode resi Anda untuk mengecek status persetujuan.", ticketCode);
             e.target.reset();
             if(canvas) canvas.classList.add('hidden');
             const input = document.getElementById('form-schedule').querySelector('input[type="file"]');
             if(input) { Object.defineProperty(input, 'files', {value: []}); updateFileName(input); }
         }
 
-        /* --- DASHBOARD LOGIC (CLASSIC UI & UNIFIED DATA SYNC) --- */
+        /* --- DASHBOARD LOGIC --- */
         const simDB = { guests: [], inbox: [] };
 
         function generateMockData() {
             simDB.guests = [
-                { id: 101, time: '10:45 WIB', name: 'Dr. Hendra', phone: '0812345678', agency: 'Diknas Pusat', target: 'Pengajuan Rapat', status: 'PENDING', read: false },
-                { id: 102, time: '09:30 WIB', name: 'Bapak Ahmad', phone: '0899887766', agency: 'Vendor ATK', target: 'Permohonan Kebijakan', status: 'PENDING', read: false },
-                { id: 103, time: 'Kemarin', name: 'Ibu Ratna Susanti', phone: '0855443322', agency: 'Wali Murid', target: 'Info Digital', status: 'APPROVED', read: true }
+                { id: 101, ticket: 'RSV-1001', time: '10:45 WIB', name: 'Dr. Hendra', phone: '0812345678', agency: 'Diknas Pusat', target: 'Pengajuan Rapat', status: 'PENDING', read: false },
+                { id: 102, ticket: 'RSV-1002', time: '09:30 WIB', name: 'Bapak Ahmad', phone: '0899887766', agency: 'Vendor ATK', target: 'Permohonan Kebijakan', status: 'PENDING', read: false },
+                { id: 103, ticket: 'RSV-1003', time: 'Kemarin', name: 'Ibu Ratna Susanti', phone: '0855443322', agency: 'Wali Murid', target: 'Info Digital', status: 'APPROVED', read: true }
             ];
 
             simDB.inbox = [
-                { id: 101, sender: "Dr. Hendra", agency: "Diknas Pusat", phone: "0812345678", email: "hendra@diknas.go.id", time: "10:45 WIB", reqDate: "12 Okt 2026 | 10:00", location: "Ruang Kepsek", title: "Pengajuan Rapat Akreditasi", body: "Mohon izin, kami ingin mendiskusikan laporan nilai akhir. Mohon ibu siapkan data pendukung.", hasFile: true, fileName: "Berkas_Akreditasi.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Dr+Hendra&background=1E293B&color=fff" },
-                { id: 102, sender: "Bapak Ahmad", agency: "Vendor ATK", phone: "0899887766", email: "ahmad@vendor.com", time: "09:30 WIB", reqDate: "As Soon As Possible", location: "Via Website", title: "Permohonan Kebijakan Pengadaan", body: "Ada pengajuan proposal ATK tahun ajaran baru. Mohon persetujuan Ibu di sistem.", hasFile: true, fileName: "Proposal_Tender.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Bapak+Ahmad&background=3B82F6&color=fff" },
-                { id: 103, sender: "Ibu Ratna Susanti", agency: "Wali Murid", phone: "0855443322", email: "ratna.s@gmail.com", time: "Kemarin", reqDate: "Tidak Perlu Lokasi", location: "Via Website", title: "Informasi Lomba Siswa", body: "Anak kami berhasil memenangkan lomba melukis nasional. Kami lampirkan piagam digitalnya.", hasFile: false, fileName: "", status: 'APPROVED', read: true, avatar: "https://ui-avatars.com/api/?name=Ratna+Susanti&background=10B981&color=fff" }
+                { id: 101, ticket: 'RSV-1001', sender: "Dr. Hendra", agency: "Diknas Pusat", phone: "0812345678", email: "hendra@diknas.go.id", time: "10:45 WIB", reqDate: "12 Okt 2026 | 10:00", location: "Ruang Kepsek", title: "Pengajuan Rapat Akreditasi", body: "Mohon izin, kami ingin mendiskusikan laporan nilai akhir. Mohon ibu siapkan data pendukung.", hasFile: true, fileName: "Berkas_Akreditasi.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Dr+Hendra&background=1E293B&color=fff" },
+                { id: 102, ticket: 'RSV-1002', sender: "Bapak Ahmad", agency: "Vendor ATK", phone: "0899887766", email: "ahmad@vendor.com", time: "09:30 WIB", reqDate: "As Soon As Possible", location: "Via Website", title: "Permohonan Kebijakan Pengadaan", body: "Ada pengajuan proposal ATK tahun ajaran baru. Mohon persetujuan Ibu di sistem.", hasFile: true, fileName: "Proposal_Tender.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Bapak+Ahmad&background=3B82F6&color=fff" },
+                { id: 103, ticket: 'RSV-1003', sender: "Ibu Ratna Susanti", agency: "Wali Murid", phone: "0855443322", email: "ratna.s@gmail.com", time: "Kemarin", reqDate: "Tidak Perlu Lokasi", location: "Via Website", title: "Informasi Lomba Siswa", body: "Anak kami berhasil memenangkan lomba melukis nasional. Kami lampirkan piagam digitalnya.", hasFile: false, fileName: "", status: 'APPROVED', read: true, avatar: "https://ui-avatars.com/api/?name=Ratna+Susanti&background=10B981&color=fff" }
             ];
         }
 
@@ -1305,7 +1323,7 @@
             const target = document.getElementById(tabId); 
             if(target) {
                 target.classList.add('active');
-                void target.offsetWidth; // Trigger reflow
+                void target.offsetWidth; 
                 target.classList.add('animate-fadeSlideUp');
             }
             
@@ -1313,7 +1331,7 @@
             const activeBtn = document.getElementById(tabId.replace('tab', 'nav'));
             if(activeBtn){ activeBtn.classList.add('bg-white/10', 'text-white', 'active'); activeBtn.classList.remove('hover:bg-white/5', 'text-gray-400'); }
 
-            const titles = { 'tab-overview': 'Sistem Informasi Kepala Sekolah', 'tab-inbox': 'Daftar Pesan Masuk', 'tab-history': 'Riwayat Arsip Pesan', 'tab-reports': 'Analitik Interaksi Website', 'tab-settings': 'Konfigurasi Profil Eksekutif' };
+            const titles = { 'tab-overview': 'Sistem Informasi Kepala Sekolah', 'tab-inbox': 'Daftar Pesan & Pengajuan', 'tab-history': 'Riwayat Arsip Pesan', 'tab-reports': 'Analitik Interaksi Website', 'tab-settings': 'Konfigurasi Profil Eksekutif' };
             const dt = document.getElementById('dash-title');
             if(dt) dt.innerText = titles[tabId] || 'Dasbor Utama';
             
@@ -1328,7 +1346,6 @@
             if(overlay) overlay.classList.toggle('active');
         }
 
-        // Auto Collapse Sidebar (Responsive Desktop)
         function toggleSidebar() {
             if(isMobileScreen()) {
                 toggleMobileSidebar();
@@ -1337,7 +1354,6 @@
             }
         }
 
-        // Memastikan sidebar hilang jika diklik via Desktop
         function autoCollapseSidebar() {
             if(isMobileScreen()) {
                 const sidebar = document.getElementById('principal-sidebar');
@@ -1354,7 +1370,6 @@
             if(panel) panel.classList.toggle('hidden');
         }
 
-        // --- DARK MODE TOGGLE SCRIPT ---
         function toggleDarkMode(checkbox) {
             if(checkbox.checked) {
                 document.body.classList.add('dark-mode');
@@ -1387,7 +1402,6 @@
             const actList = document.getElementById('quick-activity-list');
             const guestList = document.getElementById('guest-list-area');
             
-            // HANYA MENGHITUNG PESAN PENDING UNTUK TAMPILAN DEPAN 
             let unreadCount = simDB.inbox.filter(m => !m.read && m.status === 'PENDING').length;
             let pendingReq = simDB.inbox.filter(m => m.status === 'PENDING').length;
             let approvedReq = simDB.inbox.filter(m => m.status === 'APPROVED').length;
@@ -1399,7 +1413,6 @@
             const pr = document.getElementById('db-rejected'); if(pr) pr.innerText = rejectedReq;
             const ubc = document.getElementById('db-unread-count'); if(ubc) ubc.innerText = unreadCount;
             
-            // Tampilan Ringkasan: Quick Activity Log
             if(actList) {
                 actList.innerHTML = '';
                 simDB.inbox.slice(0, 4).forEach(req => {
@@ -1412,7 +1425,6 @@
                 });
             }
 
-            // FILTER: TAMPILAN DEPAN HANYA MUNCUL ORANG YANG MASIH PENDING
             if(guestList) {
                 guestList.innerHTML = '';
                 const pendingGuests = simDB.guests.filter(g => g.status === 'PENDING');
@@ -1448,7 +1460,6 @@
             if(!listArea) return; 
             listArea.innerHTML = '';
             
-            // HANYA MENGAMBIL PESAN YANG STATUSNYA MASIH PENDING!
             const pendingMessages = simDB.inbox.filter(m => m.status === 'PENDING');
             let unreadCount = pendingMessages.filter(m => !m.read).length;
             
@@ -1457,7 +1468,6 @@
                 else { badge.style.display = 'none'; }
             }
             
-            // JIKA SEMUA PESAN SUDAH DISELESAIKAN (INBOX ZERO)
             if(pendingMessages.length === 0) {
                 listArea.innerHTML = `
                     <div class="flex flex-col items-center justify-center h-full text-center p-8 mt-10">
@@ -1499,7 +1509,6 @@
             if(!historyArea) return;
             historyArea.innerHTML = '';
             
-            // Filter hanya pesan yang BUKAN PENDING (Approved / Rejected)
             const historyData = simDB.inbox.filter(m => m.status !== 'PENDING');
             
             if(historyData.length === 0) {
@@ -1531,7 +1540,6 @@
         function openMessage(id, element) {
             const container = document.getElementById('inbox-wrapper-el');
             
-            // Logika UI Desktop (Shrink) / Mobile (Swap)
             if(!isMobileScreen()) {
                 if(container) container.classList.add('is-reading');
             } else {
@@ -1563,7 +1571,6 @@
                 actionButtons = `<span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">Pengajuan Telah ${msg.status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}</span>`;
             }
 
-            // Nama File Dinamis (Hadir di bawah chat)
             let fileIcon = msg.hasFile ? `<div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl inline-flex items-center gap-3 cursor-pointer hover:bg-red-100 transition dark-mode-file"><i class="fa-solid fa-file-pdf text-red-500 text-xl"></i><div><p class="text-xs font-bold text-gray-700 file-name-text">${msg.fileName || 'Lampiran_Resmi.pdf'}</p><p class="text-[10px] text-gray-500">1.2 MB</p></div></div>` : '';
             let avatarDetailHTML = getAvatarHTML(msg.avatar, 'w-12 h-12 md:w-16 md:h-16');
 
@@ -1609,7 +1616,6 @@
                 req.status = newStatus;
                 if(gst) gst.status = newStatus;
                 
-                // MENGHAPUS PESAN DARI LAYAR BACA DAN MENGEMBALIKAN KE DEFAULT KOSONG
                 const detailArea = document.getElementById('inbox-detail-area');
                 if(detailArea) {
                     detailArea.innerHTML = `
@@ -1620,11 +1626,11 @@
                     `;
                 }
 
-                closeMessageMobile(); // Keluar dari view pesan jika di HP / perbesar list jika di PC
+                closeMessageMobile(); 
                 
                 renderDashboardMetrics();
                 renderInboxList(); 
-                renderHistoryList(); // Update arsip otomatis
+                renderHistoryList(); 
                 renderNotifications();
                 
                 showToast(newStatus === 'APPROVED' ? "Pengajuan disetujui. Pesan dipindahkan ke Riwayat." : "Pengajuan ditolak. Pesan dipindahkan ke Riwayat.", newStatus === 'APPROVED' ? "success" : "error");
