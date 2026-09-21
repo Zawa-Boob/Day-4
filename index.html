@@ -93,10 +93,10 @@
         
         .dash-content-area { 
             margin-left: 280px; width: calc(100% - 280px); height: 100vh; 
-            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
+            overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
         }
 
-        /* AUTO COLLAPSE LOGIC */
+        /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
         body.sidebar-collapsed .dash-sidebar { transform: translateX(-100%) !important; }
         body.sidebar-collapsed .dash-content-area { margin-left: 0 !important; width: 100% !important; }
 
@@ -147,7 +147,7 @@
         .chart-tooltip { position: absolute; top: -35px; background: #1f2937; color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 50; }
         .chart-bar-wrap:hover .chart-tooltip { opacity: 1; top: -40px; }
         
-        /* ================= INBOX SPLIT PANE WA WEB STYLE ================= */
+        /* ================= INBOX SPLIT PANE WA WEB STYLE (SANGAT INTERAKTIF) ================= */
         .inbox-wrapper { 
             display: flex; flex-direction: row; 
             width: 100%; height: calc(100vh - 160px); min-height: 500px;
@@ -185,17 +185,21 @@
             .inbox-wrapper.is-reading .inbox-avatar-wrap { margin: 0 auto; }
         }
 
-        /* MOBILE STATE FIX (SWAP FULL WIDTH) */
+        /* MOBILE STATE FIX (SWAP FULL WIDTH - BEBAS BUG) */
         @media (max-width: 1024px) {
             .inbox-wrapper { flex-direction: column; height: 75vh; min-height: 400px; }
             .inbox-list { width: 100%; border-right: none; display: flex; }
-            .inbox-detail { display: none; width: 100%; height: 100%; }
+            .inbox-detail { display: none; width: 100%; height: 100%; } /* Default Sembunyi */
             
+            /* Kunci pertukaran layar saat pesan diklik */
             .inbox-wrapper.show-detail .inbox-list { display: none !important; }
             .inbox-wrapper.show-detail .inbox-detail { display: flex !important; width: 100%; }
+            
+            /* Matikan shrink effect (Desktop only) agar tidak bocor ke Mobile */
             .inbox-wrapper.is-reading .inbox-list { width: 100%; }
         }
 
+        /* BUG FIX: Memastikan TABS terpisah dan tidak bertumpuk */
         .dash-view { display: none !important; width: 100%; }
         .dash-view.active { display: flex !important; flex-direction: column; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
@@ -220,7 +224,7 @@
         body.dark-mode .text-gray-600, body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94A3B8 !important; }
         
         body.dark-mode .border-gray-100, body.dark-mode .border-gray-200 { border-color: #334155 !important; }
-        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .inbox-card:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
+        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
         
         body.dark-mode .inbox-item { border-color: #334155 !important; background-color: #1E293B !important; color: #F8FAFC !important;}
         body.dark-mode .inbox-item-name-shrink { color: #CBD5E1 !important; }
@@ -265,7 +269,6 @@
         <div class="text-center glass-panel p-6 md:p-12 rounded-3xl w-full max-w-4xl border-t border-white/30 relative overflow-hidden mt-8 md:mt-0 shadow-2xl">
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accent/20 blur-[80px] rounded-full pointer-events-none"></div>
 
-            <!-- LOGO SEKOLAH WARNA LATAR HITAM (SESUAI PERMINTAAN) -->
             <div class="w-28 h-28 md:w-40 md:h-40 bg-black rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-[0_0_30px_rgba(212,175,55,0.6)] border-4 border-accent relative z-10 overflow-hidden p-2">
                 <img src="Logo_Saka.png" alt="Logo Sekolah" id="school-logo" class="w-full h-full object-contain" onerror="this.src='https://ui-avatars.com/api/?name=SAKA&background=fff&color=0A2540&bold=true&size=200'">
             </div>
@@ -311,7 +314,7 @@
         </div>
 
         <button onclick="openGuideModal()" class="mt-6 md:mt-8 text-gray-400 hover:text-white px-5 py-2 rounded-full text-xs md:text-sm font-semibold transition flex items-center gap-2 border border-transparent hover:border-white/20 hover:bg-white/5">
-            <i class="fa-solid fa-circle-question"></i> Bantuan & Panduan Sistem
+            <i class="fa-solid fa-circle-question"></i> Panduan Penggunaan
         </button>
     </div>
 
@@ -337,7 +340,6 @@
         <div class="glass-panel p-8 md:p-10 rounded-3xl max-w-sm w-full relative border border-accent/60 scale-0 transition-transform duration-400 shadow-[0_0_50px_rgba(212,175,55,0.15)]" id="auth-content">
             <button onclick="closePrincipalLogin()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
-                <!-- LOGO SEKOLAH WARNA LATAR HITAM -->
                 <img src="Logo_Saka.png" class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-accent mx-auto mb-4 shadow-lg object-contain bg-black p-1" onerror="this.src='https://ui-avatars.com/api/?name=SAKA&background=fff&color=0A2540&bold=true&size=200'">
                 <h3 class="text-lg md:text-xl font-bold text-white">Otorisasi Eksekutif</h3>
                 <p class="text-[10px] md:text-xs text-accent/80 mt-1 uppercase tracking-widest">Portal Ibu Kepala Sekolah</p>
@@ -518,7 +520,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4 - DIJAGA 100%)        -->
+    <!-- WEBSITE: PAGE 4 (SCHEDULE FORM DENGAN CAMERA FASE 4)                      -->
     <!-- ========================================================================= -->
     <div id="page-schedule" class="page flex-col items-center py-6 px-4 md:px-8 relative">
         <div class="flex justify-between items-center mb-4 max-w-4xl mx-auto w-full shrink-0 mt-4 md:mt-0">
@@ -581,7 +583,7 @@
             </div>
             
             <p class="text-xs md:text-sm text-gray-500 mb-6" id="ticket-desc">Data berhasil masuk ke sistem Dasbor.</p>
-            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Menu</button>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Lobi</button>
         </div>
     </div>
 
@@ -614,7 +616,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY + LOGO HITAM)           -->
+    <!-- PAGE 4: DASHBOARD IBU KEPALA SEKOLAH (KLASIK NAVY)                        -->
     <!-- ========================================================================= -->
     <div id="page-principal" class="page dash-layout" style="color: #333;">
         
@@ -623,7 +625,6 @@
         <!-- Sidebar Navigation (Classic) -->
         <aside class="dash-sidebar shadow-xl" id="principal-sidebar">
             <div class="p-6 border-b border-white/10 flex items-center gap-4 bg-black/20 shrink-0">
-                <!-- LOGO SEKOLAH WARNA LATAR HITAM -->
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-black rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-accent shrink-0 p-1">
                     <img src="Logo_Saka.png" class="w-full h-full object-contain" onerror="this.src='https://ui-avatars.com/api/?name=Logo+Sekolah&background=fff&color=0A2540&bold=true&size=200'">
                 </div>
@@ -1162,7 +1163,7 @@
             if(canvas && canvas.classList.contains('hidden')) { showToast("Wajib merekam wajah pengirim demi keamanan sistem.", "error"); return; }
             
             // SINKRONISASI DATA KE DASHBOARD
-            const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency'), pEl = document.getElementById('w-phone');
+            const nEl = document.getElementById('w-name'), aEl = document.getElementById('w-agency'), pEl = document.getElementById('w-phone'), eEl = document.getElementById('w-email');
             const tEl = document.getElementById('w-target'), dEl = document.getElementById('w-detail'), lEl = document.getElementById('w-location');
             const dtEl = document.getElementById('w-date'), tmEl = document.getElementById('w-time');
             const fileIn = document.getElementById('w-file');
@@ -1170,6 +1171,7 @@
             const name = nEl ? nEl.value : '';
             const agency = aEl ? aEl.value : '';
             const phone = pEl ? pEl.value : '';
+            const email = eEl ? eEl.value : '';
             const targetRaw = tEl ? tEl.value : '';
             const detail = dEl ? dEl.value : '';
             const loc = lEl ? lEl.value : '';
@@ -1199,7 +1201,7 @@
             });
 
             simDB.inbox.unshift({ 
-                id: newId, sender: name, agency: agency, time: timeStr, reqDate: reqInfo, location: locInfo,
+                id: newId, sender: name, agency: agency, phone: phone, email: email, time: timeStr, reqDate: reqInfo, location: locInfo,
                 title: targetStr, body: detail, hasFile: fileInput, fileName: fileNameStr, status: 'PENDING', read: false, 
                 avatar: faceImageData 
             });
@@ -1290,9 +1292,9 @@
             ];
 
             simDB.inbox = [
-                { id: 101, sender: "Dr. Hendra", agency: "Diknas Pusat", time: "10:45 WIB", reqDate: "12 Okt 2026 | 10:00", location: "Ruang Kepsek", title: "Pengajuan Rapat Akreditasi", body: "Mohon izin, kami ingin mendiskusikan laporan nilai akhir. Mohon ibu siapkan data pendukung.", hasFile: true, fileName: "Berkas_Akreditasi.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Dr+Hendra&background=1E293B&color=fff" },
-                { id: 102, sender: "Bapak Ahmad", agency: "Vendor ATK", time: "09:30 WIB", reqDate: "As Soon As Possible", location: "Via Website", title: "Permohonan Kebijakan Pengadaan", body: "Ada pengajuan proposal ATK tahun ajaran baru. Mohon persetujuan Ibu di sistem.", hasFile: true, fileName: "Proposal_Tender.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Bapak+Ahmad&background=3B82F6&color=fff" },
-                { id: 103, sender: "Ibu Ratna Susanti", agency: "Wali Murid", time: "Kemarin", reqDate: "Tidak Perlu Lokasi", location: "Via Website", title: "Informasi Lomba Siswa", body: "Anak kami berhasil memenangkan lomba melukis nasional. Kami lampirkan piagam digitalnya.", hasFile: false, fileName: "", status: 'APPROVED', read: true, avatar: "https://ui-avatars.com/api/?name=Ratna+Susanti&background=10B981&color=fff" }
+                { id: 101, sender: "Dr. Hendra", agency: "Diknas Pusat", phone: "0812345678", email: "hendra@diknas.go.id", time: "10:45 WIB", reqDate: "12 Okt 2026 | 10:00", location: "Ruang Kepsek", title: "Pengajuan Rapat Akreditasi", body: "Mohon izin, kami ingin mendiskusikan laporan nilai akhir. Mohon ibu siapkan data pendukung.", hasFile: true, fileName: "Berkas_Akreditasi.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Dr+Hendra&background=1E293B&color=fff" },
+                { id: 102, sender: "Bapak Ahmad", agency: "Vendor ATK", phone: "0899887766", email: "ahmad@vendor.com", time: "09:30 WIB", reqDate: "As Soon As Possible", location: "Via Website", title: "Permohonan Kebijakan Pengadaan", body: "Ada pengajuan proposal ATK tahun ajaran baru. Mohon persetujuan Ibu di sistem.", hasFile: true, fileName: "Proposal_Tender.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Bapak+Ahmad&background=3B82F6&color=fff" },
+                { id: 103, sender: "Ibu Ratna Susanti", agency: "Wali Murid", phone: "0855443322", email: "ratna.s@gmail.com", time: "Kemarin", reqDate: "Tidak Perlu Lokasi", location: "Via Website", title: "Informasi Lomba Siswa", body: "Anak kami berhasil memenangkan lomba melukis nasional. Kami lampirkan piagam digitalnya.", hasFile: false, fileName: "", status: 'APPROVED', read: true, avatar: "https://ui-avatars.com/api/?name=Ratna+Susanti&background=10B981&color=fff" }
             ];
         }
 
@@ -1303,7 +1305,7 @@
             const target = document.getElementById(tabId); 
             if(target) {
                 target.classList.add('active');
-                void target.offsetWidth; 
+                void target.offsetWidth; // Trigger reflow
                 target.classList.add('animate-fadeSlideUp');
             }
             
@@ -1311,7 +1313,7 @@
             const activeBtn = document.getElementById(tabId.replace('tab', 'nav'));
             if(activeBtn){ activeBtn.classList.add('bg-white/10', 'text-white', 'active'); activeBtn.classList.remove('hover:bg-white/5', 'text-gray-400'); }
 
-            const titles = { 'tab-overview': 'Sistem Informasi Kepala Sekolah', 'tab-inbox': 'Daftar Pesan & Pengajuan', 'tab-history': 'Riwayat Arsip Pesan', 'tab-reports': 'Analitik Interaksi Website', 'tab-settings': 'Konfigurasi Profil Eksekutif' };
+            const titles = { 'tab-overview': 'Sistem Informasi Kepala Sekolah', 'tab-inbox': 'Daftar Pesan Masuk', 'tab-history': 'Riwayat Arsip Pesan', 'tab-reports': 'Analitik Interaksi Website', 'tab-settings': 'Konfigurasi Profil Eksekutif' };
             const dt = document.getElementById('dash-title');
             if(dt) dt.innerText = titles[tabId] || 'Dasbor Utama';
             
@@ -1326,7 +1328,7 @@
             if(overlay) overlay.classList.toggle('active');
         }
 
-        // Auto Collapse Sidebar (Responsive)
+        // Auto Collapse Sidebar (Responsive Desktop)
         function toggleSidebar() {
             if(isMobileScreen()) {
                 toggleMobileSidebar();
@@ -1335,6 +1337,7 @@
             }
         }
 
+        // Memastikan sidebar hilang jika diklik via Desktop
         function autoCollapseSidebar() {
             if(isMobileScreen()) {
                 const sidebar = document.getElementById('principal-sidebar');
@@ -1580,9 +1583,11 @@
                             ${getStatusBadgeUI(msg.status)}
                         </div>
                     </div>
-                    <div class="px-8 py-4 bg-gray-50 border-b border-gray-100 flex gap-6 text-xs shrink-0">
-                        <div><span class="text-gray-400 uppercase tracking-widest text-[9px] block mb-0.5">Waktu Target</span><span class="font-bold text-gray-700">${msg.reqDate}</span></div>
-                        <div><span class="text-gray-400 uppercase tracking-widest text-[9px] block mb-0.5">Lokasi Target</span><span class="font-bold text-gray-700">${msg.location}</span></div>
+                    <div class="px-4 md:px-8 py-3 md:py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap gap-4 md:gap-6 text-xs shrink-0">
+                        <div><span class="text-gray-400 uppercase tracking-widest text-[9px] block mb-0.5"><i class="fa-brands fa-whatsapp text-green-500 mr-1"></i>WhatsApp</span><span class="font-bold text-gray-700">${msg.phone || '-'}</span></div>
+                        <div><span class="text-gray-400 uppercase tracking-widest text-[9px] block mb-0.5"><i class="fa-regular fa-envelope text-blue-500 mr-1"></i>Email</span><span class="font-bold text-gray-700">${msg.email || '-'}</span></div>
+                        <div><span class="text-gray-400 uppercase tracking-widest text-[9px] block mb-0.5"><i class="fa-regular fa-clock text-orange-400 mr-1"></i>Waktu</span><span class="font-bold text-gray-700">${msg.reqDate}</span></div>
+                        <div><span class="text-gray-400 uppercase tracking-widest text-[9px] block mb-0.5"><i class="fa-solid fa-map-pin text-red-400 mr-1"></i>Lokasi</span><span class="font-bold text-gray-700">${msg.location}</span></div>
                     </div>
                     <div class="p-4 md:p-8 flex-1 overflow-y-auto bg-white">
                         <div class="bg-gray-50 p-6 md:p-8 rounded-[1.5rem] border border-gray-200 shadow-sm min-h-[200px] text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">${msg.body}</div>
