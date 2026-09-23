@@ -88,7 +88,7 @@
         .dash-sidebar { 
             width: 280px; height: 100vh; background-color: #0A2540; color: white; 
             position: fixed; left: 0; top: 0; z-index: 50; border-right: 1px solid rgba(212, 175, 55, 0.2); 
-            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         
         .dash-content-area { 
@@ -96,7 +96,7 @@
             overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
         }
 
-        /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
+        /* AUTO COLLAPSE LOGIC */
         body.sidebar-collapsed .dash-sidebar { transform: translateX(-100%) !important; }
         body.sidebar-collapsed .dash-content-area { margin-left: 0 !important; width: 100% !important; }
 
@@ -114,14 +114,20 @@
         .dash-nav-btn:hover { background-color: rgba(255,255,255,0.05); color: white; border-left: 4px solid rgba(255,255,255,0.2); }
         .dash-nav-btn.active { background-color: rgba(212, 175, 55, 0.1); color: #D4AF37; font-weight: 700; border-left: 4px solid #D4AF37;}
 
+        /* --- UI KARTU STATISTIK YANG CLEAN & MATCHING TEMA --- */
         .stat-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-color: rgba(212,175,55,0.4); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-color: rgba(212,175,55,0.5); }
         
+        .stat-icon-wrap { background: #f1f5f9; color: #64748b; transition: all 0.3s ease; }
+        .stat-card:hover .stat-icon-wrap { background: #0A2540; color: #D4AF37; transform: scale(1.1); box-shadow: 0 4px 10px rgba(10,37,64,0.15); }
+        /* ----------------------------------------------------- */
+
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table th { background-color: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1.2rem 1rem; text-align: left; border-bottom: 2px solid #e2e8f0; transition: background-color 0.3s; }
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
         .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
         
+        /* BADGE KUNING/HIJAU/MERAH */
         .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
         .badge-pending { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
         .badge-approved { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
@@ -192,7 +198,6 @@
             
             .inbox-wrapper.show-detail .inbox-list { display: none !important; }
             .inbox-wrapper.show-detail .inbox-detail { display: flex !important; width: 100%; }
-            
             .inbox-wrapper.is-reading .inbox-list { width: 100%; }
         }
 
@@ -209,18 +214,23 @@
         .notif-item:hover { background: #F8FAFC; }
 
         /* ==========================================================================
-           DARK MODE OVERRIDES
+           DARK MODE OVERRIDES (Kualitas Hidup)
            ========================================================================== */
         body.dark-mode .dash-layout, body.dark-mode .dash-content-area { background-color: #0F172A !important; color: #F8FAFC !important; }
-        body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modern-table-container, body.dark-mode .inbox-wrapper, body.dark-mode .inbox-detail, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
+        body.dark-mode .bg-white, body.dark-mode .modern-table-container, body.dark-mode .inbox-wrapper, body.dark-mode .inbox-detail, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
         body.dark-mode .bg-gray-50, body.dark-mode .inbox-list, body.dark-mode .bg-gray-100 { background-color: #0F172A !important; border-color: #334155 !important; }
+        
+        /* Dark Mode untuk Stat Card Clean */
+        body.dark-mode .stat-card { background-color: #1E293B !important; border-color: #334155 !important; }
+        body.dark-mode .stat-icon-wrap { background-color: #0F172A !important; color: #94A3B8 !important; }
+        body.dark-mode .stat-card:hover .stat-icon-wrap { background-color: #D4AF37 !important; color: #0A2540 !important; }
         
         body.dark-mode .text-gray-800, body.dark-mode .text-gray-900 { color: #F1F5F9 !important; }
         body.dark-mode .text-gray-700 { color: #CBD5E1 !important; }
         body.dark-mode .text-gray-600, body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94A3B8 !important; }
         
         body.dark-mode .border-gray-100, body.dark-mode .border-gray-200 { border-color: #334155 !important; }
-        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .inbox-card:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
+        body.dark-mode .hover\:bg-gray-50:hover, body.dark-mode .inbox-item:hover, body.dark-mode .notif-item:hover { background-color: #334155 !important; }
         
         body.dark-mode .inbox-item { border-color: #334155 !important; background-color: #1E293B !important; color: #F8FAFC !important;}
         body.dark-mode .inbox-item-name-shrink { color: #CBD5E1 !important; }
@@ -246,7 +256,7 @@
 </head>
 <body class="kiosk-mode select-none relative">
 
-    <!-- DYNAMIC BACKGROUNDS (Lobi Website) -->
+    <!-- DYNAMIC BACKGROUNDS -->
     <div id="bg-1" class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070');"></div>
     <div id="bg-2" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070');"></div>
     <div id="bg-3" class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069');"></div>
@@ -417,7 +427,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Agenda -->
+                <!-- STEP 2: Agenda, Lokasi, Waktu, File Upload -->
                 <div id="step-2" class="wizard-step flex-col h-full flex-1">
                     <h3 class="text-base md:text-xl font-bold mb-4 md:mb-5 text-white border-b border-white/10 pb-2"><i class="fa-solid fa-2 text-accent mr-2"></i>Detail Pengajuan Temu / Pesan</h3>
                     
@@ -563,7 +573,7 @@
         </div>
     </div>
 
-    <!-- MODAL TIKET UMUM -->
+    <!-- MODAL TIKET UMUM (POP-UP SUCCESS) -->
     <div id="ticket-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white text-primary p-8 md:p-10 rounded-3xl max-w-sm w-full text-center relative border-4 border-accent shadow-2xl scale-0 transition-transform duration-300 flex flex-col items-center" id="ticket-content">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
@@ -711,21 +721,21 @@
                 </div>
                 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-                    <div class="stat-card border-l-4 border-blue-500 p-4 md:p-6 group">
+                    <div class="stat-card group">
                         <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Total Pendaftar</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-guest-count">0</h3></div>
-                        <div class="w-8 h-8 md:w-12 md:h-12 bg-blue-50 text-blue-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-users"></i></div>
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-sm md:text-xl stat-icon-wrap"><i class="fa-solid fa-users"></i></div>
                     </div>
-                    <div class="stat-card border-l-4 border-yellow-500 p-4 md:p-6 group">
+                    <div class="stat-card group">
                         <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Menunggu Keputusan</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-wait">0</h3></div>
-                        <div class="w-8 h-8 md:w-12 md:h-12 bg-yellow-50 text-yellow-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-sm md:text-xl stat-icon-wrap"><i class="fa-solid fa-hourglass-half"></i></div>
                     </div>
-                    <div class="stat-card border-l-4 border-emerald-500 p-4 md:p-6 group">
+                    <div class="stat-card group">
                         <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Pesan Disetujui</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-approved">0</h3></div>
-                        <div class="w-8 h-8 md:w-12 md:h-12 bg-emerald-50 text-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-check"></i></div>
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-sm md:text-xl stat-icon-wrap"><i class="fa-solid fa-check-double"></i></div>
                     </div>
-                    <div class="stat-card border-l-4 border-purple-500 p-4 md:p-6 group">
+                    <div class="stat-card group">
                         <div><p class="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-1">Pesan Ditolak</p><h3 class="text-2xl md:text-3xl font-black text-gray-800" id="db-rejected">0</h3></div>
-                        <div class="w-8 h-8 md:w-12 md:h-12 bg-purple-50 text-purple-600 rounded-lg md:rounded-xl flex items-center justify-center text-sm md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-xmark"></i></div>
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-sm md:text-xl stat-icon-wrap"><i class="fa-solid fa-xmark"></i></div>
                     </div>
                 </div>
                 
@@ -743,7 +753,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: INBOX (SPLIT PANE) -->
+            <!-- TAB 2: INBOX (SPLIT PANE WA WEB STYLE - HANYA PENDING) -->
             <div id="tab-inbox" class="dash-view p-4 md:p-8 flex-1">
                 <div class="inbox-wrapper" id="inbox-wrapper-el">
                     
@@ -879,6 +889,17 @@
                                     <label for="toggle-darkmode" class="toggle-label theme-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                                 </div>
                             </div>
+
+                            <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <p class="font-bold text-gray-800 text-sm md:text-base">Aktifkan Respon Otomatis Sistem</p>
+                                    <p class="text-[10px] md:text-xs text-gray-500">Otomatis menolak jadwal baru saat status Dinas Luar.</p>
+                                </div>
+                                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="toggle-autoreply" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
+                                    <label for="toggle-autoreply" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
                             
                             <div class="pt-6">
                                 <button type="submit" class="w-full sm:w-auto bg-primary hover:bg-blue-900 text-white px-8 py-3.5 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2 text-sm md:text-base">
@@ -992,9 +1013,6 @@
             navigate('page-main');
         }
 
-        // =======================================================
-        // MODAL TIKET & PENYELARASAN DATABASE (LOGIKA IF-ELSE BARU)
-        // =======================================================
         function showTicketModal(title, desc, providedCode) { 
             const code = providedCode || ('RSV-' + Math.floor(1000 + Math.random() * 9000));
             const ce = document.getElementById('ticket-code'); if(ce) ce.innerText = code; 
@@ -1026,14 +1044,12 @@
                 
                 if(resCon) resCon.classList.remove('hidden');
                 
-                // MENCARI TIKET DI DATABASE SIMULASI
                 const foundMsg = simDB.inbox.find(m => m.ticket === input);
                 
                 if(foundMsg) {
                     if(nameEl) nameEl.innerText = foundMsg.sender + " (" + foundMsg.agency + ")";
                     if(descEl) descEl.innerHTML = `<i class="fa-solid fa-info-circle text-blue-400 mr-1"></i> Pengajuan masuk pada ${foundMsg.time}`;
                     
-                    // LOGIKA IF-ELSE STATUS
                     if (foundMsg.status === 'APPROVED') {
                         if(badge) {
                             badge.innerText = "SUDAH DISETUJUI"; 
@@ -1045,14 +1061,12 @@
                             badge.className = "text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30";
                         }
                     } else {
-                        // Kondisi PENDING
                         if(badge) {
                             badge.innerText = "BELUM (MENUNGGU)"; 
                             badge.className = "text-[10px] font-bold bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30";
                         }
                     }
                 } else {
-                    // Jika kode tidak ditemukan
                     if(nameEl) nameEl.innerText = "Data Tidak Ditemukan";
                     if(descEl) descEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 mr-1"></i> Pastikan kode resi benar.`;
                     if(badge) {
@@ -1211,7 +1225,7 @@
             }
 
             const newId = Date.now();
-            const ticketCode = 'RSV-' + Math.floor(1000 + Math.random() * 9000); // Generate Resi unik
+            const ticketCode = 'RSV-' + Math.floor(1000 + Math.random() * 9000); 
 
             simDB.guests.unshift({
                 id: newId, ticket: ticketCode, time: timeStr, name: name, phone: phone, agency: agency, target: targetStr, status: 'PENDING', read: false
@@ -1331,7 +1345,7 @@
             const activeBtn = document.getElementById(tabId.replace('tab', 'nav'));
             if(activeBtn){ activeBtn.classList.add('bg-white/10', 'text-white', 'active'); activeBtn.classList.remove('hover:bg-white/5', 'text-gray-400'); }
 
-            const titles = { 'tab-overview': 'Sistem Informasi Kepala Sekolah', 'tab-inbox': 'Daftar Pesan & Pengajuan', 'tab-history': 'Riwayat Arsip Pesan', 'tab-reports': 'Analitik Interaksi Website', 'tab-settings': 'Konfigurasi Profil Eksekutif' };
+            const titles = { 'tab-overview': 'Sistem Informasi Kepala Sekolah', 'tab-inbox': 'Daftar Pesan Masuk', 'tab-history': 'Riwayat Arsip Pesan', 'tab-reports': 'Analitik Interaksi Website', 'tab-settings': 'Konfigurasi Profil Eksekutif' };
             const dt = document.getElementById('dash-title');
             if(dt) dt.innerText = titles[tabId] || 'Dasbor Utama';
             
