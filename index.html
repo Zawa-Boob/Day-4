@@ -88,7 +88,7 @@
         .dash-sidebar { 
             width: 280px; height: 100vh; background-color: #0A2540; color: white; 
             position: fixed; left: 0; top: 0; z-index: 50; border-right: 1px solid rgba(212, 175, 55, 0.2); 
-            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         
         .dash-content-area { 
@@ -96,7 +96,7 @@
             overflow-y: auto; background-color: #F0F4F8; transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; 
         }
 
-        /* AUTO COLLAPSE LOGIC */
+        /* AUTO COLLAPSE LOGIC (TIDAK AKAN OVERLAP) */
         body.sidebar-collapsed .dash-sidebar { transform: translateX(-100%) !important; }
         body.sidebar-collapsed .dash-content-area { margin-left: 0 !important; width: 100% !important; }
 
@@ -127,7 +127,7 @@
         .data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; transition: border-color 0.3s; }
         .data-table tr:hover { background-color: #f8fafc; cursor: pointer; }
         
-        /* BADGE KUNING/HIJAU/MERAH */
+        /* MENGEMBALIKAN BADGE KUNING */
         .badge { padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; letter-spacing: 0.02em; text-transform: uppercase; transition: all 0.3s; }
         .badge-pending { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
         .badge-approved { background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
@@ -180,7 +180,7 @@
 
         .inbox-item-name-shrink { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #475569; width: 100%; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* DESKTOP IS-READING STATE */
+        /* DESKTOP IS-READING STATE (Menyusutkan kiri jadi kecil) */
         @media (min-width: 1025px) {
             .inbox-wrapper.is-reading .inbox-list { width: 90px; padding-top: 1rem; }
             .inbox-wrapper.is-reading .inbox-header-wrap { display: none; }
@@ -217,10 +217,9 @@
            DARK MODE OVERRIDES (Kualitas Hidup)
            ========================================================================== */
         body.dark-mode .dash-layout, body.dark-mode .dash-content-area { background-color: #0F172A !important; color: #F8FAFC !important; }
-        body.dark-mode .bg-white, body.dark-mode .modern-table-container, body.dark-mode .inbox-wrapper, body.dark-mode .inbox-detail, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
+        body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modern-table-container, body.dark-mode .inbox-wrapper, body.dark-mode .inbox-detail, body.dark-mode header.bg-white, body.dark-mode .notif-dropdown { background-color: #1E293B !important; border-color: #334155 !important; }
         body.dark-mode .bg-gray-50, body.dark-mode .inbox-list, body.dark-mode .bg-gray-100 { background-color: #0F172A !important; border-color: #334155 !important; }
         
-        /* Dark Mode untuk Stat Card Clean */
         body.dark-mode .stat-card { background-color: #1E293B !important; border-color: #334155 !important; }
         body.dark-mode .stat-icon-wrap { background-color: #0F172A !important; color: #94A3B8 !important; }
         body.dark-mode .stat-card:hover .stat-icon-wrap { background-color: #D4AF37 !important; color: #0A2540 !important; }
@@ -252,6 +251,9 @@
         body.dark-mode .badge-approved { background-color: #064e3b !important; color: #a7f3d0 !important; border-color: #065f46 !important; }
         body.dark-mode .badge-rejected { background-color: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
         body.dark-mode .inbox-shrink-header { background-color: #0F172A !important; border-color: #334155 !important; }
+        
+        /* Modal Viewer Fix for Dark Mode */
+        body.dark-mode #viewer-body { background-color: #0F172A !important; border: 1px solid #334155; }
     </style>
 </head>
 <body class="kiosk-mode select-none relative">
@@ -263,6 +265,21 @@
     <div class="bg-overlay" id="global-overlay"></div>
     
     <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 flex flex-col gap-3 w-[90%] max-w-md pointer-events-none" style="z-index: 9999;"></div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL FILE VIEWER (FITUR BARU)                                            -->
+    <!-- ========================================================================= -->
+    <div id="modal-file-viewer" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[999] hidden flex items-center justify-center p-4">
+        <div class="glass-panel p-4 rounded-2xl w-full max-w-5xl h-[90vh] relative flex flex-col scale-0 transition-transform duration-300" id="file-viewer-content">
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h3 class="text-white font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-file-lines text-accent"></i> <span id="viewer-title">Lampiran Dokumen</span></h3>
+                <button onclick="closeFileViewer()" class="text-gray-400 hover:text-red-400 bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 bg-white rounded-xl overflow-hidden relative flex items-center justify-center p-1 shadow-inner" id="viewer-body">
+                <!-- Iframe / Img akan disisipkan via JavaScript -->
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================================================= -->
     <!-- PAGE 1: LOBI UTAMA (PORTAL SATU PINTU)                                    -->
@@ -290,7 +307,7 @@
                     </div>
                     <div class="flex-1 text-left">
                         <h3 class="text-base md:text-xl font-bold mb-1 text-white">Buat Daftar Temu / Kirim Pesan</h3>
-                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Ajukan rencana pertemuan atau kirim pesan resmi.</p>
+                        <p class="text-gray-400 text-[10px] md:text-xs leading-relaxed">Ajukan rencana pertemuan atau kirim lampiran resmi.</p>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-500 pr-2"></i>
                 </button>
@@ -334,7 +351,7 @@
             </div>
             <div class="timeline px-2">
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">1. Pengisian Formulir</h4><p class="text-xs md:text-sm text-gray-300">Gunakan menu utama untuk mengirim pesan, mengajukan jadwal, atau melampirkan dokumen resmi ke Ibu Kepsek.</p></div>
-                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Di tahap akhir, sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
+                <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">2. Verifikasi Wajah</h4><p class="text-xs md:text-sm text-gray-300">Sistem akan meminta foto wajah Anda untuk keamanan dan identifikasi pengirim.</p></div>
                 <div class="timeline-item"><h4 class="text-accent font-bold text-base md:text-lg mb-1">3. Cek Status Resi</h4><p class="text-xs md:text-sm text-gray-300">Gunakan kode resi yang didapat setelah mengirim form untuk mengecek persetujuan jadwal Anda di menu Cek Status.</p></div>
             </div>
             <button onclick="closeGuideModal()" class="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 md:py-3.5 rounded-xl font-bold transition mt-4 text-sm">Saya Mengerti</button>
@@ -469,11 +486,11 @@
                                 <textarea id="w-detail" class="w-full flex-1 min-h-[140px] bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:border-accent resize-none transition" placeholder="Tuliskan secara lengkap pesan, agenda rapat, atau detail dokumen..."></textarea>
                             </div>
                             <div>
-                                <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Lampiran File Resmi (Opsional)</label>
+                                <label class="block text-[10px] md:text-xs text-gray-300 mb-1 uppercase font-semibold">Lampiran (PDF/Gambar/Dokumen)</label>
                                 <div class="border-2 border-dashed border-white/30 hover:border-accent rounded-xl flex items-center justify-center bg-black/20 cursor-pointer transition relative p-3 min-h-[60px]">
-                                    <input type="file" id="w-file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx" onchange="updateCheckinFileName(this)">
+                                    <input type="file" id="w-file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="updateCheckinFileName(this)">
                                     <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 mr-3" id="c-file-icon"></i>
-                                    <span class="text-xs text-gray-400 font-medium text-center" id="c-file-name">Klik/Tap unggah PDF/Word</span>
+                                    <span class="text-xs text-gray-400 font-medium text-center" id="c-file-name">Klik/Tap unggah PDF/Gambar</span>
                                 </div>
                             </div>
                         </div>
@@ -557,7 +574,7 @@
                     <h3 class="text-sm md:text-base font-bold text-emerald-400 mb-2 border-b border-emerald-900/50 pb-1"><i class="fa-solid fa-file-lines mr-1"></i>3. Topik & Agenda</h3>
                     <div class="flex flex-col md:flex-row gap-3">
                         <div class="flex-1"><textarea rows="3" required class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:border-emerald-400 transition resize-none" placeholder="Jelaskan secara singkat agenda pertemuan..."></textarea></div>
-                        <div class="w-full md:w-1/3 border border-dashed border-white/30 hover:border-emerald-400 rounded-lg flex flex-col items-center justify-center bg-black/20 cursor-pointer transition relative p-3"><input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf" onchange="updateFileName(this)"><i class="fa-solid fa-file-pdf text-xl text-gray-400 mb-1" id="file-icon"></i><span class="text-[10px] text-gray-400 text-center px-1" id="file-name">Lampirkan Surat (PDF)</span></div>
+                        <div class="w-full md:w-1/3 border border-dashed border-white/30 hover:border-emerald-400 rounded-lg flex flex-col items-center justify-center bg-black/20 cursor-pointer transition relative p-3"><input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this)"><i class="fa-solid fa-file-pdf text-xl text-gray-400 mb-1" id="file-icon"></i><span class="text-[10px] text-gray-400 text-center px-1" id="file-name">Lampirkan Surat (PDF/Gambar)</span></div>
                     </div>
                 </div>
                 <div class="mb-6">
@@ -589,7 +606,7 @@
             </div>
             
             <p class="text-xs md:text-sm text-gray-500 mb-6" id="ticket-desc">Data berhasil masuk ke sistem Dasbor.</p>
-            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Lobi</button>
+            <button onclick="closeTicket()" class="w-full bg-primary hover:bg-blue-900 text-white py-3 md:py-4 rounded-xl text-sm font-bold transition">Kembali ke Menu</button>
         </div>
     </div>
 
@@ -813,6 +830,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
+                    <!-- Grafik Batang CSS Sederhana -->
                     <div class="lg:col-span-2 bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm">
                         <h3 class="font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2 text-sm md:text-base">Grafik Pengajuan (7 Hari Terakhir)</h3>
                         <div class="chart-container"><div id="bar-chart-wrapper" class="flex w-full h-full gap-2 items-end"></div></div>
@@ -821,6 +839,7 @@
                         </div>
                     </div>
                     
+                    <!-- Insight -->
                     <div class="bg-gradient-to-br from-primary to-[#163050] text-white rounded-xl md:rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -bottom-10 -right-10 text-9xl text-white/5 pointer-events-none"><i class="fa-solid fa-chart-pie"></i></div>
                         <div class="relative z-10">
@@ -881,7 +900,7 @@
 
                             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div>
-                                    <p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap</p>
+                                    <p class="font-bold text-gray-800 text-sm md:text-base">Tema Dasbor Mode Gelap <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">BARU</span></p>
                                     <p class="text-[10px] md:text-xs text-gray-500">Ubah tampilan dasbor menjadi gelap untuk menjaga kesehatan mata.</p>
                                 </div>
                                 <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
@@ -915,7 +934,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- JAVASCRIPT MASTER LOGIC (DB & LOGIKA IF-ELSE TIKET)                       -->
+    <!-- JAVASCRIPT MASTER LOGIC                                                   -->
     <!-- ========================================================================= -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -927,6 +946,7 @@
             try { generateMockData(); } catch(e) { console.error("Database initialization error", e); }
         });
 
+        /* --- BACKGROUND LOOP SYSTEM --- */
         let currentBgIndex = 1;
         setInterval(() => {
             const current = document.getElementById(`bg-${currentBgIndex}`);
@@ -936,6 +956,7 @@
             if(next) next.classList.add('active');
         }, 5000);
 
+        /* --- GLOBAL ROUTING & TOAST --- */
         function navigate(pageId) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(pageId);
@@ -985,6 +1006,7 @@
             setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 400); }, 3500);
         }
 
+        /* --- MODAL PANDUAN & KELUAR --- */
         function openGuideModal() { const m = document.getElementById('modal-guide'), c = document.getElementById('guide-content'); if(m) m.classList.remove('hidden'); setTimeout(()=> { if(c) c.classList.replace('scale-0','scale-100'); }, 10); }
         function closeGuideModal() { const c = document.getElementById('guide-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=> { const m = document.getElementById('modal-guide'); if(m) m.classList.add('hidden'); }, 300); }
         function closePrincipalLogin() { const c = document.getElementById('auth-content'); if(c) c.classList.replace('scale-100','scale-0'); setTimeout(()=> { const m = document.getElementById('modal-auth-kepsek'); if(m) m.classList.add('hidden'); }, 300); }
@@ -1013,6 +1035,9 @@
             navigate('page-main');
         }
 
+        // =======================================================
+        // MODAL TIKET & PENYELARASAN DATABASE (LOGIKA IF-ELSE)
+        // =======================================================
         function showTicketModal(title, desc, providedCode) { 
             const code = providedCode || ('RSV-' + Math.floor(1000 + Math.random() * 9000));
             const ce = document.getElementById('ticket-code'); if(ce) ce.innerText = code; 
@@ -1051,28 +1076,16 @@
                     if(descEl) descEl.innerHTML = `<i class="fa-solid fa-info-circle text-blue-400 mr-1"></i> Pengajuan masuk pada ${foundMsg.time}`;
                     
                     if (foundMsg.status === 'APPROVED') {
-                        if(badge) {
-                            badge.innerText = "SUDAH DISETUJUI"; 
-                            badge.className = "text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30";
-                        }
+                        if(badge) { badge.innerText = "SUDAH DISETUJUI"; badge.className = "text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30"; }
                     } else if (foundMsg.status === 'REJECTED') {
-                        if(badge) {
-                            badge.innerText = "DITOLAK"; 
-                            badge.className = "text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30";
-                        }
+                        if(badge) { badge.innerText = "DITOLAK"; badge.className = "text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30"; }
                     } else {
-                        if(badge) {
-                            badge.innerText = "BELUM (MENUNGGU)"; 
-                            badge.className = "text-[10px] font-bold bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30";
-                        }
+                        if(badge) { badge.innerText = "BELUM (MENUNGGU)"; badge.className = "text-[10px] font-bold bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30"; }
                     }
                 } else {
                     if(nameEl) nameEl.innerText = "Data Tidak Ditemukan";
                     if(descEl) descEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 mr-1"></i> Pastikan kode resi benar.`;
-                    if(badge) {
-                        badge.innerText = "KODE INVALID"; 
-                        badge.className = "text-[10px] font-bold bg-gray-500/20 text-gray-400 px-2 py-1 rounded border border-gray-500/30";
-                    }
+                    if(badge) { badge.innerText = "KODE INVALID"; badge.className = "text-[10px] font-bold bg-gray-500/20 text-gray-400 px-2 py-1 rounded border border-gray-500/30"; }
                 }
             }, 1000);
         }
@@ -1104,6 +1117,8 @@
             }
         }
 
+        /* --- FITUR WIZARD KIRIM PESAN GABUNGAN --- */
+        let checkinStream = null;
         function updateCheckinFileName(input) {
             const nameEl = document.getElementById('c-file-name'), iconEl = document.getElementById('c-file-icon');
             if(!nameEl || !iconEl) return;
@@ -1189,6 +1204,7 @@
             }
         }
         
+        // --- PROSES PENGIRIMAN DATA FORM LOBI & FILE KE DASBOR ---
         function submitCheckin() {
             const canvas = document.getElementById('checkin-canvas');
             if(canvas && canvas.classList.contains('hidden')) { showToast("Wajib merekam wajah pengirim demi keamanan sistem.", "error"); return; }
@@ -1207,8 +1223,14 @@
             const loc = lEl ? lEl.value : '';
             const reqDate = dtEl ? dtEl.value : '';
             const reqTime = tmEl ? tmEl.value : '';
+            
+            // FUNGSI BARU: MENANGKAP FILE URL SEMENTARA AGAR BISA DIBUKA DI DASBOR
             const fileInput = (fileIn && fileIn.files.length > 0) ? true : false;
             const fileNameStr = fileInput ? fileIn.files[0].name : '';
+            let fileDataUrl = '';
+            if (fileInput) {
+                fileDataUrl = URL.createObjectURL(fileIn.files[0]);
+            }
             
             const targetMap = {'laporan':'Laporan Umum', 'permohonan':'Permohonan Kebijakan', 'informasi':'Info Digital', 'rapat':'Pengajuan Rapat', 'dokumen':'Penyerahan Dokumen'};
             const targetStr = targetMap[targetRaw] || 'Pengajuan Baru';
@@ -1231,9 +1253,10 @@
                 id: newId, ticket: ticketCode, time: timeStr, name: name, phone: phone, agency: agency, target: targetStr, status: 'PENDING', read: false
             });
 
+            // Menyimpan fileDataUrl ke database memori
             simDB.inbox.unshift({ 
                 id: newId, ticket: ticketCode, sender: name, agency: agency, phone: phone, email: email, time: timeStr, reqDate: reqInfo, location: locInfo,
-                title: targetStr, body: detail, hasFile: fileInput, fileName: fileNameStr, status: 'PENDING', read: false, 
+                title: targetStr, body: detail, hasFile: fileInput, fileName: fileNameStr, fileDataUrl: fileDataUrl, status: 'PENDING', read: false, 
                 avatar: faceImageData 
             });
 
@@ -1248,7 +1271,7 @@
             resetCheckinWizard();
         }
 
-        /* --- FITUR SCHEDULE FORM & CAMERA --- */
+        /* --- FITUR SCHEDULE FORM & CAMERA (JADWAL TEMU) --- */
         let schStream = null;
         
         function updateFileName(input) {
@@ -1304,16 +1327,92 @@
                 showToast("Pengajuan Gagal. Anda wajib merekam foto wajah pemohon pada bagian 4.", "error"); 
                 return;
             }
+            
+            // FUNGSI BARU: SINKRONISASI JADWAL KE DASHBOARD KEPSEK
+            const inputs = e.target.querySelectorAll('input');
+            const name = inputs[0].value;
+            const agency = inputs[1].value;
+            const phone = inputs[2].value;
+            const email = inputs[3].value;
+            const reqDate = inputs[4].value;
+            const reqTime = inputs[5].value;
+            const loc = e.target.querySelector('select').value;
+            const detail = e.target.querySelector('textarea').value;
+            const fileIn = e.target.querySelector('input[type="file"]');
+            
+            const fileInput = (fileIn && fileIn.files.length > 0) ? true : false;
+            const fileNameStr = fileInput ? fileIn.files[0].name : '';
+            let fileDataUrl = '';
+            if (fileInput) {
+                fileDataUrl = URL.createObjectURL(fileIn.files[0]);
+            }
+
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ' WIB';
+            let reqInfo = (reqDate && reqTime) ? `${reqDate} | ${reqTime}` : 'As Soon As Possible';
+            let faceImageData = canvas.toDataURL('image/jpeg');
+
+            const newId = Date.now();
+            const ticketCode = 'RSV-' + Math.floor(1000 + Math.random() * 9000); 
+
+            simDB.guests.unshift({
+                id: newId, ticket: ticketCode, time: timeStr, name: name, phone: phone, agency: agency, target: "Pengajuan Jadwal", status: 'PENDING', read: false
+            });
+
+            simDB.inbox.unshift({ 
+                id: newId, ticket: ticketCode, sender: name, agency: agency, phone: phone, email: email, time: timeStr, reqDate: reqInfo, location: loc,
+                title: "Pengajuan Jadwal Pertemuan", body: detail, hasFile: fileInput, fileName: fileNameStr, fileDataUrl: fileDataUrl, status: 'PENDING', read: false, 
+                avatar: faceImageData 
+            });
+
+            renderDashboardMetrics(); renderInboxList(); renderNotifications(); 
+
             stopScheduleCamera();
-            const ticketCode = 'RSV-' + Math.floor(1000 + Math.random() * 9000);
             showTicketModal("Jadwal Diajukan!", "Permohonan lengkap beserta foto telah dikirim ke Aplikasi Kepsek. Simpan kode resi Anda untuk mengecek status persetujuan.", ticketCode);
             e.target.reset();
             if(canvas) canvas.classList.add('hidden');
-            const input = document.getElementById('form-schedule').querySelector('input[type="file"]');
-            if(input) { Object.defineProperty(input, 'files', {value: []}); updateFileName(input); }
+            if(fileIn) { Object.defineProperty(fileIn, 'files', {value: []}); updateFileName(fileIn); }
         }
 
-        /* --- DASHBOARD LOGIC --- */
+        /* --- FITUR MODAL FILE VIEWER IN-APP --- */
+        function openFileViewer(fileName, fileUrl) {
+            if(!fileUrl || fileUrl === 'undefined' || fileUrl === '') {
+                showToast("Dokumen ini adalah data simulasi (tidak ada file aslinya).", "warning");
+                return;
+            }
+            const modal = document.getElementById('modal-file-viewer');
+            const content = document.getElementById('file-viewer-content');
+            const title = document.getElementById('viewer-title');
+            const body = document.getElementById('viewer-body');
+            
+            title.innerText = fileName;
+            body.innerHTML = '<div class="text-gray-400 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-3xl"></i></div>';
+            
+            // Check if it's an image
+            if(fileName.match(/\.(jpg|jpeg|png|gif)$/i) || fileUrl.startsWith('data:image')) {
+                body.innerHTML = `<img src="${fileUrl}" class="max-w-full max-h-full object-contain bg-gray-50 rounded-xl">`;
+            } else {
+                // Render as PDF / Iframe
+                body.innerHTML = `<iframe src="${fileUrl}" class="w-full h-full border-0 rounded-xl bg-gray-50"></iframe>`;
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => { content.classList.replace('scale-0', 'scale-100'); }, 10);
+        }
+
+        function closeFileViewer() {
+            const modal = document.getElementById('modal-file-viewer');
+            const content = document.getElementById('file-viewer-content');
+            const body = document.getElementById('viewer-body');
+            
+            content.classList.replace('scale-100', 'scale-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                body.innerHTML = ''; // bersihkan memory cache
+            }, 300);
+        }
+
+        /* --- DASHBOARD LOGIC (MOCK DATA) --- */
         const simDB = { guests: [], inbox: [] };
 
         function generateMockData() {
@@ -1324,9 +1423,9 @@
             ];
 
             simDB.inbox = [
-                { id: 101, ticket: 'RSV-1001', sender: "Dr. Hendra", agency: "Diknas Pusat", phone: "0812345678", email: "hendra@diknas.go.id", time: "10:45 WIB", reqDate: "12 Okt 2026 | 10:00", location: "Ruang Kepsek", title: "Pengajuan Rapat Akreditasi", body: "Mohon izin, kami ingin mendiskusikan laporan nilai akhir. Mohon ibu siapkan data pendukung.", hasFile: true, fileName: "Berkas_Akreditasi.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Dr+Hendra&background=1E293B&color=fff" },
-                { id: 102, ticket: 'RSV-1002', sender: "Bapak Ahmad", agency: "Vendor ATK", phone: "0899887766", email: "ahmad@vendor.com", time: "09:30 WIB", reqDate: "As Soon As Possible", location: "Via Website", title: "Permohonan Kebijakan Pengadaan", body: "Ada pengajuan proposal ATK tahun ajaran baru. Mohon persetujuan Ibu di sistem.", hasFile: true, fileName: "Proposal_Tender.pdf", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Bapak+Ahmad&background=3B82F6&color=fff" },
-                { id: 103, ticket: 'RSV-1003', sender: "Ibu Ratna Susanti", agency: "Wali Murid", phone: "0855443322", email: "ratna.s@gmail.com", time: "Kemarin", reqDate: "Tidak Perlu Lokasi", location: "Via Website", title: "Informasi Lomba Siswa", body: "Anak kami berhasil memenangkan lomba melukis nasional. Kami lampirkan piagam digitalnya.", hasFile: false, fileName: "", status: 'APPROVED', read: true, avatar: "https://ui-avatars.com/api/?name=Ratna+Susanti&background=10B981&color=fff" }
+                { id: 101, ticket: 'RSV-1001', sender: "Dr. Hendra", agency: "Diknas Pusat", phone: "0812345678", email: "hendra@diknas.go.id", time: "10:45 WIB", reqDate: "12 Okt 2026 | 10:00", location: "Ruang Kepsek", title: "Pengajuan Rapat Akreditasi", body: "Mohon izin, kami ingin mendiskusikan laporan nilai akhir. Mohon ibu siapkan data pendukung.", hasFile: true, fileName: "Berkas_Akreditasi.pdf", fileDataUrl: "", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Dr+Hendra&background=1E293B&color=fff" },
+                { id: 102, ticket: 'RSV-1002', sender: "Bapak Ahmad", agency: "Vendor ATK", phone: "0899887766", email: "ahmad@vendor.com", time: "09:30 WIB", reqDate: "As Soon As Possible", location: "Via Website", title: "Permohonan Kebijakan Pengadaan", body: "Ada pengajuan proposal ATK tahun ajaran baru. Mohon persetujuan Ibu di sistem.", hasFile: true, fileName: "Proposal_Tender.pdf", fileDataUrl: "", status: 'PENDING', read: false, avatar: "https://ui-avatars.com/api/?name=Bapak+Ahmad&background=3B82F6&color=fff" },
+                { id: 103, ticket: 'RSV-1003', sender: "Ibu Ratna Susanti", agency: "Wali Murid", phone: "0855443322", email: "ratna.s@gmail.com", time: "Kemarin", reqDate: "Tidak Perlu Lokasi", location: "Via Website", title: "Informasi Lomba Siswa", body: "Anak kami berhasil memenangkan lomba melukis nasional. Kami lampirkan piagam digitalnya.", hasFile: false, fileName: "", fileDataUrl: "", status: 'APPROVED', read: true, avatar: "https://ui-avatars.com/api/?name=Ratna+Susanti&background=10B981&color=fff" }
             ];
         }
 
@@ -1585,7 +1684,26 @@
                 actionButtons = `<span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">Pengajuan Telah ${msg.status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}</span>`;
             }
 
-            let fileIcon = msg.hasFile ? `<div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl inline-flex items-center gap-3 cursor-pointer hover:bg-red-100 transition dark-mode-file"><i class="fa-solid fa-file-pdf text-red-500 text-xl"></i><div><p class="text-xs font-bold text-gray-700 file-name-text">${msg.fileName || 'Lampiran_Resmi.pdf'}</p><p class="text-[10px] text-gray-500">1.2 MB</p></div></div>` : '';
+            // ==============================================================
+            // FUNGSI BARU: IKON FILE DINAMIS BISA DIKLIK (OPEN FILE VIEWER)
+            // ==============================================================
+            let fileIcon = '';
+            if (msg.hasFile) {
+                const fName = msg.fileName || 'Lampiran_Resmi.pdf';
+                const fUrl = msg.fileDataUrl || '';
+                const isImage = fName.match(/\.(jpg|jpeg|png|gif)$/i);
+                const iconClass = isImage ? 'fa-image text-blue-500' : 'fa-file-pdf text-red-500';
+                
+                fileIcon = `
+                    <div onclick="openFileViewer('${fName}', '${fUrl}')" class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl inline-flex items-center gap-3 cursor-pointer hover:bg-red-100 transition dark-mode-file">
+                        <i class="fa-solid ${iconClass} text-xl"></i>
+                        <div>
+                            <p class="text-xs font-bold text-gray-700 file-name-text">${fName}</p>
+                            <p class="text-[10px] text-gray-500">Klik untuk melihat file</p>
+                        </div>
+                    </div>`;
+            }
+
             let avatarDetailHTML = getAvatarHTML(msg.avatar, 'w-12 h-12 md:w-16 md:h-16');
 
             const detailArea = document.getElementById('inbox-detail-area');
